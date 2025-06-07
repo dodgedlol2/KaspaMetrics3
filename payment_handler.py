@@ -4,18 +4,43 @@ import streamlit as st
 
 class PaymentHandler:
     def __init__(self):
-        # For testing, use Stripe test keys
-        # Get these from your Stripe dashboard
-        self.stripe_secret_key = os.getenv('STRIPE_SECRET_KEY', 'sk_test_your_test_key_here')
-        self.stripe_publishable_key = os.getenv('STRIPE_PUBLISHABLE_KEY', 'pk_test_your_test_key_here')
-        stripe.api_key = self.stripe_secret_key
-        
-        # Your domain for redirects
-        self.domain = os.getenv('DOMAIN', 'http://localhost:8501')
-    
-    def create_checkout_session(self, username):
-        """Create a Stripe checkout session for premium upgrade"""
+        # Load Stripe keys from Streamlit secrets or environment variables
         try:
+            # Try Streamlit secrets first (for Streamlit Cloud)
+            self.stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY") or os.getenv('STRIPE_SECRET_KEY')
+            self.stripe_publishable_key = st.secrets.get("STRIPE_PUBLISHABLE_KEY") or os.getenv('STRIPE_PUBLISHABLE_KEY')
+            self.domain = st.secrets.get("DOMAIN", "http://localhost:8501") or os.getenv('DOMAIN', 'http://localhost:8501')
+        except:
+            # Fallback to environment variables (for local development)
+            self.stripe_secret_key = os.getenv('STRIPE_SECRET_KEY')
+            self.stripe_publishable_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
+            self.domain = os.getenv('DOMAIN', 'http://localhost:8501')
+        
+        if not self.stripe_secret_key:
+            st.error("Stripe secret key not found. Please set STRIPE_SECRET_KEY in Streamlit Cloud secrets or .env file")
+            return
+            
+        stripe.api_key = self.stripe_secret_key
+    
+    def create_checkout_session(self, username, price_amount=999, interval='month'):
+        """Create a Stripe checkout session for premium upgrade
+        
+        Args:
+            username: User's username
+            price_amount: Price in cents (999 = $9.99)
+            interval: 'month' or 'year'
+        """
+        if not self.stripe_secret_key:
+            st.error("Stripe not configured. Please add your API keys to Streamlit Cloud secrets.")
+            return None
+            
+        try:
+            # Create product description based on interval
+            if interval == 'year':
+                description = f'Annual subscription to premium analytics features (${price_amount/100:.2f}/year)'
+            else:
+                description = f'Monthly subscription to premium analytics features (${price_amount/100:.2f}/month)'
+            
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[{
@@ -23,11 +48,11 @@ class PaymentHandler:
                         'currency': 'usd',
                         'product_data': {
                             'name': 'Kaspa Analytics Premium',
-                            'description': 'Monthly subscription to premium analytics features',
+                            'description': description,
                         },
-                        'unit_amount': 999,  # $9.99 in cents
+                        'unit_amount': price_amount,  # Price in cents
                         'recurring': {
-                            'interval': 'month',
+                            'interval': interval,
                         },
                     },
                     'quantity': 1,
@@ -40,6 +65,10 @@ class PaymentHandler:
                 }
             )
             return checkout_session.url
+        except stripe.error.AuthenticationError as e:
+            st.error(f"Stripe authentication error: {str(e)}")
+            st.error("Please check your STRIPE_SECRET_KEY in Streamlit Cloud secrets")
+            return None
         except Exception as e:
             st.error(f"Error creating checkout session: {str(e)}")
             return None
