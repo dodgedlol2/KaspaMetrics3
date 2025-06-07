@@ -22,20 +22,19 @@ class PaymentHandler:
             
         stripe.api_key = self.stripe_secret_key
     
-    def create_checkout_session(self, username, price_amount=999, interval='month'):
-        """Create a Stripe checkout session for premium upgrade
-        
-        Args:
-            username: User's username
-            price_amount: Price in cents (999 = $9.99)
-            interval: 'month' or 'year'
-        """
-        # Debug logging
-        st.write(f"Debug: Creating session for {username}, ${price_amount/100:.2f}/{interval}")
-        
+    def create_checkout_session(self, username):
+        """Create a Stripe checkout session for premium upgrade"""
         if not self.stripe_secret_key:
             st.error("Stripe not configured. Please add your API keys to Streamlit Cloud secrets.")
             return None
+        
+        # Get pricing from session state, default to monthly
+        plan = st.session_state.get('selected_plan', {'amount': 999, 'interval': 'month'})
+        price_amount = plan['amount']
+        interval = plan['interval']
+        
+        # Debug logging
+        st.write(f"Debug: Creating session for {username}, ${price_amount/100:.2f}/{interval}")
             
         try:
             # Create product description based on interval
