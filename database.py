@@ -21,7 +21,9 @@ class Database:
             password TEXT NOT NULL,
             name TEXT NOT NULL,
             is_premium BOOLEAN DEFAULT FALSE,
+            premium_expires_at TIMESTAMP NULL,
             stripe_customer_id TEXT,
+            stripe_subscription_id TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         ''')
@@ -83,27 +85,34 @@ class Database:
                 'password': user[3],
                 'name': user[4],
                 'is_premium': bool(user[5]),
-                'stripe_customer_id': user[6]
+                'premium_expires_at': user[6],
+                'stripe_customer_id': user[7],
+                'stripe_subscription_id': user[8]
             }
         return None
     
-    def update_premium_status(self, username, is_premium):
-        """Update user's premium status"""
+    def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
+        """Update user's premium status with expiration date"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
         try:
-            cursor.execute('UPDATE users SET is_premium = ? WHERE username = ?', (is_premium, username))
+            cursor.execute('''
+                UPDATE users 
+                SET is_premium = ?, premium_expires_at = ?, stripe_subscription_id = ? 
+                WHERE username = ?
+            ''', (is_premium, expires_at, subscription_id, username))
+            
             rows_affected = cursor.rowcount
             conn.commit()
             
             # Debug: Verify the update worked
-            cursor.execute('SELECT username, is_premium FROM users WHERE username = ?', (username,))
+            cursor.execute('SELECT username, is_premium, premium_expires_at FROM users WHERE username = ?', (username,))
             result = cursor.fetchone()
             
             if result and rows_affected > 0:
                 st.write(f"Debug: Successfully updated {username} premium status to {is_premium}")
-                st.write(f"Debug: Database now shows: {result}")
+                st.write(f"Debug: Expires at: {expires_at}")
                 return True
             else:
                 st.write(f"Debug: Failed to update {username} - user not found or no changes made")
@@ -114,3 +123,32 @@ class Database:
             return False
         finally:
             conn.close()
+    
+    def check_premium_expiration(self, username):
+        """Check if user's premium subscription has expired"""
+        from datetime import datetime
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT premium_expires_at, is_premium FROM users WHERE username = ?', (username,))
+        result = cursor.fetchone()
+        conn.close()
+        
+        if result and result[1]:  # is_premium is True
+            expires_at = result[0]
+            if expires_at:
+                # Parse the expiration date
+                try:
+                    expiry_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                    if datetime.now() > expiry_date:
+                        # Subscription expired, update user
+                        self.update_premium_status(username, False)
+                        return False, "Subscription expired"
+                    else:
+                        return True, expiry_date
+                except:
+                    return True, "Active"
+            else:
+                return True, "Lifetime"  # No expiration set
+        return False, "Not premium"
