@@ -123,11 +123,12 @@ with col2:
                     
                     if login_button:
                         if auth_handler.authenticate(username, password):
+                            user = db.get_user(username)
                             st.session_state['authentication_status'] = True
                             st.session_state['username'] = username
-                            user = db.get_user(username)
                             st.session_state['name'] = user['name']
                             st.session_state['is_premium'] = user['is_premium']
+                            st.write(f"Debug: Logged in user {username}, premium status: {user['is_premium']}")
                             st.rerun()
                         else:
                             st.error("Invalid username or password")
