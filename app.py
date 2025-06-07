@@ -155,7 +155,9 @@ if selected_section == "Paid Section":
         with col1:
             if st.button("Monthly\n$9.99/mo", key="monthly"):
                 try:
-                    payment_url = payment_handler.create_checkout_session(st.session_state['username'], 999, 'month')
+                    # Set session state for pricing
+                    st.session_state['selected_plan'] = {'amount': 999, 'interval': 'month'}
+                    payment_url = payment_handler.create_checkout_session(st.session_state['username'])
                     if payment_url:
                         st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
                 except Exception as e:
@@ -163,7 +165,9 @@ if selected_section == "Paid Section":
         with col2:
             if st.button("Annual\n$99/year", key="annual"):
                 try:
-                    payment_url = payment_handler.create_checkout_session(st.session_state['username'], 9900, 'year')
+                    # Set session state for pricing
+                    st.session_state['selected_plan'] = {'amount': 9900, 'interval': 'year'}
+                    payment_url = payment_handler.create_checkout_session(st.session_state['username'])
                     if payment_url:
                         st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
                 except Exception as e:
