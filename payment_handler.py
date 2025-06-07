@@ -7,20 +7,31 @@ class PaymentHandler:
         # Load Stripe keys from Streamlit secrets or environment variables
         try:
             # Try Streamlit secrets first (for Streamlit Cloud)
-            self.stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY") or os.getenv('STRIPE_SECRET_KEY')
-            self.stripe_publishable_key = st.secrets.get("STRIPE_PUBLISHABLE_KEY") or os.getenv('STRIPE_PUBLISHABLE_KEY')
-            self.domain = st.secrets.get("DOMAIN", "http://localhost:8501") or os.getenv('DOMAIN', 'http://localhost:8501')
-        except:
+            self.stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY")
+            self.stripe_publishable_key = st.secrets.get("STRIPE_PUBLISHABLE_KEY") 
+            self.domain = st.secrets.get("DOMAIN", "http://localhost:8501")
+            
+            # Debug: Show what keys we loaded (partially masked)
+            if self.stripe_secret_key:
+                masked_key = self.stripe_secret_key[:12] + "***" + self.stripe_secret_key[-4:]
+                st.write(f"Debug: Loaded secret key: {masked_key}")
+            else:
+                st.write("Debug: No secret key found in st.secrets")
+                
+        except Exception as e:
+            st.write(f"Debug: Error accessing secrets: {e}")
             # Fallback to environment variables (for local development)
             self.stripe_secret_key = os.getenv('STRIPE_SECRET_KEY')
             self.stripe_publishable_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
             self.domain = os.getenv('DOMAIN', 'http://localhost:8501')
         
         if not self.stripe_secret_key:
-            st.error("Stripe secret key not found. Please set STRIPE_SECRET_KEY in Streamlit Cloud secrets or .env file")
+            st.error("Stripe secret key not found. Please set STRIPE_SECRET_KEY in Streamlit Cloud secrets")
             return
-            
+        
+        # Set the Stripe API key
         stripe.api_key = self.stripe_secret_key
+        st.write(f"Debug: Stripe API key set successfully")
     
     def create_checkout_session(self, username):
         """Create a Stripe checkout session for premium upgrade"""
