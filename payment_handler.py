@@ -8,15 +8,17 @@ class PaymentHandler:
         st.write("Debug: Checking Streamlit secrets...")
         try:
             st.write(f"Debug: Available secrets keys: {list(st.secrets.keys())}")
+            if 'default' in st.secrets:
+                st.write(f"Debug: Keys in default section: {list(st.secrets['default'].keys())}")
         except:
             st.write("Debug: No secrets available")
             
         # Load Stripe keys from Streamlit secrets or environment variables
         try:
-            # Try Streamlit secrets first (for Streamlit Cloud)
-            self.stripe_secret_key = st.secrets["STRIPE_SECRET_KEY"]
-            self.stripe_publishable_key = st.secrets["STRIPE_PUBLISHABLE_KEY"] 
-            self.domain = st.secrets["DOMAIN"]
+            # Access secrets through the 'default' section
+            self.stripe_secret_key = st.secrets["default"]["STRIPE_SECRET_KEY"]
+            self.stripe_publishable_key = st.secrets["default"]["STRIPE_PUBLISHABLE_KEY"] 
+            self.domain = st.secrets["default"]["DOMAIN"]
             
             # Debug: Show what keys we loaded (partially masked)
             if self.stripe_secret_key:
