@@ -1,6 +1,7 @@
 import sqlite3
 import bcrypt
 import os
+import streamlit as st
 
 class Database:
     def __init__(self, db_path="kaspa_users.db"):
