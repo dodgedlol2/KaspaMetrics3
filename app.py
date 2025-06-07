@@ -27,6 +27,34 @@ def init_app():
 
 db, auth_handler, payment_handler = init_app()
 
+# Check for payment success in URL parameters
+query_params = st.query_params
+if query_params.get("upgrade") == "success" and query_params.get("session_id"):
+    st.success("🎉 Payment successful! You now have premium access!")
+    session_id = query_params.get("session_id")
+    
+    # If user is logged in, upgrade them to premium
+    if st.session_state.get('username'):
+        username = st.session_state['username']
+        try:
+            # Verify the payment with Stripe and upgrade user
+            if payment_handler.handle_successful_payment(session_id, username):
+                st.session_state['is_premium'] = True
+                db.update_premium_status(username, True)
+                st.balloons()
+                st.success(f"Welcome to Premium, {st.session_state.get('name', username)}!")
+            else:
+                st.error("Payment verification failed. Please contact support.")
+        except Exception as e:
+            st.error(f"Error processing upgrade: {str(e)}")
+
+elif query_params.get("upgrade") == "cancelled":
+    st.warning("Payment was cancelled. You can try again anytime!")
+
+# Clear URL parameters after handling
+if query_params.get("upgrade") or query_params.get("session_id"):
+    st.query_params.clear()
+
 # Custom CSS for better styling
 st.markdown("""
 <style>
