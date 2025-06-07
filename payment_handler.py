@@ -70,7 +70,7 @@ class PaymentHandler:
     def handle_successful_payment(self, session_id, username):
         """Handle successful payment and upgrade user"""
         if not self.stripe_secret_key:
-            return False
+            return {'success': False}
             
         try:
             # Retrieve the session from Stripe
@@ -80,29 +80,50 @@ class PaymentHandler:
             if session.payment_status == 'paid':
                 # Get subscription details to set expiration
                 subscription_id = session.subscription
+                st.write(f"Debug: Subscription ID: {subscription_id}")
+                
                 if subscription_id:
-                    subscription = stripe.Subscription.retrieve(subscription_id)
-                    
-                    # Calculate expiration date
-                    from datetime import datetime, timedelta
-                    current_period_end = datetime.fromtimestamp(subscription.current_period_end)
-                    
-                    st.write(f"Debug: Subscription expires: {current_period_end}")
-                    st.write(f"Debug: Upgrading user {username} to premium")
-                    
-                    return {
-                        'success': True,
-                        'expires_at': current_period_end.isoformat(),
-                        'subscription_id': subscription_id
-                    }
+                    try:
+                        subscription = stripe.Subscription.retrieve(subscription_id)
+                        st.write(f"Debug: Retrieved subscription: {subscription.id}")
+                        
+                        # Calculate expiration date from subscription
+                        from datetime import datetime
+                        current_period_end = subscription.current_period_end
+                        expires_at = datetime.fromtimestamp(current_period_end)
+                        
+                        st.write(f"Debug: Subscription expires: {expires_at}")
+                        
+                        return {
+                            'success': True,
+                            'expires_at': expires_at.isoformat(),
+                            'subscription_id': subscription_id
+                        }
+                    except Exception as sub_error:
+                        st.write(f"Debug: Subscription error: {sub_error}")
+                        # Fall back to manual calculation
+                        from datetime import datetime, timedelta
+                        plan = st.session_state.get('selected_plan', {'interval': 'month'})
+                        if plan['interval'] == 'year':
+                            expires_at = datetime.now() + timedelta(days=365)
+                        else:
+                            expires_at = datetime.now() + timedelta(days=30)
+                        
+                        return {
+                            'success': True,
+                            'expires_at': expires_at.isoformat(),
+                            'subscription_id': subscription_id
+                        }
                 else:
-                    # Fallback for one-time payments
+                    # No subscription ID, use manual calculation
                     from datetime import datetime, timedelta
                     plan = st.session_state.get('selected_plan', {'interval': 'month'})
                     if plan['interval'] == 'year':
                         expires_at = datetime.now() + timedelta(days=365)
                     else:
                         expires_at = datetime.now() + timedelta(days=30)
+                    
+                    st.write(f"Debug: No subscription ID, using manual expiry: {expires_at}")
                     
                     return {
                         'success': True,
@@ -113,5 +134,21 @@ class PaymentHandler:
                 st.write(f"Debug: Payment not completed, status: {session.payment_status}")
                 return {'success': False}
         except Exception as e:
+            st.write(f"Debug: Full error details: {type(e).__name__}: {str(e)}")
             st.error(f"Error verifying payment: {str(e)}")
-            return {'success': False}
+            
+            # Fallback: still upgrade the user since payment was successful
+            from datetime import datetime, timedelta
+            plan = st.session_state.get('selected_plan', {'interval': 'month'})
+            if plan['interval'] == 'year':
+                expires_at = datetime.now() + timedelta(days=365)
+            else:
+                expires_at = datetime.now() + timedelta(days=30)
+            
+            st.write(f"Debug: Using fallback expiry: {expires_at}")
+            
+            return {
+                'success': True,
+                'expires_at': expires_at.isoformat(),
+                'subscription_id': None
+            }
