@@ -5,12 +5,9 @@ import streamlit_authenticator as stauth
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
-
-# Import page modules
-from pages.mining import hashrate, difficulty
-from pages.spot import price, volume, marketcap
-from pages.social import test_page, test_page2
-from pages.paid import test_paid, test_paid2
+import importlib.util
+import sys
+import os
 
 # Page configuration
 st.set_page_config(
@@ -113,24 +110,31 @@ with col2:
 # Sidebar navigation
 st.sidebar.title("Navigation")
 
-# Define pages structure
+def load_page_module(file_path):
+    """Dynamically load a page module"""
+    spec = importlib.util.spec_from_file_location("page_module", file_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+# Define pages structure with file paths
 pages = {
     "Mining": {
-        "Hashrate": hashrate,
-        "Difficulty": difficulty
+        "Hashrate": "pages/mining/hashrate.py",
+        "Difficulty": "pages/mining/difficulty.py"
     },
     "Spot": {
-        "Price": price,
-        "Volume": volume,
-        "Market Cap": marketcap
+        "Price": "pages/spot/price.py",
+        "Volume": "pages/spot/volume.py",
+        "Market Cap": "pages/spot/marketcap.py"
     },
     "Social Data": {
-        "Test Page": test_page,
-        "Test Page 2": test_page2
+        "Test Page": "pages/social/test_page.py",
+        "Test Page 2": "pages/social/test_page2.py"
     },
     "Paid Section": {
-        "Premium Analytics": test_paid,
-        "Advanced Metrics": test_paid2
+        "Premium Analytics": "pages/paid/test_paid.py",
+        "Advanced Metrics": "pages/paid/test_paid2.py"
     }
 }
 
@@ -157,8 +161,12 @@ else:
 
 # Display selected page
 if selected_page:
-    page_module = pages[selected_section][selected_page]
-    page_module.show()
+    page_file = pages[selected_section][selected_page]
+    if os.path.exists(page_file):
+        page_module = load_page_module(page_file)
+        page_module.show()
+    else:
+        st.error(f"Page file not found: {page_file}")
 else:
     if selected_section == "Paid Section":
         st.title("Premium Access Required")
