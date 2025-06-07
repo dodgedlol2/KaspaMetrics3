@@ -4,20 +4,35 @@ import streamlit as st
 
 class PaymentHandler:
     def __init__(self):
+        # Debug: Check if secrets are available
+        st.write("Debug: Checking Streamlit secrets...")
+        try:
+            st.write(f"Debug: Available secrets keys: {list(st.secrets.keys())}")
+        except:
+            st.write("Debug: No secrets available")
+            
         # Load Stripe keys from Streamlit secrets or environment variables
         try:
             # Try Streamlit secrets first (for Streamlit Cloud)
-            self.stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY")
-            self.stripe_publishable_key = st.secrets.get("STRIPE_PUBLISHABLE_KEY") 
-            self.domain = st.secrets.get("DOMAIN", "http://localhost:8501")
+            self.stripe_secret_key = st.secrets["STRIPE_SECRET_KEY"]
+            self.stripe_publishable_key = st.secrets["STRIPE_PUBLISHABLE_KEY"] 
+            self.domain = st.secrets["DOMAIN"]
             
             # Debug: Show what keys we loaded (partially masked)
             if self.stripe_secret_key:
                 masked_key = self.stripe_secret_key[:12] + "***" + self.stripe_secret_key[-4:]
                 st.write(f"Debug: Loaded secret key: {masked_key}")
+                st.write(f"Debug: Key length: {len(self.stripe_secret_key)}")
+                st.write(f"Debug: Key starts with: {self.stripe_secret_key[:10]}")
             else:
-                st.write("Debug: No secret key found in st.secrets")
+                st.write("Debug: Secret key is empty")
                 
+        except KeyError as e:
+            st.write(f"Debug: Secret key not found: {e}")
+            # Fallback to environment variables (for local development)
+            self.stripe_secret_key = os.getenv('STRIPE_SECRET_KEY')
+            self.stripe_publishable_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
+            self.domain = os.getenv('DOMAIN', 'http://localhost:8501')
         except Exception as e:
             st.write(f"Debug: Error accessing secrets: {e}")
             # Fallback to environment variables (for local development)
