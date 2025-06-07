@@ -1,0 +1,21 @@
+credentials:
+  usernames:
+    demo_user:
+      email: demo@kaspa.com
+      name: Demo User
+      password: $2b$12$xGhzB9Q6pYgIzGxsN7VwX.HxBYCHwPKjTjqhCfzUi8.Yfx5GfxQUe  # demo123
+      is_premium: false
+    premium_user:
+      email: premium@kaspa.com
+      name: Premium User
+      password: $2b$12$xGhzB9Q6pYgIzGxsN7VwX.HxBYCHwPKjTjqhCfzUi8.Yfx5GfxQUe  # demo123
+      is_premium: true
+
+cookie:
+  name: kaspa_auth_cookie
+  key: kaspa_secret_key_12345  # Change this to a secure random key
+  expiry_days: 30
+
+preauthorized:
+  emails:
+    - admin@kaspa.com
