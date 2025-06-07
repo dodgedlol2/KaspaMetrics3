@@ -148,11 +148,21 @@ if selected_section == "Paid Section":
         selected_page = None
     elif not st.session_state.get('is_premium', False):
         st.sidebar.warning("Upgrade to premium to access this section")
-        # Payment integration
-        if st.sidebar.button("Upgrade to Premium"):
-            payment_url = payment_handler.create_checkout_session(st.session_state['username'])
-            if payment_url:
-                st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
+        # Payment integration with pricing options
+        st.sidebar.subheader("Choose Your Plan:")
+        
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            if st.button("Monthly\n$9.99/mo", key="monthly"):
+                payment_url = payment_handler.create_checkout_session(st.session_state['username'], 999, 'month')
+                if payment_url:
+                    st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
+        with col2:
+            if st.button("Annual\n$99/year", key="annual"):
+                payment_url = payment_handler.create_checkout_session(st.session_state['username'], 9900, 'year')
+                if payment_url:
+                    st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
+        
         selected_page = None
     else:
         selected_page = st.sidebar.selectbox("Select Page", list(pages[selected_section].keys()))
