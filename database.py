@@ -92,6 +92,25 @@ class Database:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        cursor.execute('UPDATE users SET is_premium = ? WHERE username = ?', (is_premium, username))
-        conn.commit()
-        conn.close()
+        try:
+            cursor.execute('UPDATE users SET is_premium = ? WHERE username = ?', (is_premium, username))
+            rows_affected = cursor.rowcount
+            conn.commit()
+            
+            # Debug: Verify the update worked
+            cursor.execute('SELECT username, is_premium FROM users WHERE username = ?', (username,))
+            result = cursor.fetchone()
+            
+            if result and rows_affected > 0:
+                st.write(f"Debug: Successfully updated {username} premium status to {is_premium}")
+                st.write(f"Debug: Database now shows: {result}")
+                return True
+            else:
+                st.write(f"Debug: Failed to update {username} - user not found or no changes made")
+                return False
+                
+        except Exception as e:
+            st.write(f"Debug: Database error updating premium status: {e}")
+            return False
+        finally:
+            conn.close()
