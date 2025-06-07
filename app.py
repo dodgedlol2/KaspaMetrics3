@@ -41,8 +41,12 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
         
         if username_from_stripe:
             # Upgrade the user in database
-            if payment_handler.handle_successful_payment(session_id, username_from_stripe):
-                db.update_premium_status(username_from_stripe, True)
+            payment_result = payment_handler.handle_successful_payment(session_id, username_from_stripe)
+            if payment_result.get('success'):
+                expires_at = payment_result.get('expires_at')
+                subscription_id = payment_result.get('subscription_id')
+                
+                db.update_premium_status(username_from_stripe, True, expires_at, subscription_id)
                 
                 # Auto-login the user if they're not logged in
                 if not st.session_state.get('authentication_status'):
@@ -51,6 +55,7 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
                     user = db.get_user(username_from_stripe)
                     st.session_state['name'] = user['name']
                     st.session_state['is_premium'] = True
+                    st.session_state['premium_expires_at'] = expires_at
                     
                 st.success("🎉 Payment successful! You now have premium access!")
                 st.balloons()
@@ -124,11 +129,20 @@ with col2:
                     if login_button:
                         if auth_handler.authenticate(username, password):
                             user = db.get_user(username)
+                            
+                            # Check premium expiration
+                            is_premium, expiry_info = db.check_premium_expiration(username)
+                            
                             st.session_state['authentication_status'] = True
                             st.session_state['username'] = username
                             st.session_state['name'] = user['name']
-                            st.session_state['is_premium'] = user['is_premium']
-                            st.write(f"Debug: Logged in user {username}, premium status: {user['is_premium']}")
+                            st.session_state['is_premium'] = is_premium
+                            st.session_state['premium_expires_at'] = user.get('premium_expires_at')
+                            
+                            st.write(f"Debug: Logged in user {username}, premium status: {is_premium}")
+                            if isinstance(expiry_info, str):
+                                st.write(f"Debug: Premium info: {expiry_info}")
+                            
                             st.rerun()
                         else:
                             st.error("Invalid username or password")
@@ -148,13 +162,38 @@ with col2:
                             st.error("Username or email already exists")
     
     elif st.session_state['authentication_status']:
-        st.write(f"Welcome, {st.session_state['name']}!")
-        if st.button("Logout"):
-            st.session_state['authentication_status'] = None
-            st.session_state['username'] = None
-            st.session_state['name'] = None
-            st.session_state['is_premium'] = False
-            st.rerun()
+        # Check for expired premium subscriptions
+        if st.session_state.get('username'):
+            is_premium, expiry_info = db.check_premium_expiration(st.session_state['username'])
+            st.session_state['is_premium'] = is_premium
+            
+            if isinstance(expiry_info, str) and expiry_info == "Subscription expired":
+                st.warning("⚠️ Your premium subscription has expired. Please renew to continue accessing premium features.")
+        
+        # Show user info with premium status
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            welcome_msg = f"Welcome, {st.session_state['name']}!"
+            if st.session_state.get('is_premium'):
+                welcome_msg += " 👑 PREMIUM"
+                if st.session_state.get('premium_expires_at'):
+                    from datetime import datetime
+                    try:
+                        expires = datetime.fromisoformat(st.session_state['premium_expires_at'].replace('Z', '+00:00'))
+                        days_left = (expires - datetime.now()).days
+                        if days_left > 0:
+                            welcome_msg += f" ({days_left} days left)"
+                    except:
+                        pass
+            st.write(welcome_msg)
+        with col2:
+            if st.button("Logout"):
+                st.session_state['authentication_status'] = None
+                st.session_state['username'] = None
+                st.session_state['name'] = None
+                st.session_state['is_premium'] = False
+                st.session_state['premium_expires_at'] = None
+                st.rerun()
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
