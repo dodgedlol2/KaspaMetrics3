@@ -30,6 +30,9 @@ class PaymentHandler:
             price_amount: Price in cents (999 = $9.99)
             interval: 'month' or 'year'
         """
+        # Debug logging
+        st.write(f"Debug: Creating session for {username}, ${price_amount/100:.2f}/{interval}")
+        
         if not self.stripe_secret_key:
             st.error("Stripe not configured. Please add your API keys to Streamlit Cloud secrets.")
             return None
@@ -41,6 +44,8 @@ class PaymentHandler:
             else:
                 description = f'Monthly subscription to premium analytics features (${price_amount/100:.2f}/month)'
             
+            st.write(f"Debug: Creating Stripe session with amount {price_amount}")
+            
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[{
@@ -50,7 +55,7 @@ class PaymentHandler:
                             'name': 'Kaspa Analytics Premium',
                             'description': description,
                         },
-                        'unit_amount': price_amount,  # Price in cents
+                        'unit_amount': int(price_amount),  # Ensure it's an integer
                         'recurring': {
                             'interval': interval,
                         },
@@ -64,13 +69,17 @@ class PaymentHandler:
                     'username': username
                 }
             )
+            
+            st.write(f"Debug: Session created successfully: {checkout_session.id}")
             return checkout_session.url
+            
         except stripe.error.AuthenticationError as e:
             st.error(f"Stripe authentication error: {str(e)}")
             st.error("Please check your STRIPE_SECRET_KEY in Streamlit Cloud secrets")
             return None
         except Exception as e:
             st.error(f"Error creating checkout session: {str(e)}")
+            st.write(f"Debug: Full error details: {type(e).__name__}: {str(e)}")
             return None
     
     def handle_successful_payment(self, session_id, username):
