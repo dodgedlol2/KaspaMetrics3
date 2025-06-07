@@ -154,14 +154,20 @@ if selected_section == "Paid Section":
         col1, col2 = st.sidebar.columns(2)
         with col1:
             if st.button("Monthly\n$9.99/mo", key="monthly"):
-                payment_url = payment_handler.create_checkout_session(st.session_state['username'], 999, 'month')
-                if payment_url:
-                    st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
+                try:
+                    payment_url = payment_handler.create_checkout_session(st.session_state['username'], 999, 'month')
+                    if payment_url:
+                        st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
+                except Exception as e:
+                    st.sidebar.error(f"Error creating payment session: {str(e)}")
         with col2:
             if st.button("Annual\n$99/year", key="annual"):
-                payment_url = payment_handler.create_checkout_session(st.session_state['username'], 9900, 'year')
-                if payment_url:
-                    st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
+                try:
+                    payment_url = payment_handler.create_checkout_session(st.session_state['username'], 9900, 'year')
+                    if payment_url:
+                        st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
+                except Exception as e:
+                    st.sidebar.error(f"Error creating payment session: {str(e)}")
         
         selected_page = None
     else:
