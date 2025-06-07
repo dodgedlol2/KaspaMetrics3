@@ -78,12 +78,40 @@ class PaymentHandler:
             st.write(f"Debug: Payment session status: {session.payment_status}")
             
             if session.payment_status == 'paid':
-                # Payment was successful, upgrade user
-                st.write(f"Debug: Upgrading user {username} to premium")
-                return True
+                # Get subscription details to set expiration
+                subscription_id = session.subscription
+                if subscription_id:
+                    subscription = stripe.Subscription.retrieve(subscription_id)
+                    
+                    # Calculate expiration date
+                    from datetime import datetime, timedelta
+                    current_period_end = datetime.fromtimestamp(subscription.current_period_end)
+                    
+                    st.write(f"Debug: Subscription expires: {current_period_end}")
+                    st.write(f"Debug: Upgrading user {username} to premium")
+                    
+                    return {
+                        'success': True,
+                        'expires_at': current_period_end.isoformat(),
+                        'subscription_id': subscription_id
+                    }
+                else:
+                    # Fallback for one-time payments
+                    from datetime import datetime, timedelta
+                    plan = st.session_state.get('selected_plan', {'interval': 'month'})
+                    if plan['interval'] == 'year':
+                        expires_at = datetime.now() + timedelta(days=365)
+                    else:
+                        expires_at = datetime.now() + timedelta(days=30)
+                    
+                    return {
+                        'success': True,
+                        'expires_at': expires_at.isoformat(),
+                        'subscription_id': None
+                    }
             else:
                 st.write(f"Debug: Payment not completed, status: {session.payment_status}")
-                return False
+                return {'success': False}
         except Exception as e:
             st.error(f"Error verifying payment: {str(e)}")
-            return False
+            return {'success': False}
