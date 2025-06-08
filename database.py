@@ -10,44 +10,26 @@ class Database:
     def __init__(self):
         # Get database URL from Streamlit secrets or environment
         try:
-            # Try accessing from [default] section first
             self.database_url = st.secrets["default"]["DATABASE_URL"]
-            st.write(f"Debug: Found DATABASE_URL in default section: {self.database_url[:30]}...")
-        except Exception as e:
-            st.write(f"Debug: Error accessing default section: {e}")
+        except:
             try:
-                # Fallback to direct access
                 self.database_url = st.secrets["DATABASE_URL"]
-                st.write(f"Debug: Found DATABASE_URL direct: {self.database_url[:30]}...")
-            except Exception as e2:
-                # Final fallback to SQLite
+            except:
                 self.database_url = os.getenv('DATABASE_URL', 'sqlite:///kaspa_users.db')
-                st.write(f"Debug: Error accessing DATABASE_URL directly: {e2}")
-                st.write(f"Debug: Using fallback SQLite: {self.database_url}")
         
         # Check if using PostgreSQL (Supabase) or fallback to SQLite
         if self.database_url.startswith('postgresql://'):
             self.use_postgres = True
-            st.write("Debug: Initializing PostgreSQL database...")
             self.init_postgres_database()
         else:
             self.use_postgres = False
-            st.write("Debug: Initializing SQLite database...")
             self.init_sqlite_database()
     
     def get_connection(self):
         """Get database connection"""
         if self.use_postgres:
-            st.write(f"Debug: Connecting to PostgreSQL...")
-            try:
-                conn = psycopg2.connect(self.database_url)
-                st.write("Debug: PostgreSQL connection successful!")
-                return conn
-            except Exception as e:
-                st.write(f"Debug: PostgreSQL connection failed: {e}")
-                raise e
+            return psycopg2.connect(self.database_url)
         else:
-            st.write(f"Debug: Connecting to SQLite...")
             import sqlite3
             return sqlite3.connect('kaspa_users.db')
     
@@ -57,9 +39,7 @@ class Database:
             conn = self.get_connection()
             cursor = conn.cursor()
             
-            st.write("Debug: Creating PostgreSQL users table...")
-            
-            # Create users table for PostgreSQL with all columns at once
+            # Create users table with all columns
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -78,31 +58,23 @@ class Database:
             ''')
             
             conn.commit()
-            st.write("Debug: PostgreSQL users table created/verified!")
             
-            # Create default demo users in fresh transaction
+            # Create demo users
             self.create_demo_users_postgres(cursor)
             conn.commit()
             conn.close()
-            st.write("Debug: PostgreSQL database initialization complete!")
             
         except Exception as e:
-            st.write(f"Debug: Error initializing PostgreSQL: {e}")
             try:
-                conn.rollback()
                 conn.close()
             except:
                 pass
-            # Don't raise error, just continue - table might already exist
-            st.write("Debug: Continuing despite error - table likely exists")
     
     def init_sqlite_database(self):
         """Initialize SQLite database (fallback)"""
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
-            
-            st.write("Debug: Creating SQLite users table...")
             
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
@@ -115,42 +87,25 @@ class Database:
                 premium_expires_at TIMESTAMP NULL,
                 stripe_customer_id TEXT,
                 stripe_subscription_id TEXT,
+                reset_token TEXT NULL,
+                reset_token_expires TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
             
-            # Check if reset token columns exist and add them if needed
-            try:
-                cursor.execute("PRAGMA table_info(users)")
-                columns = [column[1] for column in cursor.fetchall()]
-                
-                if 'reset_token' not in columns:
-                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token TEXT NULL')
-                    st.write("Debug: Added reset_token column")
-                
-                if 'reset_token_expires' not in columns:
-                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
-                    st.write("Debug: Added reset_token_expires column")
-            
-            except Exception as col_error:
-                st.write(f"Debug: Error adding columns (may already exist): {col_error}")
-            
             self.create_demo_users_sqlite(cursor)
             conn.commit()
             conn.close()
-            st.write("Debug: SQLite database initialization complete!")
             
         except Exception as e:
-            st.write(f"Debug: Error initializing SQLite: {e}")
-            raise e
+            pass
     
     def create_demo_users_postgres(self, cursor):
         """Create demo users for PostgreSQL"""
         try:
-            st.write("Debug: Creating demo users in PostgreSQL...")
             demo_password = bcrypt.hashpw("demo123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             
-            # Check if demo users already exist first
+            # Check existing users
             cursor.execute('SELECT username FROM users WHERE username IN (%s, %s)', ('demo_user', 'premium_user'))
             existing_users = [row[0] for row in cursor.fetchall()]
             
@@ -159,29 +114,19 @@ class Database:
                 INSERT INTO users (username, email, password, name, is_premium)
                 VALUES (%s, %s, %s, %s, %s)
                 ''', ("demo_user", "demo@kaspa.com", demo_password, "Demo User", False))
-                st.write("Debug: Created demo_user")
-            else:
-                st.write("Debug: demo_user already exists")
                 
             if 'premium_user' not in existing_users:
                 cursor.execute('''
                 INSERT INTO users (username, email, password, name, is_premium)
                 VALUES (%s, %s, %s, %s, %s)
                 ''', ("premium_user", "premium@kaspa.com", demo_password, "Premium User", True))
-                st.write("Debug: Created premium_user")
-            else:
-                st.write("Debug: premium_user already exists")
-            
-            st.write("Debug: Demo users setup complete!")
             
         except Exception as e:
-            st.write(f"Debug: Error in demo user creation: {e}")
-            # Don't raise the error, just log it
+            pass
     
     def create_demo_users_sqlite(self, cursor):
         """Create demo users for SQLite"""
         try:
-            st.write("Debug: Creating demo users in SQLite...")
             demo_password = bcrypt.hashpw("demo123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             
             users = [
@@ -195,15 +140,12 @@ class Database:
                 VALUES (?, ?, ?, ?, ?)
                 ''', user)
             
-            st.write("Debug: Demo users created in SQLite!")
-            
         except Exception as e:
-            st.write(f"Debug: Error creating demo users in SQLite: {e}")
+            pass
     
     def add_user(self, username, email, password, name):
         """Add a new user to the database"""
         try:
-            st.write(f"Debug: Adding user {username} to database...")
             conn = self.get_connection()
             cursor = conn.cursor()
             
@@ -222,17 +164,14 @@ class Database:
             
             conn.commit()
             conn.close()
-            st.write(f"Debug: User {username} added successfully!")
             return True
             
         except Exception as e:
-            st.write(f"Debug: Error adding user {username}: {e}")
             return False
     
     def get_user(self, username):
         """Get user by username"""
         try:
-            st.write(f"Debug: Getting user {username} from database...")
             conn = self.get_connection()
             cursor = conn.cursor()
             
@@ -245,9 +184,7 @@ class Database:
             conn.close()
             
             if user:
-                st.write(f"Debug: User {username} found!")
-                # Handle cases where reset token columns might not exist
-                user_dict = {
+                return {
                     'id': user[0],
                     'username': user[1],
                     'email': user[2],
@@ -260,19 +197,14 @@ class Database:
                     'reset_token': user[9] if len(user) > 9 else None,
                     'reset_token_expires': user[10] if len(user) > 10 else None
                 }
-                return user_dict
-            else:
-                st.write(f"Debug: User {username} not found!")
-                return None
+            return None
                 
         except Exception as e:
-            st.write(f"Debug: Error getting user {username}: {e}")
             return None
     
     def get_user_by_email(self, email):
         """Get user by email address"""
         try:
-            st.write(f"Debug: Getting user by email {email}...")
             conn = self.get_connection()
             cursor = conn.cursor()
             
@@ -285,9 +217,7 @@ class Database:
             conn.close()
             
             if user:
-                st.write(f"Debug: User found for email {email}!")
-                # Handle cases where reset token columns might not exist
-                user_dict = {
+                return {
                     'id': user[0],
                     'username': user[1],
                     'email': user[2],
@@ -300,23 +230,16 @@ class Database:
                     'reset_token': user[9] if len(user) > 9 else None,
                     'reset_token_expires': user[10] if len(user) > 10 else None
                 }
-                return user_dict
-            else:
-                st.write(f"Debug: No user found for email {email}!")
-                return None
+            return None
                 
         except Exception as e:
-            st.write(f"Debug: Error getting user by email {email}: {e}")
             return None
     
     def create_reset_token(self, email):
         """Create a password reset token for user"""
         try:
-            st.write(f"Debug: Creating reset token for email {email}...")
-            
-            # Generate secure token
             token = secrets.token_urlsafe(32)
-            expires_at = datetime.now() + timedelta(hours=1)  # Token expires in 1 hour
+            expires_at = datetime.now() + timedelta(hours=1)
             
             conn = self.get_connection()
             cursor = conn.cursor()
@@ -336,18 +259,14 @@ class Database:
             
             conn.commit()
             conn.close()
-            
-            st.write(f"Debug: Reset token created for {email}")
             return token
             
         except Exception as e:
-            st.write(f"Debug: Error creating reset token for {email}: {e}")
             return None
     
     def verify_reset_token(self, token):
         """Verify reset token and return user if valid"""
         try:
-            st.write(f"Debug: Verifying reset token...")
             conn = self.get_connection()
             cursor = conn.cursor()
             
@@ -366,7 +285,6 @@ class Database:
             conn.close()
             
             if user:
-                st.write("Debug: Valid reset token found!")
                 return {
                     'id': user[0],
                     'username': user[1],
@@ -378,25 +296,18 @@ class Database:
                     'stripe_customer_id': user[7],
                     'stripe_subscription_id': user[8]
                 }
-            else:
-                st.write("Debug: Invalid or expired reset token!")
-                return None
+            return None
                 
         except Exception as e:
-            st.write(f"Debug: Error verifying reset token: {e}")
             return None
     
     def reset_password(self, token, new_password):
         """Reset password using valid token"""
         try:
-            st.write(f"Debug: Resetting password with token...")
-            
-            # First verify token is still valid
             user = self.verify_reset_token(token)
             if not user:
                 return False
             
-            # Hash new password
             hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             
             conn = self.get_connection()
@@ -417,18 +328,14 @@ class Database:
             
             conn.commit()
             conn.close()
-            
-            st.write("Debug: Password reset successfully!")
             return True
             
         except Exception as e:
-            st.write(f"Debug: Error resetting password: {e}")
             return False
     
     def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
         """Update user's premium status with expiration date"""
         try:
-            st.write(f"Debug: Updating premium status for {username} to {is_premium}")
             conn = self.get_connection()
             cursor = conn.cursor()
             
@@ -448,24 +355,14 @@ class Database:
             rows_affected = cursor.rowcount
             conn.commit()
             conn.close()
-            
-            if rows_affected > 0:
-                st.write(f"Debug: Successfully updated {username} premium status to {is_premium}")
-                st.write(f"Debug: Expires at: {expires_at}")
-                return True
-            else:
-                st.write(f"Debug: Failed to update {username} - user not found")
-                return False
+            return rows_affected > 0
                 
         except Exception as e:
-            st.write(f"Debug: Error updating premium status for {username}: {e}")
             return False
     
     def check_premium_expiration(self, username):
         """Check if user's premium subscription has expired"""
         try:
-            from datetime import datetime
-            
             conn = self.get_connection()
             cursor = conn.cursor()
             
@@ -487,7 +384,6 @@ class Database:
                             expiry_date = expires_at
                             
                         if datetime.now() > expiry_date:
-                            # Subscription expired, update user
                             self.update_premium_status(username, False)
                             return False, "Subscription expired"
                         else:
@@ -499,5 +395,4 @@ class Database:
             return False, "Not premium"
             
         except Exception as e:
-            st.write(f"Debug: Error checking premium expiration for {username}: {e}")
             return False, "Error"
