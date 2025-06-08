@@ -34,9 +34,7 @@ def add_navigation():
     
     st.sidebar.markdown("---")
     
-    # Account Section (NEW)
-    st.sidebar.markdown("### 👤 Account")
-    
+    # Account Section (REMOVED "👤 Account" header text/icon)
     if st.session_state.get('authentication_status'):
         # User is logged in
         if st.sidebar.button("👤 My Account", key="nav_account", use_container_width=True):
@@ -49,14 +47,9 @@ def add_navigation():
         if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
             st.switch_page("pages/0_🔑_Login.py")
     
-    # Premium Section (NEW)
-    if st.sidebar.button("👑 Premium Features", key="nav_premium_info", use_container_width=True):
-        st.switch_page("pages/B_👑_Premium_Features.py")
-    
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 Analytics")
     
-    # Mining Section
+    # Mining Section (REMOVED "📊 Analytics" header text/icon)
     with st.sidebar.expander("⛏️ Mining", expanded=True):
         if st.button("📈 Hashrate", key="sidebar_hashrate", use_container_width=True):
             st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
@@ -79,22 +72,30 @@ def add_navigation():
         if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section (access control)
+    # Premium Analytics Section (MOVED Premium Features here + access control)
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
+            if st.button("👑 Premium Features", key="sidebar_premium_features", use_container_width=True):
+                st.switch_page("pages/B_👑_Premium_Features.py")
             if st.button("🔬 Premium Analytics", key="sidebar_premium1", use_container_width=True):
                 st.switch_page("pages/8_👑_Premium_Analytics.py")
             if st.button("📊 Advanced Metrics", key="sidebar_premium2", use_container_width=True):
                 st.switch_page("pages/9_👑_Advanced_Metrics.py")
     elif st.session_state.get('authentication_status'):
-        with st.sidebar.expander("🔒 Premium Analytics", expanded=False):
+        with st.sidebar.expander("👑 Premium Analytics", expanded=False):
+            # Premium Features accessible to logged-in users (but not paying)
+            if st.button("👑 Premium Features", key="sidebar_premium_features_free", use_container_width=True):
+                st.switch_page("pages/B_👑_Premium_Features.py")
             st.warning("Upgrade Required")
             st.write("**Monthly:** $9.99")
             st.write("**Annual:** $99")
             if st.button("💳 Upgrade Now", key="sidebar_upgrade", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
     else:
-        with st.sidebar.expander("🔐 Premium Analytics", expanded=False):
+        with st.sidebar.expander("👑 Premium Analytics", expanded=False):
+            # Premium Features accessible to everyone (including non-logged users)
+            if st.button("👑 Premium Features", key="sidebar_premium_features_guest", use_container_width=True):
+                st.switch_page("pages/B_👑_Premium_Features.py")
             st.info("Login Required")
             st.write("Sign in to access premium analytics")
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
