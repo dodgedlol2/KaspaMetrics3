@@ -3,22 +3,27 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar (shared across all pages)"""
     
-    # Hide the native page navigation
+    # More precise CSS to hide only native page navigation
     st.markdown("""
         <style>
-        /* Hide the native Streamlit page navigation */
-        .css-1q1n0ol, .css-1rs6os, .css-17ziqus {
+        /* Hide only the native Streamlit page list */
+        .css-1q1n0ol[data-testid="stSidebarNav"] {
             display: none;
         }
         
-        /* Hide the default page selector */
-        section[data-testid="stSidebar"] > div:first-child {
+        /* Alternative selectors for native page navigation */
+        div[data-testid="stSidebarNav"] {
             display: none;
         }
         
-        /* Style improvements for sidebar */
-        .css-1d391kg {
-            padding-top: 1rem;
+        /* Keep sidebar visible but hide page selector */
+        section[data-testid="stSidebar"] nav {
+            display: none;
+        }
+        
+        /* Ensure our content remains visible */
+        section[data-testid="stSidebar"] > div {
+            display: block !important;
         }
         </style>
     """, unsafe_allow_html=True)
