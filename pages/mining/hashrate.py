@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 def show():
-    st.title("🔨 Kaspa Hashrate")
+    st.title("🔨 test Kaspa Hashrate")
     st.write("Current network hashrate metrics and trends")
     
     # Sample data - replace with real Kaspa API data later
