@@ -263,19 +263,3 @@ else:
 st.markdown("---")
 st.markdown("### 🚀 Getting Started")
 st.write("**New to Kaspa Analytics?** Start with our mining data to understand network health, then explore market metrics and social sentiment. Premium users get access to advanced analytics and custom alerts.")
-
-# Sidebar info
-with st.sidebar:
-    st.markdown("### ℹ️ Quick Info")
-    st.info("Use the navigation above or pages in the sidebar to explore different analytics sections.")
-    
-    if st.session_state.get('is_premium'):
-        st.success("👑 Premium Active")
-        if st.session_state.get('premium_expires_at'):
-            st.write(f"Expires: {st.session_state['premium_expires_at'][:10]}")
-    elif st.session_state.get('authentication_status'):
-        st.warning("🔒 Free Account")
-        st.write("Upgrade for premium features")
-    else:
-        st.info("🔐 Not Logged In")
-        st.write("Login for full access")
