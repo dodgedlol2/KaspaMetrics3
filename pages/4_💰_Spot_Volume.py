@@ -15,8 +15,10 @@ from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
 
-# Page config
-st.set_page_config(page_title="Trading Volume", page_icon="📊", layout="wide")
+from navigation import add_navigation
+
+# NOW add navigation (after page config)
+add_navigation()
 
 # Initialize handlers
 @st.cache_resource
