@@ -14,7 +14,6 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
-
 from navigation import add_navigation
 
 # NOW add navigation (after page config)
