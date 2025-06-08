@@ -5,23 +5,41 @@ import numpy as np
 import sys
 import os
 
+# Debug: Show current path
+st.sidebar.write(f"Current file: {__file__}")
+st.sidebar.write(f"Parent dir: {os.path.dirname(os.path.dirname(__file__))}")
+
 # Add parent directory to path for imports
 parent_dir = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(parent_dir)
 
-from database import Database
-from auth_handler import AuthHandler
-from payment_handler import PaymentHandler
-from navigation import add_navigation
+# Debug: Check if files exist
+navigation_path = os.path.join(parent_dir, "navigation.py")
+st.sidebar.write(f"Navigation.py exists: {os.path.exists(navigation_path)}")
+
+try:
+    from database import Database
+    from auth_handler import AuthHandler
+    from payment_handler import PaymentHandler
+    st.sidebar.success("✅ Core imports successful")
+except Exception as e:
+    st.sidebar.error(f"❌ Core import error: {e}")
+
+try:
+    from navigation import add_navigation
+    st.sidebar.success("✅ Navigation import successful")
+except Exception as e:
+    st.sidebar.error(f"❌ Navigation import error: {e}")
 
 # Page config
 st.set_page_config(page_title="Mining Hashrate", page_icon="📈", layout="wide")
 
-# Add shared navigation to sidebar (with error handling)
+# Try to add navigation
 try:
     add_navigation()
+    st.sidebar.success("✅ Navigation added successfully")
 except Exception as e:
-    st.sidebar.error(f"Navigation error: {e}")
+    st.sidebar.error(f"❌ Navigation error: {e}")
     # Fallback navigation
     if st.sidebar.button("🏠 Home"):
         st.switch_page("Home.py")
@@ -29,10 +47,14 @@ except Exception as e:
 # Initialize handlers
 @st.cache_resource
 def init_handlers():
-    db = Database()
-    auth_handler = AuthHandler(db)
-    payment_handler = PaymentHandler()
-    return db, auth_handler, payment_handler
+    try:
+        db = Database()
+        auth_handler = AuthHandler(db)
+        payment_handler = PaymentHandler()
+        return db, auth_handler, payment_handler
+    except Exception as e:
+        st.error(f"Handler initialization error: {e}")
+        return None, None, None
 
 db, auth_handler, payment_handler = init_handlers()
 
