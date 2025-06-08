@@ -71,30 +71,64 @@ class Database:
                 premium_expires_at TIMESTAMP NULL,
                 stripe_customer_id VARCHAR(100),
                 stripe_subscription_id VARCHAR(100),
-                reset_token VARCHAR(100) NULL,
-                reset_token_expires TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
             
-            # Add reset token columns if they don't exist (for existing databases)
-            try:
-                cursor.execute('ALTER TABLE users ADD COLUMN reset_token VARCHAR(100) NULL')
-                cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
-            except:
-                pass  # Columns already exist
-            
             st.write("Debug: PostgreSQL users table created/verified!")
             
-            # Create default demo users if they don't exist
-            self.create_demo_users_postgres(cursor)
+            # Check if reset token columns exist and add them if needed
+            try:
+                cursor.execute("""
+                    SELECT column_name 
+                    FROM information_schema.columns 
+                    WHERE table_name='users' AND column_name IN ('reset_token', 'reset_token_expires')
+                """)
+                existing_columns = [row[0] for row in cursor.fetchall()]
+                
+                if 'reset_token' not in existing_columns:
+                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token VARCHAR(100) NULL')
+                    st.write("Debug: Added reset_token column")
+                
+                if 'reset_token_expires' not in existing_columns:
+                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
+                    st.write("Debug: Added reset_token_expires column")
+                
+                conn.commit()
+                
+            except Exception as col_error:
+                st.write(f"Debug: Error adding columns (may already exist): {col_error}")
+                conn.rollback()
             
-            conn.commit()
+            # Create default demo users if they don't exist - in separate transaction
+            try:
+                self.create_demo_users_postgres(cursor)
+                conn.commit()
+            except Exception as demo_error:
+                st.write(f"Debug: Error creating demo users: {demo_error}")
+                conn.rollback()
+                # Try again with fresh connection
+                try:
+                    conn.close()
+                    conn = self.get_connection()
+                    cursor = conn.cursor()
+                    self.create_demo_users_postgres(cursor)
+                    conn.commit()
+                    st.write("Debug: Demo users created successfully on retry!")
+                except Exception as retry_error:
+                    st.write(f"Debug: Still couldn't create demo users: {retry_error}")
+                    conn.rollback()
+            
             conn.close()
             st.write("Debug: PostgreSQL database initialization complete!")
             
         except Exception as e:
             st.write(f"Debug: Error initializing PostgreSQL: {e}")
+            try:
+                conn.rollback()
+                conn.close()
+            except:
+                pass
             raise e
     
     def init_sqlite_database(self):
@@ -116,18 +150,25 @@ class Database:
                 premium_expires_at TIMESTAMP NULL,
                 stripe_customer_id TEXT,
                 stripe_subscription_id TEXT,
-                reset_token TEXT NULL,
-                reset_token_expires TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
             
-            # Add reset token columns if they don't exist (for existing databases)
+            # Check if reset token columns exist and add them if needed
             try:
-                cursor.execute('ALTER TABLE users ADD COLUMN reset_token TEXT NULL')
-                cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
-            except:
-                pass  # Columns already exist
+                cursor.execute("PRAGMA table_info(users)")
+                columns = [column[1] for column in cursor.fetchall()]
+                
+                if 'reset_token' not in columns:
+                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token TEXT NULL')
+                    st.write("Debug: Added reset_token column")
+                
+                if 'reset_token_expires' not in columns:
+                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
+                    st.write("Debug: Added reset_token_expires column")
+            
+            except Exception as col_error:
+                st.write(f"Debug: Error adding columns (may already exist): {col_error}")
             
             self.create_demo_users_sqlite(cursor)
             conn.commit()
@@ -229,7 +270,8 @@ class Database:
             
             if user:
                 st.write(f"Debug: User {username} found!")
-                return {
+                # Handle cases where reset token columns might not exist
+                user_dict = {
                     'id': user[0],
                     'username': user[1],
                     'email': user[2],
@@ -237,11 +279,12 @@ class Database:
                     'name': user[4],
                     'is_premium': bool(user[5]),
                     'premium_expires_at': user[6],
-                    'stripe_customer_id': user[7],
-                    'stripe_subscription_id': user[8],
+                    'stripe_customer_id': user[7] if len(user) > 7 else None,
+                    'stripe_subscription_id': user[8] if len(user) > 8 else None,
                     'reset_token': user[9] if len(user) > 9 else None,
                     'reset_token_expires': user[10] if len(user) > 10 else None
                 }
+                return user_dict
             else:
                 st.write(f"Debug: User {username} not found!")
                 return None
@@ -267,7 +310,8 @@ class Database:
             
             if user:
                 st.write(f"Debug: User found for email {email}!")
-                return {
+                # Handle cases where reset token columns might not exist
+                user_dict = {
                     'id': user[0],
                     'username': user[1],
                     'email': user[2],
@@ -275,11 +319,12 @@ class Database:
                     'name': user[4],
                     'is_premium': bool(user[5]),
                     'premium_expires_at': user[6],
-                    'stripe_customer_id': user[7],
-                    'stripe_subscription_id': user[8],
+                    'stripe_customer_id': user[7] if len(user) > 7 else None,
+                    'stripe_subscription_id': user[8] if len(user) > 8 else None,
                     'reset_token': user[9] if len(user) > 9 else None,
                     'reset_token_expires': user[10] if len(user) > 10 else None
                 }
+                return user_dict
             else:
                 st.write(f"Debug: No user found for email {email}!")
                 return None
