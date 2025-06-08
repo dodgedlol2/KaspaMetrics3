@@ -11,6 +11,11 @@ from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
 
+from navigation import add_navigation
+
+# NOW add navigation (after page config)
+add_navigation()
+
 # Page config
 st.set_page_config(page_title="Mining Difficulty", page_icon="⚙️", layout="wide")
 
