@@ -3,9 +3,30 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar (shared across all pages)"""
     
-    # Add our navigation BELOW the native navigation
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🚀 Quick Navigation")
+    # More precise CSS to hide only native page navigation
+    st.markdown("""
+        <style>
+        /* Hide only the native Streamlit page list */
+        .css-1q1n0ol[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        
+        /* Alternative selectors for native page navigation */
+        div[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        
+        /* Keep sidebar visible but hide page selector */
+        section[data-testid="stSidebar"] nav {
+            display: none;
+        }
+        
+        /* Ensure our content remains visible */
+        section[data-testid="stSidebar"] > div {
+            display: block !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
     
     # Add home button at top
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
