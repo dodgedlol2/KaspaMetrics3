@@ -71,7 +71,6 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
             
     except Exception as e:
         st.error(f"Error processing upgrade: {str(e)}")
-        st.write(f"Debug: Session ID: {session_id}")
 
 elif query_params.get("upgrade") == "cancelled":
     st.warning("Payment was cancelled. You can try again anytime!")
@@ -139,10 +138,6 @@ with col2:
                             st.session_state['is_premium'] = is_premium
                             st.session_state['premium_expires_at'] = user.get('premium_expires_at')
                             
-                            st.write(f"Debug: Logged in user {username}, premium status: {is_premium}")
-                            if isinstance(expiry_info, str):
-                                st.write(f"Debug: Premium info: {expiry_info}")
-                            
                             st.rerun()
                         else:
                             st.error("Invalid username or password")
@@ -195,147 +190,116 @@ with col2:
                 st.session_state['premium_expires_at'] = None
                 st.rerun()
 
-# Sidebar navigation
-st.sidebar.title("Navigation")
+# Main content
+st.title("⚡ Welcome to Kaspa Analytics")
+st.write("Your comprehensive platform for Kaspa blockchain analytics and insights.")
 
-def load_page_module(file_path):
-    """Dynamically load a page module"""
-    spec = importlib.util.spec_from_file_location("page_module", file_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+# Quick stats cards
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.metric("Current Price", "$0.125", "+2.4%")
+with col2:
+    st.metric("Market Cap", "$3.1B", "+1.8%")
+with col3:
+    st.metric("24h Volume", "$45M", "-5.2%")
+with col4:
+    st.metric("Hashrate", "1.2 EH/s", "+0.8%")
 
-# Define pages structure with file paths
-pages = {
-    "Mining": {
-        "Hashrate": "pages/mining/hashrate.py",
-        "Difficulty": "pages/mining/difficulty.py"
-    },
-    "Spot": {
-        "Price": "pages/spot/price.py",
-        "Volume": "pages/spot/volume.py",
-        "Market Cap": "pages/spot/marketcap.py"
-    },
-    "Social Data": {
-        "Test Page": "pages/social/test_page.py",
-        "Test Page 2": "pages/social/test_page2.py"
-    },
-    "Paid Section": {
-        "Premium Analytics": "pages/paid/test_paid.py",
-        "Advanced Metrics": "pages/paid/test_paid2.py"
-    }
-}
+# Navigation sections
+st.subheader("📊 Analytics Sections")
 
-# Sidebar navigation
-selected_section = st.sidebar.selectbox("Select Section", list(pages.keys()))
+# Free sections
+col1, col2, col3 = st.columns(3)
 
-# Check if user has access to paid section
-if selected_section == "Paid Section":
-    if st.session_state.get('authentication_status') != True:
-        st.sidebar.warning("Please login to access paid features")
-        selected_page = None
-    elif not st.session_state.get('is_premium', False):
-        st.sidebar.warning("Upgrade to premium to access this section")
-        # Payment integration with pricing options
-        st.sidebar.subheader("Choose Your Plan:")
-        
-        col1, col2 = st.sidebar.columns(2)
-        with col1:
-            if st.button("Monthly\n$9.99/mo", key="monthly"):
-                try:
-                    # Set session state for pricing
-                    st.session_state['selected_plan'] = {'amount': 999, 'interval': 'month'}
-                    payment_url = payment_handler.create_checkout_session(st.session_state['username'])
-                    if payment_url:
-                        st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
-                except Exception as e:
-                    st.sidebar.error(f"Error creating payment session: {str(e)}")
-        with col2:
-            if st.button("Annual\n$99/year", key="annual"):
-                try:
-                    # Set session state for pricing
-                    st.session_state['selected_plan'] = {'amount': 9900, 'interval': 'year'}
-                    payment_url = payment_handler.create_checkout_session(st.session_state['username'])
-                    if payment_url:
-                        st.sidebar.markdown(f"[Click here to upgrade]({payment_url})")
-                except Exception as e:
-                    st.sidebar.error(f"Error creating payment session: {str(e)}")
-        
-        selected_page = None
-    else:
-        selected_page = st.sidebar.selectbox("Select Page", list(pages[selected_section].keys()))
-else:
-    selected_page = st.sidebar.selectbox("Select Page", list(pages[selected_section].keys()))
+with col1:
+    st.markdown("### ⛏️ Mining Analytics")
+    st.write("Network hashrate, difficulty, and mining metrics")
+    if st.button("📈 View Mining Data", use_container_width=True):
+        st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
 
-# Define pages structure (keep existing file paths)
-pages = {
-    "Mining": {
-        "Hashrate": "pages/mining/hashrate.py",
-        "Difficulty": "pages/mining/difficulty.py"
-    },
-    "Spot": {
-        "Price": "pages/spot/price.py",
-        "Volume": "pages/spot/volume.py",
-        "Market Cap": "pages/spot/marketcap.py"
-    },
-    "Social Data": {
-        "Test Page": "pages/social/test_page.py",
-        "Test Page 2": "pages/social/test_page2.py"
-    },
-    "Paid Section": {
-        "Premium Analytics": "pages/paid/test_paid.py",
-        "Advanced Metrics": "pages/paid/test_paid2.py"
-    }
-}
+with col2:
+    st.markdown("### 💰 Spot Market")
+    st.write("Price tracking, volume analysis, and market cap data")
+    if st.button("💵 View Market Data", use_container_width=True):
+        st.switch_page("pages/3_💰_Spot_Price.py")
 
-# Display selected page
-if selected_section and selected_page:
-    if selected_section in pages and selected_page in pages[selected_section]:
-        page_file = pages[selected_section][selected_page]
-        if os.path.exists(page_file):
-            page_module = load_page_module(page_file)
-            page_module.show()
-        else:
-            st.error(f"Page file not found: {page_file}")
-    else:
-        st.error("Invalid page selection")
-else:
-    # Show default home page when no page is selected
-    st.title("⚡ Welcome to Kaspa Analytics")
-    st.write("Select a page from the sidebar to get started.")
+with col3:
+    st.markdown("### 📱 Social Data")
+    st.write("Community metrics and social sentiment analysis")
+    if st.button("📊 View Social Data", use_container_width=True):
+        st.switch_page("pages/6_📱_Social_Metrics.py")
+
+# Premium section
+st.subheader("👑 Premium Features")
+
+if not st.session_state.get('authentication_status'):
+    st.info("🔐 **Login required** to access premium analytics features")
     
-    # Quick stats cards
-    col1, col2, col3, col4 = st.columns(4)
+elif not st.session_state.get('is_premium', False):
+    st.warning("🔒 **Premium subscription required** for advanced analytics")
+    
+    col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Current Price", "$0.125", "+2.4%")
-    with col2:
-        st.metric("Market Cap", "$3.1B", "+1.8%")
-    with col3:
-        st.metric("24h Volume", "$45M", "-5.2%")
-    with col4:
-        st.metric("Hashrate", "1.2 EH/s", "+0.8%")
+        st.markdown("#### 💎 Premium Benefits")
+        st.write("• Advanced on-chain analytics")
+        st.write("• Real-time alerts and notifications") 
+        st.write("• Custom data exports")
+        st.write("• Priority customer support")
         
-    # Quick navigation
-    st.subheader("🚀 Quick Start")
-    quick_col1, quick_col2, quick_col3 = st.columns(3)
+    with col2:
+        st.markdown("#### 💳 Monthly Plan")
+        st.write("**$9.99/month**")
+        st.write("• All premium features")
+        st.write("• Cancel anytime")
+        if st.button("Subscribe Monthly", key="home_monthly", use_container_width=True):
+            st.session_state['selected_plan'] = {'amount': 999, 'interval': 'month'}
+            payment_url = payment_handler.create_checkout_session(st.session_state['username'])
+            if payment_url:
+                st.markdown(f"[💳 Complete Payment]({payment_url})")
+                
+    with col3:
+        st.markdown("#### 💳 Annual Plan")
+        st.write("**$99/year** *(Save 17%)*")
+        st.write("• All premium features")
+        st.write("• 2 months free")
+        if st.button("Subscribe Annually", key="home_annual", use_container_width=True):
+            st.session_state['selected_plan'] = {'amount': 9900, 'interval': 'year'}
+            payment_url = payment_handler.create_checkout_session(st.session_state['username'])
+            if payment_url:
+                st.markdown(f"[💳 Complete Payment]({payment_url})")
+else:
+    st.success("🎉 **You have premium access!** Explore all advanced analytics features.")
+    col1, col2 = st.columns(2)
     
-    with quick_col1:
-        if st.button("📈 View Mining Data", use_container_width=True):
-            st.session_state['selected_section'] = 'Mining'
-            st.session_state['selected_page'] = 'Hashrate'
-            st.query_params.update({"page": "hashrate"})
-            st.rerun()
+    with col1:
+        st.markdown("### 🔬 Premium Analytics")
+        st.write("Advanced metrics and AI-powered insights")
+        if st.button("🚀 Launch Premium Analytics", use_container_width=True):
+            st.switch_page("pages/8_👑_Premium_Analytics.py")
             
-    with quick_col2:
-        if st.button("💰 Check Price", use_container_width=True):
-            st.session_state['selected_section'] = 'Spot'
-            st.session_state['selected_page'] = 'Price'
-            st.query_params.update({"page": "price"})
-            st.rerun()
-            
-    with quick_col3:
-        if st.button("📱 Social Metrics", use_container_width=True):
-            st.session_state['selected_section'] = 'Social Data'
-            st.session_state['selected_page'] = 'Test Page'
-            st.query_params.update({"page": "social"})
-            st.rerun()
+    with col2:
+        st.markdown("### 📊 Advanced Metrics")
+        st.write("Custom indicators and correlation analysis")
+        if st.button("📈 View Advanced Metrics", use_container_width=True):
+            st.switch_page("pages/9_👑_Advanced_Metrics.py")
+
+# Footer
+st.markdown("---")
+st.markdown("### 🚀 Getting Started")
+st.write("**New to Kaspa Analytics?** Start with our mining data to understand network health, then explore market metrics and social sentiment. Premium users get access to advanced analytics and custom alerts.")
+
+# Sidebar info
+with st.sidebar:
+    st.markdown("### ℹ️ Quick Info")
+    st.info("Use the navigation above or pages in the sidebar to explore different analytics sections.")
+    
+    if st.session_state.get('is_premium'):
+        st.success("👑 Premium Active")
+        if st.session_state.get('premium_expires_at'):
+            st.write(f"Expires: {st.session_state['premium_expires_at'][:10]}")
+    elif st.session_state.get('authentication_status'):
+        st.warning("🔒 Free Account")
+        st.write("Upgrade for premium features")
+    else:
+        st.info("🔐 Not Logged In")
+        st.write("Login for full access")
