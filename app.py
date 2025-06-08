@@ -267,34 +267,75 @@ if selected_section == "Paid Section":
 else:
     selected_page = st.sidebar.selectbox("Select Page", list(pages[selected_section].keys()))
 
+# Define pages structure (keep existing file paths)
+pages = {
+    "Mining": {
+        "Hashrate": "pages/mining/hashrate.py",
+        "Difficulty": "pages/mining/difficulty.py"
+    },
+    "Spot": {
+        "Price": "pages/spot/price.py",
+        "Volume": "pages/spot/volume.py",
+        "Market Cap": "pages/spot/marketcap.py"
+    },
+    "Social Data": {
+        "Test Page": "pages/social/test_page.py",
+        "Test Page 2": "pages/social/test_page2.py"
+    },
+    "Paid Section": {
+        "Premium Analytics": "pages/paid/test_paid.py",
+        "Advanced Metrics": "pages/paid/test_paid2.py"
+    }
+}
+
 # Display selected page
-if selected_page:
-    page_file = pages[selected_section][selected_page]
-    if os.path.exists(page_file):
-        page_module = load_page_module(page_file)
-        page_module.show()
+if selected_section and selected_page:
+    if selected_section in pages and selected_page in pages[selected_section]:
+        page_file = pages[selected_section][selected_page]
+        if os.path.exists(page_file):
+            page_module = load_page_module(page_file)
+            page_module.show()
+        else:
+            st.error(f"Page file not found: {page_file}")
     else:
-        st.error(f"Page file not found: {page_file}")
+        st.error("Invalid page selection")
 else:
-    if selected_section == "Paid Section":
-        st.title("Premium Access Required")
-        st.write("Please login and upgrade to access premium features.")
+    # Show default home page when no page is selected
+    st.title("⚡ Welcome to Kaspa Analytics")
+    st.write("Select a page from the sidebar to get started.")
+    
+    # Quick stats cards
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Current Price", "$0.125", "+2.4%")
+    with col2:
+        st.metric("Market Cap", "$3.1B", "+1.8%")
+    with col3:
+        st.metric("24h Volume", "$45M", "-5.2%")
+    with col4:
+        st.metric("Hashrate", "1.2 EH/s", "+0.8%")
         
-        col1, col2, col3 = st.columns(3)
-        with col2:
-            st.info("Premium Features Include:\n- Advanced Analytics\n- Real-time Data\n- Custom Alerts\n- Priority Support")
-    else:
-        # Show default home page
-        st.title("Welcome to Kaspa Analytics")
-        st.write("Select a section and page from the sidebar to get started.")
-        
-        # Quick stats cards
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("Current Price", "$0.125", "+2.4%")
-        with col2:
-            st.metric("Market Cap", "$3.1B", "+1.8%")
-        with col3:
-            st.metric("24h Volume", "$45M", "-5.2%")
-        with col4:
-            st.metric("Hashrate", "1.2 EH/s", "+0.8%")
+    # Quick navigation
+    st.subheader("🚀 Quick Start")
+    quick_col1, quick_col2, quick_col3 = st.columns(3)
+    
+    with quick_col1:
+        if st.button("📈 View Mining Data", use_container_width=True):
+            st.session_state['selected_section'] = 'Mining'
+            st.session_state['selected_page'] = 'Hashrate'
+            st.query_params.update({"page": "hashrate"})
+            st.rerun()
+            
+    with quick_col2:
+        if st.button("💰 Check Price", use_container_width=True):
+            st.session_state['selected_section'] = 'Spot'
+            st.session_state['selected_page'] = 'Price'
+            st.query_params.update({"page": "price"})
+            st.rerun()
+            
+    with quick_col3:
+        if st.button("📱 Social Metrics", use_container_width=True):
+            st.session_state['selected_section'] = 'Social Data'
+            st.session_state['selected_page'] = 'Test Page'
+            st.query_params.update({"page": "social"})
+            st.rerun()
