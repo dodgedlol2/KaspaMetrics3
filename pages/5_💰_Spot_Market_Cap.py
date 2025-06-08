@@ -1,4 +1,8 @@
 import streamlit as st
+
+# Page config MUST be first!
+st.set_page_config(page_title="Market Cap", page_icon="🏦", layout="wide")
+
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
@@ -6,13 +10,16 @@ import sys
 import os
 
 # Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+parent_dir = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(parent_dir)
+
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
+from navigation import add_navigation
 
-# Page config
-st.set_page_config(page_title="Market Cap", page_icon="🏦", layout="wide")
+# Add shared navigation to sidebar
+add_navigation()
 
 # Initialize handlers
 @st.cache_resource
