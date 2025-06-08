@@ -86,7 +86,13 @@ def add_navigation():
     if st.session_state.get('is_premium'):
         st.sidebar.success("👑 Premium Active")
         if st.session_state.get('premium_expires_at'):
-            st.sidebar.write(f"Expires: {st.session_state['premium_expires_at'][:10]}")
+            try:
+                expires_str = str(st.session_state['premium_expires_at'])[:10]
+                st.sidebar.write(f"Expires: {expires_str}")
+            except:
+                st.sidebar.write("Expires: Active")
+        else:
+            st.sidebar.write("Expires: Active")
     elif st.session_state.get('authentication_status'):
         st.sidebar.warning("🔒 Free Account")
         st.sidebar.write("Upgrade for premium features")
