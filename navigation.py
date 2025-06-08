@@ -41,49 +41,6 @@ def add_navigation():
         # User is logged in
         if st.sidebar.button("👤 My Account", key="nav_account", use_container_width=True):
             st.switch_page("pages/A_👤_Account.py")
-        if st.sidebar.button("🚪 Logout", key="nav_logout", use_import streamlit as st
-
-def add_navigation():
-    """Add organized navigation to sidebar (shared across all pages)"""
-    
-    # More precise CSS to hide only native page navigation
-    st.markdown("""
-        <style>
-        /* Hide only the native Streamlit page list */
-        .css-1q1n0ol[data-testid="stSidebarNav"] {
-            display: none;
-        }
-        
-        /* Alternative selectors for native page navigation */
-        div[data-testid="stSidebarNav"] {
-            display: none;
-        }
-        
-        /* Keep sidebar visible but hide page selector */
-        section[data-testid="stSidebar"] nav {
-            display: none;
-        }
-        
-        /* Ensure our content remains visible */
-        section[data-testid="stSidebar"] > div {
-            display: block !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    # Add home button at top
-    if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
-        st.switch_page("Home.py")
-    
-    st.sidebar.markdown("---")
-    
-    # Account Section (NEW)
-    st.sidebar.markdown("### 👤 Account")
-    
-    if st.session_state.get('authentication_status'):
-        # User is logged in
-        if st.sidebar.button("👤 My Account", key="nav_account", use_container_width=True):
-            st.switch_page("pages/A_👤_Account.py")
         if st.sidebar.button("🚪 Logout", key="nav_logout", use_container_width=True):
             st.session_state.clear()
             st.switch_page("Home.py")
