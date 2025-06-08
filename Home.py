@@ -322,13 +322,13 @@ with st.sidebar:
         st.success("👑 Premium Active")
         if st.session_state.get('premium_expires_at'):
             try:
-    expires_date = st.session_state['premium_expires_at']
-    if hasattr(expires_date, 'strftime'):
-        st.write(f"Expires: {expires_date.strftime('%Y-%m-%d')}")
-    else:
-        st.write(f"Expires: {str(expires_date)[:10]}")
-except:
-    st.write("Expires: Active")
+                expires_date = st.session_state['premium_expires_at']
+                if hasattr(expires_date, 'strftime'):
+                    st.write(f"Expires: {expires_date.strftime('%Y-%m-%d')}")
+                else:
+                    st.write(f"Expires: {str(expires_date)[:10]}")
+            except:
+                st.write("Expires: Active")
     elif st.session_state.get('authentication_status'):
         st.warning("🔒 Free Account")
         st.write("Upgrade for premium features")
