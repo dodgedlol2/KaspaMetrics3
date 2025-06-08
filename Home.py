@@ -5,6 +5,7 @@ import streamlit_authenticator as stauth
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
+from navigation import add_navigation
 import importlib.util
 import sys
 import os
