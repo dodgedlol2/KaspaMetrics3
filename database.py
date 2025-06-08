@@ -1,16 +1,63 @@
-import sqlite3
+import psycopg2
 import bcrypt
 import os
 import streamlit as st
+from urllib.parse import urlparse
 
 class Database:
-    def __init__(self, db_path="kaspa_users.db"):
-        self.db_path = db_path
-        self.init_database()
+    def __init__(self):
+        # Get database URL from Streamlit secrets or environment
+        try:
+            self.database_url = st.secrets["DATABASE_URL"]
+        except:
+            self.database_url = os.getenv('DATABASE_URL', 'sqlite:///kaspa_users.db')
+        
+        # Check if using PostgreSQL (Supabase) or fallback to SQLite
+        if self.database_url.startswith('postgresql://'):
+            self.use_postgres = True
+            self.init_postgres_database()
+        else:
+            self.use_postgres = False
+            self.init_sqlite_database()
     
-    def init_database(self):
-        """Initialize the database with users table"""
-        conn = sqlite3.connect(self.db_path)
+    def get_connection(self):
+        """Get database connection"""
+        if self.use_postgres:
+            return psycopg2.connect(self.database_url)
+        else:
+            import sqlite3
+            return sqlite3.connect('kaspa_users.db')
+    
+    def init_postgres_database(self):
+        """Initialize PostgreSQL database with users table"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Create users table for PostgreSQL
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(50) UNIQUE NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            is_premium BOOLEAN DEFAULT FALSE,
+            premium_expires_at TIMESTAMP NULL,
+            stripe_customer_id VARCHAR(100),
+            stripe_subscription_id VARCHAR(100),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+        
+        # Create default demo users if they don't exist
+        self.create_demo_users_postgres(cursor)
+        
+        conn.commit()
+        conn.close()
+    
+    def init_sqlite_database(self):
+        """Initialize SQLite database (fallback)"""
+        conn = self.get_connection()
         cursor = conn.cursor()
         
         cursor.execute('''
@@ -28,14 +75,28 @@ class Database:
         )
         ''')
         
-        # Create default demo users if they don't exist
-        self.create_demo_users(cursor)
-        
+        self.create_demo_users_sqlite(cursor)
         conn.commit()
         conn.close()
     
-    def create_demo_users(self, cursor):
-        """Create demo users for testing"""
+    def create_demo_users_postgres(self, cursor):
+        """Create demo users for PostgreSQL"""
+        demo_password = bcrypt.hashpw("demo123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        users = [
+            ("demo_user", "demo@kaspa.com", demo_password, "Demo User", False),
+            ("premium_user", "premium@kaspa.com", demo_password, "Premium User", True)
+        ]
+        
+        for user in users:
+            cursor.execute('''
+            INSERT INTO users (username, email, password, name, is_premium)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (username) DO NOTHING
+            ''', user)
+    
+    def create_demo_users_sqlite(self, cursor):
+        """Create demo users for SQLite"""
         demo_password = bcrypt.hashpw("demo123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         
         users = [
@@ -51,29 +112,41 @@ class Database:
     
     def add_user(self, username, email, password, name):
         """Add a new user to the database"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self.get_connection()
         cursor = conn.cursor()
         
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         
         try:
-            cursor.execute('''
-            INSERT INTO users (username, email, password, name, is_premium)
-            VALUES (?, ?, ?, ?, ?)
-            ''', (username, email, hashed_password, name, False))
+            if self.use_postgres:
+                cursor.execute('''
+                INSERT INTO users (username, email, password, name, is_premium)
+                VALUES (%s, %s, %s, %s, %s)
+                ''', (username, email, hashed_password, name, False))
+            else:
+                cursor.execute('''
+                INSERT INTO users (username, email, password, name, is_premium)
+                VALUES (?, ?, ?, ?, ?)
+                ''', (username, email, hashed_password, name, False))
+            
             conn.commit()
             return True
-        except sqlite3.IntegrityError:
+        except Exception as e:
+            st.write(f"Debug: Database error adding user: {e}")
             return False
         finally:
             conn.close()
     
     def get_user(self, username):
         """Get user by username"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self.get_connection()
         cursor = conn.cursor()
         
-        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        if self.use_postgres:
+            cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+        else:
+            cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        
         user = cursor.fetchone()
         conn.close()
         
@@ -93,29 +166,31 @@ class Database:
     
     def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
         """Update user's premium status with expiration date"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self.get_connection()
         cursor = conn.cursor()
         
         try:
-            cursor.execute('''
-                UPDATE users 
-                SET is_premium = ?, premium_expires_at = ?, stripe_subscription_id = ? 
-                WHERE username = ?
-            ''', (is_premium, expires_at, subscription_id, username))
+            if self.use_postgres:
+                cursor.execute('''
+                    UPDATE users 
+                    SET is_premium = %s, premium_expires_at = %s, stripe_subscription_id = %s 
+                    WHERE username = %s
+                ''', (is_premium, expires_at, subscription_id, username))
+            else:
+                cursor.execute('''
+                    UPDATE users 
+                    SET is_premium = ?, premium_expires_at = ?, stripe_subscription_id = ? 
+                    WHERE username = ?
+                ''', (is_premium, expires_at, subscription_id, username))
             
             rows_affected = cursor.rowcount
             conn.commit()
             
-            # Debug: Verify the update worked
-            cursor.execute('SELECT username, is_premium, premium_expires_at FROM users WHERE username = ?', (username,))
-            result = cursor.fetchone()
-            
-            if result and rows_affected > 0:
+            if rows_affected > 0:
                 st.write(f"Debug: Successfully updated {username} premium status to {is_premium}")
-                st.write(f"Debug: Expires at: {expires_at}")
                 return True
             else:
-                st.write(f"Debug: Failed to update {username} - user not found or no changes made")
+                st.write(f"Debug: Failed to update {username}")
                 return False
                 
         except Exception as e:
@@ -128,19 +203,26 @@ class Database:
         """Check if user's premium subscription has expired"""
         from datetime import datetime
         
-        conn = sqlite3.connect(self.db_path)
+        conn = self.get_connection()
         cursor = conn.cursor()
         
-        cursor.execute('SELECT premium_expires_at, is_premium FROM users WHERE username = ?', (username,))
+        if self.use_postgres:
+            cursor.execute('SELECT premium_expires_at, is_premium FROM users WHERE username = %s', (username,))
+        else:
+            cursor.execute('SELECT premium_expires_at, is_premium FROM users WHERE username = ?', (username,))
+        
         result = cursor.fetchone()
         conn.close()
         
         if result and result[1]:  # is_premium is True
             expires_at = result[0]
             if expires_at:
-                # Parse the expiration date
                 try:
-                    expiry_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                    if isinstance(expires_at, str):
+                        expiry_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                    else:
+                        expiry_date = expires_at
+                        
                     if datetime.now() > expiry_date:
                         # Subscription expired, update user
                         self.update_premium_status(username, False)
@@ -150,5 +232,5 @@ class Database:
                 except:
                     return True, "Active"
             else:
-                return True, "Lifetime"  # No expiration set
+                return True, "Lifetime"
         return False, "Not premium"
