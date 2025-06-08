@@ -1,4 +1,8 @@
 import streamlit as st
+
+# Page config
+st.set_page_config(page_title="Kaspa Price", page_icon="💵", layout="wide")
+
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
@@ -11,8 +15,6 @@ from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
 
-# Page config
-st.set_page_config(page_title="Kaspa Price", page_icon="💵", layout="wide")
 
 # Initialize handlers
 @st.cache_resource
