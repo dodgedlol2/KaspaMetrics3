@@ -9,54 +9,6 @@ import importlib.util
 import sys
 import os
 
-def add_sidebar_sections():
-    """Add organized sections to sidebar"""
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 Analytics Sections")
-    
-    # Mining Section
-    with st.sidebar.expander("⛏️ Mining", expanded=True):
-        if st.button("📈 Hashrate", key="sidebar_hashrate", use_container_width=True):
-            st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
-        if st.button("⚙️ Difficulty", key="sidebar_difficulty", use_container_width=True):
-            st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
-    
-    # Spot Section
-    with st.sidebar.expander("💰 Spot Market", expanded=True):
-        if st.button("💵 Price", key="sidebar_price", use_container_width=True):
-            st.switch_page("pages/3_💰_Spot_Price.py")
-        if st.button("📊 Volume", key="sidebar_volume", use_container_width=True):
-            st.switch_page("pages/4_💰_Spot_Volume.py")
-        if st.button("🏦 Market Cap", key="sidebar_marketcap", use_container_width=True):
-            st.switch_page("pages/5_💰_Spot_Market_Cap.py")
-    
-    # Social Section
-    with st.sidebar.expander("📱 Social Data", expanded=True):
-        if st.button("📈 Social Metrics", key="sidebar_social1", use_container_width=True):
-            st.switch_page("pages/6_📱_Social_Metrics.py")
-        if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
-            st.switch_page("pages/7_📱_Social_Trends.py")
-    
-    # Premium Section (with access control)
-    if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
-        with st.sidebar.expander("👑 Premium Features", expanded=True):
-            if st.button("🔬 Premium Analytics", key="sidebar_premium1", use_container_width=True):
-                st.switch_page("pages/8_👑_Premium_Analytics.py")
-            if st.button("📊 Advanced Metrics", key="sidebar_premium2", use_container_width=True):
-                st.switch_page("pages/9_👑_Advanced_Metrics.py")
-    elif st.session_state.get('authentication_status'):
-        with st.sidebar.expander("🔒 Premium Features", expanded=False):
-            st.warning("Upgrade Required")
-            st.write("**Monthly:** $9.99")
-            st.write("**Annual:** $99")
-            if st.button("💳 Upgrade Now", key="sidebar_upgrade", use_container_width=True):
-                # Scroll to upgrade section on main page
-                st.rerun()
-    else:
-        with st.sidebar.expander("🔐 Premium Features", expanded=False):
-            st.info("Login Required")
-            st.write("Sign in to access premium analytics")
-
 # Page configuration
 st.set_page_config(
     page_title="Kaspa Analytics",
@@ -259,9 +211,6 @@ with col2:
                 st.session_state['premium_expires_at'] = None
                 st.rerun()
 
-# Add organized sidebar sections
-add_sidebar_sections()
-
 # Main content
 st.title("⚡ Welcome to Kaspa Analytics")
 st.write("Your comprehensive platform for Kaspa blockchain analytics and insights.")
@@ -362,9 +311,8 @@ st.write("**New to Kaspa Analytics?** Start with our mining data to understand n
 
 # Sidebar info
 with st.sidebar:
-    st.markdown("---")
     st.markdown("### ℹ️ Quick Info")
-    st.info("Use the sections above or main navigation for easy access to all analytics.")
+    st.info("Use the navigation above or pages in the sidebar to explore different analytics sections.")
     
     if st.session_state.get('is_premium'):
         st.success("👑 Premium Active")
