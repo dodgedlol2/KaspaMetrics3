@@ -10,9 +10,13 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
+from navigation import add_navigation
 
 # Page config
 st.set_page_config(page_title="Mining Hashrate", page_icon="📈", layout="wide")
+
+# Add shared navigation to sidebar
+add_navigation()
 
 # Initialize handlers
 @st.cache_resource
