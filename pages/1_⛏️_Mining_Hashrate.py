@@ -6,7 +6,9 @@ import sys
 import os
 
 # Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+parent_dir = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(parent_dir)
+
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
@@ -15,8 +17,14 @@ from navigation import add_navigation
 # Page config
 st.set_page_config(page_title="Mining Hashrate", page_icon="📈", layout="wide")
 
-# Add shared navigation to sidebar
-add_navigation()
+# Add shared navigation to sidebar (with error handling)
+try:
+    add_navigation()
+except Exception as e:
+    st.sidebar.error(f"Navigation error: {e}")
+    # Fallback navigation
+    if st.sidebar.button("🏠 Home"):
+        st.switch_page("Home.py")
 
 # Initialize handlers
 @st.cache_resource
