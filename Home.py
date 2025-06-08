@@ -1,13 +1,4 @@
 import streamlit as st
-import yaml
-from yaml.loader import SafeLoader
-import streamlit_authenticator as stauth
-from database import Database
-from auth_handler import AuthHandler
-from payment_handler import PaymentHandler
-import importlib.util
-import sys
-import os
 
 # Page configuration
 st.set_page_config(
@@ -16,6 +7,20 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+import yaml
+from yaml.loader import SafeLoader
+import streamlit_authenticator as stauth
+from database import Database
+from auth_handler import AuthHandler
+from payment_handler import PaymentHandler
+from navigation import add_navigation
+import importlib.util
+import sys
+import os
+
+# Add shared navigation to sidebar
+add_navigation()
 
 # Initialize database and handlers
 @st.cache_resource
@@ -26,9 +31,6 @@ def init_app():
     return db, auth_handler, payment_handler
 
 db, auth_handler, payment_handler = init_app()
-
-# Add shared navigation to sidebar
-add_navigation()
 
 # Check for payment success in URL parameters
 query_params = st.query_params
