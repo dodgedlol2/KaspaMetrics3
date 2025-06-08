@@ -19,9 +19,6 @@ import importlib.util
 import sys
 import os
 
-# Add shared navigation to sidebar
-add_navigation()
-
 # Initialize database and handlers
 @st.cache_resource
 def init_app():
@@ -31,6 +28,9 @@ def init_app():
     return db, auth_handler, payment_handler
 
 db, auth_handler, payment_handler = init_app()
+
+# Add shared navigation to sidebar
+add_navigation()
 
 # Check for payment success in URL parameters
 query_params = st.query_params
