@@ -3,6 +3,8 @@ import bcrypt
 import os
 import streamlit as st
 from urllib.parse import urlparse
+import secrets
+from datetime import datetime, timedelta
 
 class Database:
     def __init__(self):
@@ -69,9 +71,18 @@ class Database:
                 premium_expires_at TIMESTAMP NULL,
                 stripe_customer_id VARCHAR(100),
                 stripe_subscription_id VARCHAR(100),
+                reset_token VARCHAR(100) NULL,
+                reset_token_expires TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
+            
+            # Add reset token columns if they don't exist (for existing databases)
+            try:
+                cursor.execute('ALTER TABLE users ADD COLUMN reset_token VARCHAR(100) NULL')
+                cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
+            except:
+                pass  # Columns already exist
             
             st.write("Debug: PostgreSQL users table created/verified!")
             
@@ -105,9 +116,18 @@ class Database:
                 premium_expires_at TIMESTAMP NULL,
                 stripe_customer_id TEXT,
                 stripe_subscription_id TEXT,
+                reset_token TEXT NULL,
+                reset_token_expires TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
+            
+            # Add reset token columns if they don't exist (for existing databases)
+            try:
+                cursor.execute('ALTER TABLE users ADD COLUMN reset_token TEXT NULL')
+                cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
+            except:
+                pass  # Columns already exist
             
             self.create_demo_users_sqlite(cursor)
             conn.commit()
@@ -218,7 +238,9 @@ class Database:
                     'is_premium': bool(user[5]),
                     'premium_expires_at': user[6],
                     'stripe_customer_id': user[7],
-                    'stripe_subscription_id': user[8]
+                    'stripe_subscription_id': user[8],
+                    'reset_token': user[9] if len(user) > 9 else None,
+                    'reset_token_expires': user[10] if len(user) > 10 else None
                 }
             else:
                 st.write(f"Debug: User {username} not found!")
@@ -227,6 +249,160 @@ class Database:
         except Exception as e:
             st.write(f"Debug: Error getting user {username}: {e}")
             return None
+    
+    def get_user_by_email(self, email):
+        """Get user by email address"""
+        try:
+            st.write(f"Debug: Getting user by email {email}...")
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            if self.use_postgres:
+                cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
+            else:
+                cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+            
+            user = cursor.fetchone()
+            conn.close()
+            
+            if user:
+                st.write(f"Debug: User found for email {email}!")
+                return {
+                    'id': user[0],
+                    'username': user[1],
+                    'email': user[2],
+                    'password': user[3],
+                    'name': user[4],
+                    'is_premium': bool(user[5]),
+                    'premium_expires_at': user[6],
+                    'stripe_customer_id': user[7],
+                    'stripe_subscription_id': user[8],
+                    'reset_token': user[9] if len(user) > 9 else None,
+                    'reset_token_expires': user[10] if len(user) > 10 else None
+                }
+            else:
+                st.write(f"Debug: No user found for email {email}!")
+                return None
+                
+        except Exception as e:
+            st.write(f"Debug: Error getting user by email {email}: {e}")
+            return None
+    
+    def create_reset_token(self, email):
+        """Create a password reset token for user"""
+        try:
+            st.write(f"Debug: Creating reset token for email {email}...")
+            
+            # Generate secure token
+            token = secrets.token_urlsafe(32)
+            expires_at = datetime.now() + timedelta(hours=1)  # Token expires in 1 hour
+            
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            if self.use_postgres:
+                cursor.execute('''
+                    UPDATE users 
+                    SET reset_token = %s, reset_token_expires = %s 
+                    WHERE email = %s
+                ''', (token, expires_at, email))
+            else:
+                cursor.execute('''
+                    UPDATE users 
+                    SET reset_token = ?, reset_token_expires = ? 
+                    WHERE email = ?
+                ''', (token, expires_at, email))
+            
+            conn.commit()
+            conn.close()
+            
+            st.write(f"Debug: Reset token created for {email}")
+            return token
+            
+        except Exception as e:
+            st.write(f"Debug: Error creating reset token for {email}: {e}")
+            return None
+    
+    def verify_reset_token(self, token):
+        """Verify reset token and return user if valid"""
+        try:
+            st.write(f"Debug: Verifying reset token...")
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            if self.use_postgres:
+                cursor.execute('''
+                    SELECT * FROM users 
+                    WHERE reset_token = %s AND reset_token_expires > %s
+                ''', (token, datetime.now()))
+            else:
+                cursor.execute('''
+                    SELECT * FROM users 
+                    WHERE reset_token = ? AND reset_token_expires > ?
+                ''', (token, datetime.now()))
+            
+            user = cursor.fetchone()
+            conn.close()
+            
+            if user:
+                st.write("Debug: Valid reset token found!")
+                return {
+                    'id': user[0],
+                    'username': user[1],
+                    'email': user[2],
+                    'password': user[3],
+                    'name': user[4],
+                    'is_premium': bool(user[5]),
+                    'premium_expires_at': user[6],
+                    'stripe_customer_id': user[7],
+                    'stripe_subscription_id': user[8]
+                }
+            else:
+                st.write("Debug: Invalid or expired reset token!")
+                return None
+                
+        except Exception as e:
+            st.write(f"Debug: Error verifying reset token: {e}")
+            return None
+    
+    def reset_password(self, token, new_password):
+        """Reset password using valid token"""
+        try:
+            st.write(f"Debug: Resetting password with token...")
+            
+            # First verify token is still valid
+            user = self.verify_reset_token(token)
+            if not user:
+                return False
+            
+            # Hash new password
+            hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            if self.use_postgres:
+                cursor.execute('''
+                    UPDATE users 
+                    SET password = %s, reset_token = NULL, reset_token_expires = NULL 
+                    WHERE reset_token = %s
+                ''', (hashed_password, token))
+            else:
+                cursor.execute('''
+                    UPDATE users 
+                    SET password = ?, reset_token = NULL, reset_token_expires = NULL 
+                    WHERE reset_token = ?
+                ''', (hashed_password, token))
+            
+            conn.commit()
+            conn.close()
+            
+            st.write("Debug: Password reset successfully!")
+            return True
+            
+        except Exception as e:
+            st.write(f"Debug: Error resetting password: {e}")
+            return False
     
     def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
         """Update user's premium status with expiration date"""
