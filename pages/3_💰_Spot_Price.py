@@ -15,6 +15,8 @@ from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
 
+# Add shared navigation to sidebar  # ← ADD THIS LINE
+add_navigation()                     # ← ADD THIS LINE
 
 # Initialize handlers
 @st.cache_resource
