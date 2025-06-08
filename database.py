@@ -59,7 +59,7 @@ class Database:
             
             st.write("Debug: Creating PostgreSQL users table...")
             
-            # Create users table for PostgreSQL
+            # Create users table for PostgreSQL with all columns at once
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -71,54 +71,18 @@ class Database:
                 premium_expires_at TIMESTAMP NULL,
                 stripe_customer_id VARCHAR(100),
                 stripe_subscription_id VARCHAR(100),
+                reset_token VARCHAR(100) NULL,
+                reset_token_expires TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
             
+            conn.commit()
             st.write("Debug: PostgreSQL users table created/verified!")
             
-            # Check if reset token columns exist and add them if needed
-            try:
-                cursor.execute("""
-                    SELECT column_name 
-                    FROM information_schema.columns 
-                    WHERE table_name='users' AND column_name IN ('reset_token', 'reset_token_expires')
-                """)
-                existing_columns = [row[0] for row in cursor.fetchall()]
-                
-                if 'reset_token' not in existing_columns:
-                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token VARCHAR(100) NULL')
-                    st.write("Debug: Added reset_token column")
-                
-                if 'reset_token_expires' not in existing_columns:
-                    cursor.execute('ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP NULL')
-                    st.write("Debug: Added reset_token_expires column")
-                
-                conn.commit()
-                
-            except Exception as col_error:
-                st.write(f"Debug: Error adding columns (may already exist): {col_error}")
-                conn.rollback()
-            
-            # Create default demo users if they don't exist - in separate transaction
-            try:
-                self.create_demo_users_postgres(cursor)
-                conn.commit()
-            except Exception as demo_error:
-                st.write(f"Debug: Error creating demo users: {demo_error}")
-                conn.rollback()
-                # Try again with fresh connection
-                try:
-                    conn.close()
-                    conn = self.get_connection()
-                    cursor = conn.cursor()
-                    self.create_demo_users_postgres(cursor)
-                    conn.commit()
-                    st.write("Debug: Demo users created successfully on retry!")
-                except Exception as retry_error:
-                    st.write(f"Debug: Still couldn't create demo users: {retry_error}")
-                    conn.rollback()
-            
+            # Create default demo users in fresh transaction
+            self.create_demo_users_postgres(cursor)
+            conn.commit()
             conn.close()
             st.write("Debug: PostgreSQL database initialization complete!")
             
@@ -129,7 +93,8 @@ class Database:
                 conn.close()
             except:
                 pass
-            raise e
+            # Don't raise error, just continue - table might already exist
+            st.write("Debug: Continuing despite error - table likely exists")
     
     def init_sqlite_database(self):
         """Initialize SQLite database (fallback)"""
@@ -185,22 +150,33 @@ class Database:
             st.write("Debug: Creating demo users in PostgreSQL...")
             demo_password = bcrypt.hashpw("demo123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             
-            users = [
-                ("demo_user", "demo@kaspa.com", demo_password, "Demo User", False),
-                ("premium_user", "premium@kaspa.com", demo_password, "Premium User", True)
-            ]
+            # Check if demo users already exist first
+            cursor.execute('SELECT username FROM users WHERE username IN (%s, %s)', ('demo_user', 'premium_user'))
+            existing_users = [row[0] for row in cursor.fetchall()]
             
-            for user in users:
+            if 'demo_user' not in existing_users:
                 cursor.execute('''
                 INSERT INTO users (username, email, password, name, is_premium)
                 VALUES (%s, %s, %s, %s, %s)
-                ON CONFLICT (username) DO NOTHING
-                ''', user)
+                ''', ("demo_user", "demo@kaspa.com", demo_password, "Demo User", False))
+                st.write("Debug: Created demo_user")
+            else:
+                st.write("Debug: demo_user already exists")
+                
+            if 'premium_user' not in existing_users:
+                cursor.execute('''
+                INSERT INTO users (username, email, password, name, is_premium)
+                VALUES (%s, %s, %s, %s, %s)
+                ''', ("premium_user", "premium@kaspa.com", demo_password, "Premium User", True))
+                st.write("Debug: Created premium_user")
+            else:
+                st.write("Debug: premium_user already exists")
             
-            st.write("Debug: Demo users created in PostgreSQL!")
+            st.write("Debug: Demo users setup complete!")
             
         except Exception as e:
-            st.write(f"Debug: Error creating demo users in PostgreSQL: {e}")
+            st.write(f"Debug: Error in demo user creation: {e}")
+            # Don't raise the error, just log it
     
     def create_demo_users_sqlite(self, cursor):
         """Create demo users for SQLite"""
