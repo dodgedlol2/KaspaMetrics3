@@ -32,6 +32,10 @@ query_params = st.query_params
 if query_params.get("upgrade") == "success" and query_params.get("session_id"):
     session_id = query_params.get("session_id")
     
+    # Show big success message at the top
+    st.success("🎉 **PAYMENT SUCCESSFUL!** Welcome to Kaspa Analytics Premium!")
+    st.balloons()
+    
     # Try to get username from Stripe session metadata
     try:
         import stripe
@@ -56,14 +60,31 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
                     st.session_state['name'] = user['name']
                     st.session_state['is_premium'] = True
                     st.session_state['premium_expires_at'] = expires_at
-                    
-                st.success("🎉 Payment successful! You now have premium access!")
-                st.balloons()
                 
-                # Clear URL parameters
-                st.query_params.clear()
-                # Force a rerun to update the UI
-                st.rerun()
+                # Update session state for already logged in users
+                st.session_state['is_premium'] = True
+                st.session_state['premium_expires_at'] = expires_at
+                
+                # Show premium access confirmation
+                st.info("✅ **Your account has been upgraded to Premium!** You now have access to all advanced analytics features.")
+                
+                # Add button to explore premium features
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    if st.button("🔬 Explore Premium Analytics", use_container_width=True):
+                        st.switch_page("pages/8_👑_Premium_Analytics.py")
+                with col2:
+                    if st.button("📊 View Advanced Metrics", use_container_width=True):
+                        st.switch_page("pages/9_👑_Advanced_Metrics.py")
+                with col3:
+                    if st.button("🏠 Continue to Home", use_container_width=True):
+                        st.query_params.clear()
+                        st.rerun()
+                
+                # Clear URL parameters after a delay
+                if st.button("Close Success Message"):
+                    st.query_params.clear()
+                    st.rerun()
             else:
                 st.error("Payment verification failed. Please contact support.")
         else:
@@ -73,7 +94,7 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
         st.error(f"Error processing upgrade: {str(e)}")
 
 elif query_params.get("upgrade") == "cancelled":
-    st.warning("Payment was cancelled. You can try again anytime!")
+    st.warning("⚠️ Payment was cancelled. You can try again anytime!")
     # Clear URL parameters
     if st.button("Continue"):
         st.query_params.clear()
