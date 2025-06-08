@@ -29,6 +29,11 @@ def init_app():
 
 db, auth_handler, payment_handler = init_app()
 
+# Add this after: db, auth_handler, payment_handler = init_app()
+st.sidebar.write(f"Debug: Database type: {'PostgreSQL' if db.use_postgres else 'SQLite'}")
+if hasattr(db, 'database_url'):
+    st.sidebar.write(f"Debug: Database URL starts with: {db.database_url[:20]}...")
+
 # Add shared navigation to sidebar
 add_navigation()
 
