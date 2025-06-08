@@ -27,6 +27,9 @@ def init_app():
 
 db, auth_handler, payment_handler = init_app()
 
+# Add shared navigation to sidebar
+add_navigation()
+
 # Check for payment success in URL parameters
 query_params = st.query_params
 if query_params.get("upgrade") == "success" and query_params.get("session_id"):
