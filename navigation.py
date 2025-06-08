@@ -32,16 +32,17 @@ def add_navigation():
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
         st.switch_page("Home.py")
     
-    st.sidebar.markdown("---")
-    
-    # Account Section (REMOVED "👤 Account" header text/icon)
+    # Account buttons right under Home
     if st.session_state.get('authentication_status'):
-        # User is logged in
-        if st.sidebar.button("👤 My Account", key="nav_account", use_container_width=True):
-            st.switch_page("pages/A_👤_Account.py")
-        if st.sidebar.button("🚪 Logout", key="nav_logout", use_container_width=True):
-            st.session_state.clear()
-            st.switch_page("Home.py")
+        # User is logged in - show Account and Logout side by side
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            if st.button("👤 Account", key="nav_account", use_container_width=True):
+                st.switch_page("pages/A_👤_Account.py")
+        with col2:
+            if st.button("🚪 Logout", key="nav_logout", use_container_width=True):
+                st.session_state.clear()
+                st.switch_page("Home.py")
     else:
         # User not logged in
         if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
