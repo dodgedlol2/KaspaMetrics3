@@ -1,4 +1,8 @@
 import streamlit as st
+
+# Page config
+st.set_page_config(page_title="Mining Difficulty", page_icon="⚙️", layout="wide")
+
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
@@ -15,9 +19,6 @@ from navigation import add_navigation
 
 # NOW add navigation (after page config)
 add_navigation()
-
-# Page config
-st.set_page_config(page_title="Mining Difficulty", page_icon="⚙️", layout="wide")
 
 # Initialize handlers
 @st.cache_resource
