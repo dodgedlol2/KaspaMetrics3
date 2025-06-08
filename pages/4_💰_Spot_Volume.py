@@ -1,4 +1,8 @@
 import streamlit as st
+
+# Page config
+st.set_page_config(page_title="Trading Volume", page_icon="📊", layout="wide")
+
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
