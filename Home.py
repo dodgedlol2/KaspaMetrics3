@@ -5,7 +5,6 @@ import streamlit_authenticator as stauth
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
-from navigation import add_navigation
 import importlib.util
 import sys
 import os
@@ -138,82 +137,33 @@ if 'authentication_status' not in st.session_state:
     st.session_state['username'] = None
     st.session_state['name'] = None
 
-# Login/Register form in header
+# Header with logo and user info
+col1, col2 = st.columns([3, 1])
+with col1:
+    st.markdown('<div class="logo">⚡ Kaspa Analytics</div>', unsafe_allow_html=True)
+
 with col2:
-    if st.session_state['authentication_status'] is None:
-        with st.expander("Login / Register"):
-            tab1, tab2 = st.tabs(["Login", "Register"])
-            
-            with tab1:
-                with st.form("login_form"):
-                    username = st.text_input("Username")
-                    password = st.text_input("Password", type="password")
-                    login_button = st.form_submit_button("Login")
-                    
-                    if login_button:
-                        if auth_handler.authenticate(username, password):
-                            user = db.get_user(username)
-                            
-                            # Check premium expiration
-                            is_premium, expiry_info = db.check_premium_expiration(username)
-                            
-                            st.session_state['authentication_status'] = True
-                            st.session_state['username'] = username
-                            st.session_state['name'] = user['name']
-                            st.session_state['is_premium'] = is_premium
-                            st.session_state['premium_expires_at'] = user.get('premium_expires_at')
-                            
-                            st.rerun()
-                        else:
-                            st.error("Invalid username or password")
-            
-            with tab2:
-                with st.form("register_form"):
-                    new_username = st.text_input("Username", key="reg_username")
-                    new_email = st.text_input("Email", key="reg_email")
-                    new_name = st.text_input("Full Name", key="reg_name")
-                    new_password = st.text_input("Password", type="password", key="reg_password")
-                    register_button = st.form_submit_button("Register")
-                    
-                    if register_button:
-                        if db.add_user(new_username, new_email, new_password, new_name):
-                            st.success("Account created successfully! Please login.")
-                        else:
-                            st.error("Username or email already exists")
-    
-    elif st.session_state['authentication_status']:
-        # Check for expired premium subscriptions
-        if st.session_state.get('username'):
-            is_premium, expiry_info = db.check_premium_expiration(st.session_state['username'])
-            st.session_state['is_premium'] = is_premium
-            
-            if isinstance(expiry_info, str) and expiry_info == "Subscription expired":
-                st.warning("⚠️ Your premium subscription has expired. Please renew to continue accessing premium features.")
-        
+    if st.session_state.get('authentication_status'):
         # Show user info with premium status
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            welcome_msg = f"Welcome, {st.session_state['name']}!"
-            if st.session_state.get('is_premium'):
-                welcome_msg += " 👑 PREMIUM"
-                if st.session_state.get('premium_expires_at'):
-                    from datetime import datetime
-                    try:
-                        expires = datetime.fromisoformat(st.session_state['premium_expires_at'].replace('Z', '+00:00'))
-                        days_left = (expires - datetime.now()).days
-                        if days_left > 0:
-                            welcome_msg += f" ({days_left} days left)"
-                    except:
-                        pass
-            st.write(welcome_msg)
-        with col2:
-            if st.button("Logout"):
-                st.session_state['authentication_status'] = None
-                st.session_state['username'] = None
-                st.session_state['name'] = None
-                st.session_state['is_premium'] = False
-                st.session_state['premium_expires_at'] = None
-                st.rerun()
+        welcome_msg = f"Welcome, {st.session_state['name']}!"
+        if st.session_state.get('is_premium'):
+            welcome_msg += " 👑 PREMIUM"
+            if st.session_state.get('premium_expires_at'):
+                from datetime import datetime
+                try:
+                    expires = datetime.fromisoformat(st.session_state['premium_expires_at'].replace('Z', '+00:00'))
+                    days_left = (expires - datetime.now()).days
+                    if days_left > 0:
+                        welcome_msg += f" ({days_left} days left)"
+                except:
+                    pass
+        st.write(welcome_msg)
+        
+        if st.button("👤 Account", key="header_account"):
+            st.switch_page("pages/A_👤_Account.py")
+    else:
+        if st.button("🔑 Login", key="header_login", use_container_width=True):
+            st.switch_page("pages/0_🔑_Login.py")
 
 # Main content
 st.title("⚡ Welcome to Kaspa Analytics")
@@ -321,14 +271,7 @@ with st.sidebar:
     if st.session_state.get('is_premium'):
         st.success("👑 Premium Active")
         if st.session_state.get('premium_expires_at'):
-            try:
-                expires_date = st.session_state['premium_expires_at']
-                if hasattr(expires_date, 'strftime'):
-                    st.write(f"Expires: {expires_date.strftime('%Y-%m-%d')}")
-                else:
-                    st.write(f"Expires: {str(expires_date)[:10]}")
-            except:
-                st.write("Expires: Active")
+            st.write(f"Expires: {st.session_state['premium_expires_at'][:10]}")
     elif st.session_state.get('authentication_status'):
         st.warning("🔒 Free Account")
         st.write("Upgrade for premium features")
