@@ -4,6 +4,23 @@ import os
 import streamlit as st
 from urllib.parse import urlparse
 
+def __init__(self):
+    # DEBUG: Check if secrets are accessible
+    try:
+        test_url = st.secrets["DATABASE_URL"]
+        st.write(f"Debug: Found DATABASE_URL in secrets: {test_url[:30]}...")
+    except Exception as e:
+        st.write(f"Debug: Error accessing DATABASE_URL: {e}")
+    
+    # Get database URL from Streamlit secrets or environment
+    try:
+        self.database_url = st.secrets["DATABASE_URL"]
+    except:
+        self.database_url = os.getenv('DATABASE_URL', 'sqlite:///kaspa_users.db')
+    
+    st.write(f"Debug: Using database URL: {self.database_url[:30]}...")
+ # DEBUG: Check if secrets are accessible
+
 class Database:
     def __init__(self):
         # Get database URL from Streamlit secrets or environment
