@@ -12,238 +12,73 @@ def add_navigation():
 def _add_custom_header():
     """Add the custom website header with Kaspa Analytics branding"""
     
-    # IMMEDIATE CSS injection - loads before anything else renders
+    # CSS for header and sidebar positioning
     st.markdown("""
     <style>
-        /* CRITICAL: Load these styles FIRST to prevent flicker */
-        .stApp { margin-top: -80px !important; }
-        .real-website-header { 
-            position: fixed !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            right: 0 !important; 
-            width: 100vw !important; 
-            height: 70px !important; 
-            z-index: 999999 !important; 
-            background: rgba(15, 23, 42, 0.95) !important;
-            display: flex !important;
+        /* Hide Streamlit default elements */
+        .stApp > header {
+            background-color: transparent;
         }
         
-        /* REVERT: Remove specific sidebar targeting for now */
-        /* Just use basic fallbacks */
-        [data-testid="stSidebar"] { margin-top: 80px !important; }
-        [data-testid="collapsedControl"] { top: 90px !important; z-index: 1000000 !important; }
-        
-        /* Fix main content positioning */
-        .main-content { margin-top: 90px !important; }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Render header HTML IMMEDIATELY after critical CSS
-    if st.session_state.get('authentication_status'):
-        user_name = st.session_state.get('name', 'User')
-        is_premium = st.session_state.get('is_premium', False)
-        premium_expires = st.session_state.get('premium_expires_at')
-        
-        days_left_text = ""
-        if is_premium and premium_expires:
-            from datetime import datetime
-            try:
-                expires = datetime.fromisoformat(premium_expires.replace('Z', '+00:00'))
-                days_left = (expires - datetime.now()).days
-                if days_left > 0:
-                    days_left_text = f" ({days_left} days left)"
-            except:
-                pass
-        
-        status_text = f"👑 PREMIUM{days_left_text}" if is_premium else "FREE TIER"
-        status_class = "premium" if is_premium else ""
-        
-        header_html = f"""
-        <div class="real-website-header" style="
-            position: fixed !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            right: 0 !important; 
-            width: 100vw !important; 
-            height: 70px !important; 
-            z-index: 999999 !important; 
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
-            backdrop-filter: blur(20px) !important;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            padding: 0 2rem !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-        ">
-            <div class="header-logo" style="
-                display: flex !important;
-                align-items: center !important;
-                gap: 12px !important;
-                font-size: 24px !important;
-                font-weight: 700 !important;
-                color: #00d4ff !important;
-            ">
-                <span class="logo-icon" style="
-                    font-size: 28px !important;
-                    background: linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%) !important;
-                    -webkit-background-clip: text !important;
-                    -webkit-text-fill-color: transparent !important;
-                    background-clip: text !important;
-                ">⚡</span>
-                <span>Kaspa Analytics</span>
-            </div>
-            <div class="header-user-section" style="
-                display: flex !important;
-                align-items: center !important;
-                gap: 1rem !important;
-            ">
-                <div class="user-info" style="
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: flex-end !important;
-                    gap: 2px !important;
-                ">
-                    <div class="user-name" style="
-                        color: #f1f5f9 !important;
-                        font-weight: 600 !important;
-                        font-size: 14px !important;
-                    ">Welcome, {user_name}</div>
-                    <div class="user-status {status_class}" style="
-                        color: {'#fbbf24' if is_premium else '#00d4ff'} !important;
-                        font-size: 11px !important;
-                        font-weight: 500 !important;
-                        text-transform: uppercase !important;
-                        letter-spacing: 0.5px !important;
-                    ">{status_text}</div>
-                </div>
-            </div>
-        </div>
-        """
-    else:
-        header_html = """
-        <div class="real-website-header" style="
-            position: fixed !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            right: 0 !important; 
-            width: 100vw !important; 
-            height: 70px !important; 
-            z-index: 999999 !important; 
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
-            backdrop-filter: blur(20px) !important;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            padding: 0 2rem !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-        ">
-            <div class="header-logo" style="
-                display: flex !important;
-                align-items: center !important;
-                gap: 12px !important;
-                font-size: 24px !important;
-                font-weight: 700 !important;
-                color: #00d4ff !important;
-            ">
-                <span class="logo-icon" style="
-                    font-size: 28px !important;
-                    background: linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%) !important;
-                    -webkit-background-clip: text !important;
-                    -webkit-text-fill-color: transparent !important;
-                    background-clip: text !important;
-                ">⚡</span>
-                <span>Kaspa Analytics</span>
-            </div>
-            <div class="header-user-section" style="
-                display: flex !important;
-                align-items: center !important;
-                gap: 1rem !important;
-            ">
-                <div class="user-info" style="
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: flex-end !important;
-                    gap: 2px !important;
-                ">
-                    <div class="user-name" style="
-                        color: #f1f5f9 !important;
-                        font-weight: 600 !important;
-                        font-size: 14px !important;
-                    ">Please log in</div>
-                    <div class="user-status" style="
-                        color: #00d4ff !important;
-                        font-size: 11px !important;
-                        font-weight: 500 !important;
-                        text-transform: uppercase !important;
-                        letter-spacing: 0.5px !important;
-                    ">GUEST</div>
-                </div>
-            </div>
-        </div>
-        """
-    
-    st.markdown(header_html, unsafe_allow_html=True)
-    
-    # FULL CSS for enhanced styling (loads after header is already positioned)
-    st.markdown("""
-    <style>
-        /* ANTI-FLICKER: Preload header positioning */
         .stApp {
-            margin-top: -80px !important;
+            margin-top: -80px;
         }
         
+        /* Better sidebar positioning solution from YouTube comment */
+        /* The whole sidebar */
+        .css-1lcbmhc.e1fqkh3o0 {
+            margin-top: 3.8rem;
+        }
+        
+        /* The display arrow */
+        .css-sg054d.e1fqkh3o3 {
+            margin-top: 5rem;
+        }
+        
+        /* Updated selectors for newer Streamlit versions */
+        [data-testid="stSidebar"] {
+            margin-top: 80px !important;
+        }
+        
+        [data-testid="collapsedControl"] {
+            top: 90px !important;
+            z-index: 1000000 !important;
+        }
+        
+        /* Additional modern Streamlit sidebar selectors */
+        .st-emotion-cache-1cypcdb {
+            margin-top: 80px !important;
+        }
+        
+        .st-emotion-cache-16txtl3 {
+            top: 90px !important;
+            z-index: 1000000 !important;
+        }
+        
+        /* Force sidebar collapse button visibility */
+        button[data-testid="collapsedControl"] {
+            top: 90px !important;
+            z-index: 1000000 !important;
+            position: fixed !important;
+        }
+        
+        /* Custom Real Website Header */
         .real-website-header {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
             width: 100vw !important;
-            height: 70px !important;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
             z-index: 999999 !important;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
-        }
-        /* Hide Streamlit default elements */
-        .stApp > header {
-            background-color: transparent !important;
-            display: none !important;
-        }
-        
-        /* REVERT: Go back to basic sidebar positioning */
-        [data-testid="stSidebar"] {
-            margin-top: 80px !important;
-            transition: none !important;
-        }
-        
-        [data-testid="collapsedControl"] {
-            top: 90px !important;
-            z-index: 1000000 !important;
-            transition: none !important;
-        }
-        
-        /* Remove all the specific emotion-cache targeting for now */
-        
-        /* Ensure main content is positioned correctly */
-        .main-content {
-            margin-top: 90px !important;
-            padding: 2rem !important;
-        }
-        
-        /* Custom Real Website Header - ANTI-FLICKER VERSION */
-        .real-website-header {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
-            backdrop-filter: blur(20px) !important;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            padding: 0 2rem !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-            /* Remove any transitions to prevent flicker */
-            transition: none !important;
-            animation: none !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         
         /* Logo Section */
@@ -380,8 +215,10 @@ def _add_custom_header():
         </div>
         """
     
+    st.markdown(header_html, unsafe_allow_html=True)
+    
     # Add margin to main content
-    st.markdown('<div class="main-content" style="margin-top: 90px !important;">', unsafe_allow_html=True)
+    st.markdown('<div class="main-content">', unsafe_allow_html=True)
 
 def _add_sidebar_navigation():
     """Add the sidebar navigation (existing functionality)"""
