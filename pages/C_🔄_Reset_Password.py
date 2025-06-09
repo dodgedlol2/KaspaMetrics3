@@ -95,23 +95,12 @@ if reset_token:
                                 st.success("🎉 **Password Reset Successful!**")
                                 st.balloons()
                                 
-                                st.markdown("---")
-                                st.subheader("✅ What's Next?")
-                                st.write("Your password has been successfully updated. You can now login with your new credentials.")
-                                
-                                col1, col2, col3 = st.columns(3)
-                                with col1:
-                                    if st.button("🔑 Go to Login", use_container_width=True, type="primary"):
-                                        st.switch_page("pages/0_🔑_Login.py")
-                                with col2:
-                                    if st.button("🏠 Go to Home", use_container_width=True):
-                                        st.switch_page("Home.py")
-                                with col3:
-                                    if st.button("📊 Browse Analytics", use_container_width=True):
-                                        st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
-                                
                                 # Clear URL parameters
                                 st.query_params.clear()
+                                
+                                # Set a session state flag to show success outside the form
+                                st.session_state['password_reset_success'] = True
+                                st.rerun()
                                 
                             else:
                                 st.error("❌ Failed to reset password. Please try again or contact support.")
@@ -121,6 +110,26 @@ if reset_token:
                         st.error("⚠️ Passwords do not match. Please try again.")
                 else:
                     st.error("⚠️ Please fill in both password fields")
+        
+        # Show success message and navigation OUTSIDE the form
+        if st.session_state.get('password_reset_success'):
+            st.markdown("---")
+            st.subheader("✅ What's Next?")
+            st.write("Your password has been successfully updated. You can now login with your new credentials.")
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                if st.button("🔑 Go to Login", use_container_width=True, type="primary"):
+                    st.session_state.pop('password_reset_success', None)  # Clear the flag
+                    st.switch_page("pages/0_🔑_Login.py")
+            with col2:
+                if st.button("🏠 Go to Home", use_container_width=True):
+                    st.session_state.pop('password_reset_success', None)  # Clear the flag
+                    st.switch_page("Home.py")
+            with col3:
+                if st.button("📊 Browse Analytics", use_container_width=True):
+                    st.session_state.pop('password_reset_success', None)  # Clear the flag
+                    st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
         
         # Security information
         st.markdown("---")
