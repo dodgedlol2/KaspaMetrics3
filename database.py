@@ -195,7 +195,8 @@ class Database:
                     'stripe_customer_id': user[7] if len(user) > 7 else None,
                     'stripe_subscription_id': user[8] if len(user) > 8 else None,
                     'reset_token': user[9] if len(user) > 9 else None,
-                    'reset_token_expires': user[10] if len(user) > 10 else None
+                    'reset_token_expires': user[10] if len(user) > 10 else None,
+                    'subscription_cancelled': bool(user[11]) if len(user) > 11 else False
                 }
             return None
                 
@@ -336,10 +337,7 @@ class Database:
     def cancel_premium_subscription(self, username):
         """Cancel user's premium subscription (mark for end of current period)"""
         try:
-            conn = self.get_connection()
-            cursor = conn.cursor()
-            
-            # Get current user data
+            # Get current user data first
             user = self.get_user(username)
             if not user:
                 return False, "User not found"
@@ -347,8 +345,14 @@ class Database:
             if not user['is_premium']:
                 return False, "User is not currently premium"
             
-            # Add a 'cancelled' flag to track cancelled subscriptions
-            # First, add the cancelled column if it doesn't exist
+            # Check if already cancelled
+            if user.get('subscription_cancelled', False):
+                return False, "Subscription is already cancelled"
+            
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            # Add cancelled column if it doesn't exist
             try:
                 if self.use_postgres:
                     cursor.execute('ALTER TABLE users ADD COLUMN subscription_cancelled BOOLEAN DEFAULT FALSE')
@@ -364,14 +368,14 @@ class Database:
                     UPDATE users 
                     SET subscription_cancelled = TRUE,
                         stripe_subscription_id = NULL
-                    WHERE username = %s
+                    WHERE username = %s AND subscription_cancelled = FALSE
                 ''', (username,))
             else:
                 cursor.execute('''
                     UPDATE users 
                     SET subscription_cancelled = ?,
                         stripe_subscription_id = NULL
-                    WHERE username = ?
+                    WHERE username = ? AND subscription_cancelled = FALSE
                 ''', (True, username))
             
             rows_affected = cursor.rowcount
@@ -394,7 +398,7 @@ class Database:
                 
                 return True, f"Subscription cancelled successfully. Premium access continues {days_remaining}"
             else:
-                return False, "Failed to cancel subscription"
+                return False, "Subscription is already cancelled"
                 
         except Exception as e:
             st.write(f"Debug: Error cancelling subscription for {username}: {e}")
