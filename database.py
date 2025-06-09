@@ -517,21 +517,29 @@ class Database:
         except Exception as e:
             return False, "Error"
 
-    # ✅ NEW SUBSCRIPTION MANAGEMENT FUNCTIONS
+    # ✅ NEW: AUTOMATIC SUBSCRIPTION RENEWAL SYSTEM
     
-    def check_and_process_expired_subscriptions(self):
+    def auto_check_all_renewals(self):
         """
-        Check for expired subscriptions and process renewals
-        This should be called on app startup or user login
+        ✅ Automatically check ALL users for renewals
+        This runs automatically when the app starts
         """
         try:
+            # Only run this check once per day per app session
+            current_date = datetime.now().strftime('%Y-%m-%d')
+            
+            if st.session_state.get('last_renewal_check') == current_date:
+                return  # Already checked today
+            
+            st.write("🔄 Running daily subscription renewal check...")
+            
             conn = self.get_connection()
             cursor = conn.cursor()
             
-            # Find users with expired premium that have active Stripe subscriptions
+            # Find users who might need renewal
             if self.use_postgres:
                 cursor.execute('''
-                    SELECT username, premium_expires_at, stripe_subscription_id, email, name
+                    SELECT username, premium_expires_at, stripe_subscription_id
                     FROM users 
                     WHERE is_premium = TRUE 
                     AND premium_expires_at < %s 
@@ -540,7 +548,7 @@ class Database:
                 ''', (datetime.now(),))
             else:
                 cursor.execute('''
-                    SELECT username, premium_expires_at, stripe_subscription_id, email, name
+                    SELECT username, premium_expires_at, stripe_subscription_id
                     FROM users 
                     WHERE is_premium = 1 
                     AND premium_expires_at < ? 
@@ -551,176 +559,92 @@ class Database:
             expired_users = cursor.fetchall()
             conn.close()
             
-            renewal_results = []
+            renewed_count = 0
+            cancelled_count = 0
             
-            for user_data in expired_users:
-                username, old_expiry, subscription_id, email, name = user_data
-                
-                # Try to process renewal for this user
-                renewal_result = self.process_subscription_renewal(username, subscription_id)
-                renewal_results.append({
-                    'username': username,
-                    'result': renewal_result
-                })
+            for username, old_expiry, subscription_id in expired_users:
+                result = self.simple_renewal_check(username)
+                if result == True:
+                    renewed_count += 1
+                elif result == False:
+                    cancelled_count += 1
             
-            return renewal_results
+            if renewed_count > 0 or cancelled_count > 0:
+                st.success(f"✅ Renewal check complete: {renewed_count} renewed, {cancelled_count} cancelled")
+            
+            # Mark as checked for today
+            st.session_state['last_renewal_check'] = current_date
             
         except Exception as e:
-            st.write(f"Debug: Error checking expired subscriptions: {e}")
-            return []
+            st.write(f"Debug: Error in auto renewal check: {e}")
     
-    def process_subscription_renewal(self, username, stripe_subscription_id):
+    def simple_renewal_check(self, username):
         """
-        Process renewal for a specific user subscription
-        Returns: {'success': bool, 'message': str, 'new_expiry': str}
+        ✅ Simple function to check if user should still have premium
+        Returns: True (renewed), False (cancelled), None (no action needed)
         """
         try:
-            # Import here to avoid circular imports
-            import stripe
-            stripe.api_key = st.secrets["default"]["STRIPE_SECRET_KEY"]
+            user = self.get_user(username)
             
-            # Check subscription status in Stripe
-            subscription = stripe.Subscription.retrieve(stripe_subscription_id)
-            
-            if subscription.status == 'active':
-                # Subscription is still active in Stripe, extend the user's premium
+            # Only check users who:
+            # 1. Are currently premium
+            # 2. Have an expiry date 
+            # 3. Have a real Stripe subscription (not 'CANCELLED')
+            if (user and 
+                user.get('is_premium') and 
+                user.get('premium_expires_at') and 
+                user.get('stripe_subscription_id') not in [None, 'CANCELLED']):
                 
-                # Determine renewal period based on subscription interval
-                if subscription.plan.interval == 'year':
-                    renewal_days = 365
-                    plan_type = "Annual"
-                elif subscription.plan.interval == 'month':
-                    renewal_days = 30
-                    plan_type = "Monthly"
+                # Check if their premium has expired
+                expires_at = user.get('premium_expires_at')
+                if isinstance(expires_at, str):
+                    expiry_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
                 else:
-                    renewal_days = 30  # Default fallback
-                    plan_type = "Monthly"
+                    expiry_date = expires_at
                 
-                # Calculate new expiry date (add renewal period to current time)
-                new_expiry = datetime.now() + timedelta(days=renewal_days)
-                
-                # Update user's premium status
-                success = self.update_premium_status(
-                    username, 
-                    True, 
-                    new_expiry.isoformat(), 
-                    stripe_subscription_id
-                )
-                
-                if success:
-                    st.write(f"Debug: Auto-renewed {username} - {plan_type} subscription extended to {new_expiry.strftime('%Y-%m-%d')}")
-                    return {
-                        'success': True,
-                        'message': f'{plan_type} subscription auto-renewed',
-                        'new_expiry': new_expiry.isoformat(),
-                        'plan_type': plan_type
-                    }
-                else:
-                    return {
-                        'success': False,
-                        'message': 'Database update failed',
-                        'new_expiry': None
-                    }
+                # If expired, check Stripe to see if subscription is still active
+                if datetime.now() > expiry_date:
+                    st.write(f"Debug: {username} premium expired, checking Stripe...")
                     
-            elif subscription.status in ['canceled', 'unpaid', 'past_due']:
-                # Subscription is no longer active, revoke premium access
-                self.update_premium_status(username, False, None, 'CANCELLED')
-                
-                return {
-                    'success': False,
-                    'message': f'Subscription {subscription.status} - premium access revoked',
-                    'new_expiry': None
-                }
-            else:
-                st.write(f"Debug: Unknown subscription status: {subscription.status}")
-                return {
-                    'success': False,
-                    'message': f'Unknown subscription status: {subscription.status}',
-                    'new_expiry': None
-                }
-                
-        except Exception as e:
-            st.write(f"Debug: Error processing renewal for {username}: {e}")
-            # If we can't reach Stripe, don't revoke access yet
-            return {
-                'success': False,
-                'message': f'Renewal check failed: {str(e)}',
-                'new_expiry': None
-            }
-    
-    def get_subscription_status_summary(self):
-        """
-        Get a summary of all subscription statuses for admin/debugging
-        """
-        try:
-            conn = self.get_connection()
-            cursor = conn.cursor()
+                    try:
+                        import stripe
+                        stripe.api_key = st.secrets["default"]["STRIPE_SECRET_KEY"]
+                        subscription = stripe.Subscription.retrieve(user['stripe_subscription_id'])
+                        
+                        if subscription.status == 'active':
+                            # Stripe says subscription is active, extend premium
+                            if subscription.plan.interval == 'year':
+                                new_expiry = datetime.now() + timedelta(days=365)
+                                plan_name = "Annual"
+                            else:
+                                new_expiry = datetime.now() + timedelta(days=30)
+                                plan_name = "Monthly"
+                            
+                            # Update database
+                            success = self.update_premium_status(username, True, new_expiry.isoformat(), user['stripe_subscription_id'])
+                            
+                            if success:
+                                st.success(f"✅ {username}: {plan_name} subscription auto-renewed until {new_expiry.strftime('%Y-%m-%d')}")
+                                return True  # Renewed
+                            else:
+                                st.error(f"❌ {username}: Database update failed")
+                                return None
+                        else:
+                            # Stripe says subscription is not active, remove premium
+                            self.update_premium_status(username, False, None, 'CANCELLED')
+                            st.warning(f"⚠️ {username}: Subscription {subscription.status} - premium access removed")
+                            return False  # Cancelled
+                            
+                    except Exception as e:
+                        st.write(f"Debug: Could not check Stripe for {username}: {e}")
+                        # If we can't reach Stripe, don't change anything
+                        return None  # Unknown
+                else:
+                    # Premium hasn't expired yet, all good
+                    return None  # Still active
             
-            if self.use_postgres:
-                cursor.execute('''
-                    SELECT 
-                        COUNT(*) as total_users,
-                        COUNT(CASE WHEN is_premium = TRUE THEN 1 END) as premium_users,
-                        COUNT(CASE WHEN stripe_subscription_id = 'CANCELLED' THEN 1 END) as cancelled_users,
-                        COUNT(CASE WHEN is_premium = TRUE AND premium_expires_at < %s THEN 1 END) as expired_users
-                    FROM users
-                ''', (datetime.now(),))
-            else:
-                cursor.execute('''
-                    SELECT 
-                        COUNT(*) as total_users,
-                        COUNT(CASE WHEN is_premium = 1 THEN 1 END) as premium_users,
-                        COUNT(CASE WHEN stripe_subscription_id = 'CANCELLED' THEN 1 END) as cancelled_users,
-                        COUNT(CASE WHEN is_premium = 1 AND premium_expires_at < ? THEN 1 END) as expired_users
-                    FROM users
-                ''', (datetime.now(),))
-            
-            result = cursor.fetchone()
-            conn.close()
-            
-            return {
-                'total_users': result[0],
-                'premium_users': result[1], 
-                'cancelled_users': result[2],
-                'expired_users': result[3]
-            }
+            return None  # Not applicable
             
         except Exception as e:
-            st.write(f"Debug: Error getting subscription summary: {e}")
-            return {}
-    
-    # ✅ TESTING FUNCTIONS
-    
-    def create_test_expiration(self, username, minutes_from_now=5):
-        """
-        FOR TESTING ONLY: Set a user's premium to expire in X minutes
-        This allows testing the renewal system without waiting 30 days
-        """
-        try:
-            test_expiry = datetime.now() + timedelta(minutes=minutes_from_now)
-            
-            conn = self.get_connection()
-            cursor = conn.cursor()
-            
-            if self.use_postgres:
-                cursor.execute('''
-                    UPDATE users 
-                    SET premium_expires_at = %s 
-                    WHERE username = %s
-                ''', (test_expiry, username))
-            else:
-                cursor.execute('''
-                    UPDATE users 
-                    SET premium_expires_at = ? 
-                    WHERE username = ?
-                ''', (test_expiry, username))
-            
-            conn.commit()
-            conn.close()
-            
-            st.write(f"⚠️ TEST MODE: Set {username} premium to expire at {test_expiry.strftime('%Y-%m-%d %H:%M:%S')}")
-            return True
-            
-        except Exception as e:
-            st.write(f"Debug: Error creating test expiration: {e}")
-            return False
+            st.write(f"Debug: Error in renewal check for {username}: {e}")
+            return None
