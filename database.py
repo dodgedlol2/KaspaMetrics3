@@ -625,6 +625,26 @@ class Database:
                             
                             if success:
                                 st.success(f"✅ {username}: {plan_name} subscription auto-renewed until {new_expiry.strftime('%Y-%m-%d')}")
+                                
+                                # ✅ NEW: Send renewal notification email
+                                try:
+                                    # Import email handler here to avoid circular imports
+                                    from email_handler import EmailHandler
+                                    email_handler = EmailHandler()
+                                    
+                                    # Send renewal notification
+                                    email_handler.send_renewal_notification_email(
+                                        user['email'], 
+                                        user['name'], 
+                                        plan_name,
+                                        new_expiry.strftime('%Y-%m-%d')
+                                    )
+                                    st.info(f"📧 Renewal notification sent to {user['email']}")
+                                    
+                                except Exception as email_error:
+                                    st.write(f"Debug: Could not send renewal email: {email_error}")
+                                    # Don't fail the renewal if email fails
+                                
                                 return True  # Renewed
                             else:
                                 st.error(f"❌ {username}: Database update failed")
