@@ -142,18 +142,18 @@ if st.session_state.get('is_premium'):
                     success, message = db.cancel_premium_subscription(username)
                     
                     if success:
-                        # Update session state
-                        st.session_state['is_premium'] = False
-                        st.session_state['premium_expires_at'] = None
+                        # Don't update session state premium status immediately
+                        # Keep premium until actual expiry date
                         st.session_state.pop('show_cancel_confirmation', None)
                         
                         # Send cancellation email
                         try:
                             email_handler.send_cancellation_email(user['email'], user['name'])
-                            st.success("✅ Subscription cancelled successfully!")
+                            st.success(f"✅ {message}")
                             st.info("📧 A confirmation email has been sent to you.")
+                            st.warning("⚠️ You'll keep premium access until your current billing period ends.")
                         except Exception as e:
-                            st.success("✅ Subscription cancelled successfully!")
+                            st.success(f"✅ {message}")
                             st.warning("⚠️ Could not send confirmation email, but cancellation was processed.")
                         
                         st.balloons()
