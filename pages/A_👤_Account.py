@@ -113,7 +113,9 @@ if st.session_state.get('is_premium'):
         st.write("• Priority support")
         
         # Show subscription status
-        if user.get('subscription_cancelled', False):
+        is_cancelled = user.get('stripe_subscription_id') == 'CANCELLED'
+        
+        if is_cancelled:
             st.warning("⚠️ **Subscription Cancelled**")
             st.write("Your subscription has been cancelled but you'll keep premium access until your billing period ends.")
             
@@ -138,7 +140,9 @@ if st.session_state.get('is_premium'):
     
     with col2:
         # Only show cancellation option if not already cancelled
-        if not user.get('subscription_cancelled', False):
+        is_cancelled = user.get('stripe_subscription_id') == 'CANCELLED'
+        
+        if not is_cancelled:
             st.warning("⚠️ **Cancel Subscription**")
             st.write("Cancel your subscription (you'll keep access until current period ends).")
             
