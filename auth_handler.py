@@ -99,7 +99,7 @@ class AuthHandler:
     def set_persistent_login(self, username):
         """Set persistent login cookie"""
         try:
-            st.write(f"Debug: Setting persistent login for {username}")
+            st.write(f"🔐 **Debug: Setting persistent login for:** {username}")
             
             # Import here to avoid caching issues
             from streamlit_cookies_controller import CookieController
@@ -109,7 +109,7 @@ class AuthHandler:
             if token:
                 # Set cookie to expire in 30 days
                 max_age_seconds = self.cookie_expiry_days * 24 * 60 * 60
-                st.write(f"Debug: Setting cookie with max_age: {max_age_seconds} seconds ({self.cookie_expiry_days} days)")
+                st.write(f"⏰ **Debug: Cookie expiry:** {self.cookie_expiry_days} days ({max_age_seconds} seconds)")
                 
                 cookie_controller.set(
                     self.cookie_name, 
@@ -118,33 +118,32 @@ class AuthHandler:
                 )
                 
                 # Verify the cookie was set
-                st.write("Debug: Attempting to read cookie back immediately...")
+                st.write("🔍 **Debug: Verifying cookie was set...**")
                 read_back = cookie_controller.get(self.cookie_name)
                 if read_back:
-                    st.write(f"Debug: ✅ Cookie set and verified! First 50 chars: {read_back[:50]}...")
+                    st.success(f"✅ **Debug: Cookie set successfully!** Preview: {read_back[:50]}...")
+                    return True
                 else:
-                    st.write("Debug: ❌ Cookie was not set or cannot be read back")
+                    st.error("❌ **Debug: Cookie was not set or cannot be read back**")
+                    return False
                 
-                return True
         except Exception as e:
-            st.write(f"Debug: Error setting persistent login: {e}")
+            st.error(f"💥 **Debug: Error setting persistent login:** {e}")
             import traceback
-            st.write(f"Debug: Full traceback: {traceback.format_exc()}")
+            st.text(traceback.format_exc())
         return False
     
     def check_persistent_login(self):
         """Check if user has valid persistent login cookie"""
         try:
-            st.write("Debug: Checking for persistent login cookie...")
-            
             # Skip if already checked or logged in
             if st.session_state.get('authentication_status'):
-                st.write("Debug: User already authenticated, skipping cookie check")
                 return False
                 
             if st.session_state.get('cookie_login_checked'):
-                st.write("Debug: Cookie already checked this session")
                 return False
+            
+            st.write("🔍 **Debug: Checking for persistent login cookie...**")
             
             # Import here to avoid caching issues
             from streamlit_cookies_controller import CookieController
@@ -153,17 +152,18 @@ class AuthHandler:
             # Get all cookies for debugging
             try:
                 all_cookies = cookie_controller.getAll()
-                st.write(f"Debug: All cookies: {list(all_cookies.keys()) if all_cookies else 'None'}")
-            except:
-                st.write("Debug: Could not get all cookies")
+                st.write(f"🍪 **Debug: All cookies found:** {list(all_cookies.keys()) if all_cookies else 'None'}")
+            except Exception as cookie_err:
+                st.write(f"⚠️ **Debug: Could not get all cookies:** {cookie_err}")
             
             token = cookie_controller.get(self.cookie_name)
-            st.write(f"Debug: Retrieved cookie '{self.cookie_name}': {token[:50] + '...' if token else 'None'}")
+            st.write(f"🔑 **Debug: Auth cookie '{self.cookie_name}':** {'FOUND ✅' if token else 'NOT FOUND ❌'}")
             
             if token:
+                st.write(f"📄 **Debug: Token preview:** {token[:50]}...")
                 username = self.verify_auth_token(token)
                 if username:
-                    st.write(f"Debug: Valid token found for {username}, attempting auto-login...")
+                    st.write(f"👤 **Debug: Valid token for user:** {username}")
                     
                     # Valid token found, auto-login user
                     user = self.db.get_user(username)
@@ -176,28 +176,25 @@ class AuthHandler:
                         st.session_state['premium_expires_at'] = user['premium_expires_at']
                         st.session_state['cookie_login_checked'] = True
                         
-                        # Refresh cookie expiry
-                        st.write("Debug: Refreshing cookie expiry...")
-                        self.set_persistent_login(username)
+                        st.success(f"🎉 **AUTO-LOGIN SUCCESS!** Welcome back, {user['name']}!")
                         
-                        st.write(f"Debug: ✅ Auto-logged in user {username} from cookie!")
+                        # DON'T refresh cookie immediately - causes rerun loop
                         return True
                     else:
-                        st.write(f"Debug: User {username} not found in database")
+                        st.error(f"❌ **Debug: User {username} not found in database**")
                 else:
-                    st.write("Debug: Token verification failed")
+                    st.error("❌ **Debug: Token verification failed**")
             else:
-                st.write("Debug: No cookie found")
+                st.info("ℹ️ **Debug: No auth cookie found - user needs to login**")
             
             # Mark as checked
             st.session_state['cookie_login_checked'] = True
-            st.write("Debug: Cookie check completed, no valid login found")
             return False
             
         except Exception as e:
-            st.write(f"Debug: Error checking persistent login: {e}")
+            st.error(f"💥 **Debug: Error checking persistent login:** {e}")
             import traceback
-            st.write(f"Debug: Full traceback: {traceback.format_exc()}")
+            st.text(traceback.format_exc())
             st.session_state['cookie_login_checked'] = True
             return False
     
