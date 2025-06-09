@@ -288,6 +288,7 @@ def render_real_header():
         status_text = f"👑 PREMIUM{days_left_text}" if is_premium else "FREE TIER"
         status_class = "premium" if is_premium else ""
         
+        # Create header HTML without onclick buttons
         header_html = f"""
         <div class="real-website-header">
             <div class="header-logo">
@@ -299,20 +300,68 @@ def render_real_header():
                     <div class="user-name">Welcome, {user_name}</div>
                     <div class="user-status {status_class}">{status_text}</div>
                 </div>
-                <button class="header-btn" onclick="window.location.href='/A_👤_Account'">👤 Account</button>
-                <button class="header-btn logout" onclick="handleLogout()">🚪 Logout</button>
+                <div id="header-account-btn" class="header-btn">👤 Account</div>
+                <div id="header-logout-btn" class="header-btn logout">🚪 Logout</div>
             </div>
         </div>
+        """
         
+        # Add the header
+        st.markdown(header_html, unsafe_allow_html=True)
+        
+        # Create invisible Streamlit buttons that we'll trigger with JavaScript
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        with col1:
+            if st.button("Hidden Account", key="hidden_account_btn", type="primary"):
+                st.switch_page("pages/A_👤_Account.py")
+        
+        with col2:
+            if st.button("Hidden Logout", key="hidden_logout_btn", type="secondary"):
+                auth_handler.logout()
+                st.success("✅ Logged out successfully!")
+                st.rerun()
+        
+        # JavaScript to connect header buttons to Streamlit buttons
+        button_script = """
         <script>
-        function handleLogout() {{
-            // We'll handle this with Streamlit's session state
-            window.parent.postMessage({{type: 'logout'}}, '*');
-        }}
+        setTimeout(function() {
+            // Hide the invisible Streamlit buttons
+            const hiddenButtons = document.querySelectorAll('[data-testid="stButton"]');
+            hiddenButtons.forEach(button => {
+                if (button.textContent.includes('Hidden Account') || button.textContent.includes('Hidden Logout')) {
+                    button.style.display = 'none';
+                }
+            });
+            
+            // Connect header buttons to Streamlit buttons
+            const headerAccountBtn = document.getElementById('header-account-btn');
+            const headerLogoutBtn = document.getElementById('header-logout-btn');
+            
+            if (headerAccountBtn) {
+                headerAccountBtn.addEventListener('click', function() {
+                    const accountBtn = document.querySelector('[data-testid="stButton"] button[kind="primary"]');
+                    if (accountBtn && accountBtn.textContent.includes('Hidden Account')) {
+                        accountBtn.click();
+                    }
+                });
+            }
+            
+            if (headerLogoutBtn) {
+                headerLogoutBtn.addEventListener('click', function() {
+                    const logoutBtn = document.querySelector('[data-testid="stButton"] button[kind="secondary"]');
+                    if (logoutBtn && logoutBtn.textContent.includes('Hidden Logout')) {
+                        logoutBtn.click();
+                    }
+                });
+            }
+        }, 500);
         </script>
         """
+        st.markdown(button_script, unsafe_allow_html=True)
+        
     else:
-        # Not logged in
+        # Not logged in - create header with login buttons
         header_html = """
         <div class="real-website-header">
             <div class="header-logo">
@@ -320,34 +369,67 @@ def render_real_header():
                 <span>Kaspa Analytics</span>
             </div>
             <div class="header-user-section">
-                <button class="header-btn" onclick="window.location.href='/0_🔑_Login'">🔑 Login</button>
-                <button class="header-btn" onclick="window.location.href='/0_🔑_Login'">📝 Sign Up</button>
+                <div id="header-login-btn" class="header-btn">🔑 Login</div>
+                <div id="header-signup-btn" class="header-btn">📝 Sign Up</div>
             </div>
         </div>
         """
-    
-    st.markdown(header_html, unsafe_allow_html=True)
+        
+        st.markdown(header_html, unsafe_allow_html=True)
+        
+        # Create invisible Streamlit buttons for login
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            if st.button("Hidden Login", key="hidden_login_btn", type="primary"):
+                st.switch_page("pages/0_🔑_Login.py")
+        
+        with col2:
+            if st.button("Hidden Signup", key="hidden_signup_btn", type="secondary"):
+                st.switch_page("pages/0_🔑_Login.py")
+        
+        # JavaScript for login buttons
+        login_script = """
+        <script>
+        setTimeout(function() {
+            // Hide the invisible Streamlit buttons
+            const hiddenButtons = document.querySelectorAll('[data-testid="stButton"]');
+            hiddenButtons.forEach(button => {
+                if (button.textContent.includes('Hidden Login') || button.textContent.includes('Hidden Signup')) {
+                    button.style.display = 'none';
+                }
+            });
+            
+            // Connect header buttons to Streamlit buttons
+            const headerLoginBtn = document.getElementById('header-login-btn');
+            const headerSignupBtn = document.getElementById('header-signup-btn');
+            
+            if (headerLoginBtn) {
+                headerLoginBtn.addEventListener('click', function() {
+                    const loginBtn = document.querySelector('[data-testid="stButton"] button[kind="primary"]');
+                    if (loginBtn && loginBtn.textContent.includes('Hidden Login')) {
+                        loginBtn.click();
+                    }
+                });
+            }
+            
+            if (headerSignupBtn) {
+                headerSignupBtn.addEventListener('click', function() {
+                    const signupBtn = document.querySelector('[data-testid="stButton"] button[kind="secondary"]');
+                    if (signupBtn && signupBtn.textContent.includes('Hidden Signup')) {
+                        signupBtn.click();
+                    }
+                });
+            }
+        }, 500);
+        </script>
+        """
+        st.markdown(login_script, unsafe_allow_html=True)
 
 # Render the header
 render_real_header()
 
-# Handle logout via JavaScript message
-logout_script = """
-<script>
-window.addEventListener('message', function(event) {
-    if (event.data.type === 'logout') {
-        // Trigger Streamlit logout by setting a session state flag
-        const stElements = window.parent.document.querySelectorAll('[data-testid="stButton"] button');
-        stElements.forEach(button => {
-            if (button.textContent.includes('Logout')) {
-                button.click();
-            }
-        });
-    }
-});
-</script>
-"""
-st.markdown(logout_script, unsafe_allow_html=True)
+# Remove the old logout handling script since we now handle it differently
 
 # Main Content
 st.markdown('<div class="main-content">', unsafe_allow_html=True)
