@@ -136,13 +136,11 @@ class AuthHandler:
     def check_persistent_login(self):
         """Check if user has valid persistent login cookie"""
         try:
-            # Skip if already checked or logged in
+            # Skip if already authenticated
             if st.session_state.get('authentication_status'):
                 return False
-                
-            if st.session_state.get('cookie_login_checked'):
-                return False
             
+            # DON'T skip if already checked - we need to check on fresh page loads
             st.write("🔍 **Debug: Checking for persistent login cookie...**")
             
             # Import here to avoid caching issues
@@ -174,11 +172,12 @@ class AuthHandler:
                         st.session_state['name'] = user['name']
                         st.session_state['is_premium'] = user['is_premium']
                         st.session_state['premium_expires_at'] = user['premium_expires_at']
-                        st.session_state['cookie_login_checked'] = True
                         
                         st.success(f"🎉 **AUTO-LOGIN SUCCESS!** Welcome back, {user['name']}!")
                         
-                        # DON'T refresh cookie immediately - causes rerun loop
+                        # Refresh cookie to extend expiry
+                        self.set_persistent_login(username)
+                        
                         return True
                     else:
                         st.error(f"❌ **Debug: User {username} not found in database**")
@@ -187,15 +186,12 @@ class AuthHandler:
             else:
                 st.info("ℹ️ **Debug: No auth cookie found - user needs to login**")
             
-            # Mark as checked
-            st.session_state['cookie_login_checked'] = True
             return False
             
         except Exception as e:
             st.error(f"💥 **Debug: Error checking persistent login:** {e}")
             import traceback
             st.text(traceback.format_exc())
-            st.session_state['cookie_login_checked'] = True
             return False
     
     def logout(self):
