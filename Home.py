@@ -55,82 +55,109 @@ if reset_token:
     # Streamlit native redirect (backup)
     st.switch_page(f"pages/0_🔑_Login.py")
 
-# Check for payment success in URL parameters
+# ✅ FIXED: Payment success handling with session state management
 if query_params.get("upgrade") == "success" and query_params.get("session_id"):
     session_id = query_params.get("session_id")
     
-    # Show big success message at the top
-    st.success("🎉 **PAYMENT SUCCESSFUL!** Welcome to Kaspa Analytics Premium!")
-    st.balloons()
+    # ✅ Check if this payment has already been processed
+    payment_processed_key = f"payment_processed_{session_id}"
     
-    # Try to get username from Stripe session metadata
-    try:
-        import stripe
-        stripe.api_key = payment_handler.stripe_secret_key
-        stripe_session = stripe.checkout.Session.retrieve(session_id)
-        username_from_stripe = stripe_session.metadata.get('username')
+    if not st.session_state.get(payment_processed_key, False):
+        # Mark as processed immediately to prevent duplicates
+        st.session_state[payment_processed_key] = True
         
-        if username_from_stripe:
-            # Upgrade the user in database
-            payment_result = payment_handler.handle_successful_payment(session_id, username_from_stripe)
-            if payment_result.get('success'):
-                expires_at = payment_result.get('expires_at')
-                subscription_id = payment_result.get('subscription_id')
+        # Show big success message at the top
+        st.success("🎉 **PAYMENT SUCCESSFUL!** Welcome to Kaspa Analytics Premium!")
+        st.balloons()
+        
+        # Try to get username from Stripe session metadata
+        try:
+            import stripe
+            stripe.api_key = payment_handler.stripe_secret_key
+            stripe_session = stripe.checkout.Session.retrieve(session_id)
+            username_from_stripe = stripe_session.metadata.get('username')
+            
+            if username_from_stripe:
+                # ✅ Get current user data to check for existing premium
+                current_user = db.get_user(username_from_stripe)
                 
-                db.update_premium_status(username_from_stripe, True, expires_at, subscription_id)
-                
-                # Auto-login the user if they're not logged in
-                if not st.session_state.get('authentication_status'):
-                    st.session_state['authentication_status'] = True
-                    st.session_state['username'] = username_from_stripe
-                    user = db.get_user(username_from_stripe)
-                    st.session_state['name'] = user['name']
+                # Upgrade the user in database
+                payment_result = payment_handler.handle_successful_payment(session_id, username_from_stripe)
+                if payment_result.get('success'):
+                    expires_at = payment_result.get('expires_at')
+                    subscription_id = payment_result.get('subscription_id')
+                    
+                    # ✅ FIXED: Reset cancellation status for resubscriptions
+                    # If user was previously cancelled, reset their subscription status
+                    if current_user and current_user.get('stripe_subscription_id') == 'CANCELLED':
+                        st.write("Debug: Reactivating cancelled subscription...")
+                    
+                    db.update_premium_status(username_from_stripe, True, expires_at, subscription_id)
+                    
+                    # Auto-login the user if they're not logged in
+                    if not st.session_state.get('authentication_status'):
+                        st.session_state['authentication_status'] = True
+                        st.session_state['username'] = username_from_stripe
+                        user = db.get_user(username_from_stripe)
+                        st.session_state['name'] = user['name']
+                        st.session_state['is_premium'] = True
+                        st.session_state['premium_expires_at'] = expires_at
+                    
+                    # Update session state for already logged in users
                     st.session_state['is_premium'] = True
                     st.session_state['premium_expires_at'] = expires_at
-                
-                # Update session state for already logged in users
-                st.session_state['is_premium'] = True
-                st.session_state['premium_expires_at'] = expires_at
-                
-                # Send premium subscription email
-                try:
-                    user = db.get_user(username_from_stripe)
-                    if user:
-                        # Determine plan type based on amount
-                        amount = payment_result.get('amount', 0)
-                        plan_type = "Monthly Premium" if amount == 999 else "Annual Premium"
-                        email_handler.send_premium_subscription_email(user['email'], user['name'], plan_type)
-                        st.info("📧 Premium welcome email sent to your inbox!")
-                except Exception as e:
-                    st.write(f"Debug: Could not send premium email: {e}")
-                
-                # Show premium access confirmation
-                st.info("✅ **Your account has been upgraded to Premium!** You now have access to all advanced analytics features.")
-                
-                # Add button to explore premium features
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    if st.button("🔬 Explore Premium Analytics", use_container_width=True):
-                        st.switch_page("pages/8_👑_Premium_Analytics.py")
-                with col2:
-                    if st.button("📊 View Advanced Metrics", use_container_width=True):
-                        st.switch_page("pages/9_👑_Advanced_Metrics.py")
-                with col3:
-                    if st.button("🏠 Continue to Home", use_container_width=True):
-                        st.query_params.clear()
-                        st.rerun()
-                
-                # Clear URL parameters after a delay
-                if st.button("Close Success Message"):
-                    st.query_params.clear()
-                    st.rerun()
+                    
+                    # ✅ Send premium subscription email ONLY ONCE
+                    email_sent_key = f"email_sent_{session_id}"
+                    if not st.session_state.get(email_sent_key, False):
+                        try:
+                            user = db.get_user(username_from_stripe)
+                            if user:
+                                # Determine plan type based on selected plan in session
+                                plan = st.session_state.get('selected_plan', {'interval': 'month'})
+                                plan_type = "Annual Premium" if plan['interval'] == 'year' else "Monthly Premium"
+                                
+                                email_handler.send_premium_subscription_email(user['email'], user['name'], plan_type)
+                                st.session_state[email_sent_key] = True
+                                st.info("📧 Premium welcome email sent to your inbox!")
+                        except Exception as e:
+                            st.write(f"Debug: Could not send premium email: {e}")
+                    
+                    # Show premium access confirmation
+                    st.info("✅ **Your account has been upgraded to Premium!** You now have access to all advanced analytics features.")
+                    
+                    # Add button to explore premium features
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        if st.button("🔬 Explore Premium Analytics", use_container_width=True):
+                            st.switch_page("pages/8_👑_Premium_Analytics.py")
+                    with col2:
+                        if st.button("📊 View Advanced Metrics", use_container_width=True):
+                            st.switch_page("pages/9_👑_Advanced_Metrics.py")
+                    with col3:
+                        if st.button("🏠 Continue to Home", use_container_width=True):
+                            st.query_params.clear()
+                            st.rerun()
+                    
+                else:
+                    st.error("Payment verification failed. Please contact support.")
             else:
-                st.error("Payment verification failed. Please contact support.")
-        else:
-            st.error("Could not identify user from payment. Please contact support.")
-            
-    except Exception as e:
-        st.error(f"Error processing upgrade: {str(e)}")
+                st.error("Could not identify user from payment. Please contact support.")
+                
+        except Exception as e:
+            st.error(f"Error processing upgrade: {str(e)}")
+    
+    else:
+        # Payment already processed - show simple confirmation
+        st.success("✅ **Payment Confirmed** - Your premium access is active!")
+        if st.button("🏠 Continue to Home", use_container_width=True):
+            st.query_params.clear()
+            st.rerun()
+    
+    # Clear URL parameters button
+    if st.button("Close Success Message"):
+        st.query_params.clear()
+        st.rerun()
 
 elif query_params.get("upgrade") == "cancelled":
     st.warning("⚠️ Payment was cancelled. You can try again anytime!")
