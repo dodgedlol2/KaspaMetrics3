@@ -137,7 +137,7 @@ class EmailHandler:
             © 2025 Kaspa Analytics
             """
             
-            # Prepare email data for Mailjet - FIXED VERSION
+            # Prepare email data for Mailjet
             data = {
                 'Messages': [
                     {
@@ -176,8 +176,8 @@ class EmailHandler:
         """Simulate email sending for testing"""
         st.write("Debug: Simulating email send...")
         
-        # Create reset URL - point to dedicated reset page
-        reset_url = f"{self.domain}/Reset_Password?reset_token={reset_token}"
+        # Create reset URL - FIXED to use the correct page
+        reset_url = f"{self.domain}/C_🔄_Reset_Password?reset_token={reset_token}"
         
         st.info(f"""
         📧 **Password Reset Email Simulated**
