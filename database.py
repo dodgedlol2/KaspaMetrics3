@@ -345,62 +345,26 @@ class Database:
             if not user['is_premium']:
                 return False, "User is not currently premium"
             
-            # Check if already cancelled
-            if user.get('subscription_cancelled', False):
+            # Check if already cancelled (stripe_subscription_id = 'CANCELLED')
+            if user.get('stripe_subscription_id') == 'CANCELLED':
                 return False, "Subscription is already cancelled"
             
-            # Handle adding the cancelled column in a separate transaction
-            try:
-                conn = self.get_connection()
-                cursor = conn.cursor()
-                
-                # Check if column exists first
-                if self.use_postgres:
-                    cursor.execute("""
-                        SELECT column_name 
-                        FROM information_schema.columns 
-                        WHERE table_name='users' AND column_name='subscription_cancelled'
-                    """)
-                    column_exists = cursor.fetchone() is not None
-                else:
-                    cursor.execute("PRAGMA table_info(users)")
-                    columns = [column[1] for column in cursor.fetchall()]
-                    column_exists = 'subscription_cancelled' in columns
-                
-                if not column_exists:
-                    if self.use_postgres:
-                        cursor.execute('ALTER TABLE users ADD COLUMN subscription_cancelled BOOLEAN DEFAULT FALSE')
-                    else:
-                        cursor.execute('ALTER TABLE users ADD COLUMN subscription_cancelled BOOLEAN DEFAULT FALSE')
-                    conn.commit()
-                
-                conn.close()
-            except Exception as col_error:
-                st.write(f"Debug: Column handling: {col_error}")
-                try:
-                    conn.close()
-                except:
-                    pass
-            
-            # Now perform the cancellation in a fresh transaction
+            # Simple approach - mark subscription as cancelled by setting stripe_subscription_id to 'CANCELLED'
             conn = self.get_connection()
             cursor = conn.cursor()
             
-            # Mark subscription as cancelled but keep premium until expiry
             if self.use_postgres:
                 cursor.execute('''
                     UPDATE users 
-                    SET subscription_cancelled = TRUE,
-                        stripe_subscription_id = NULL
-                    WHERE username = %s AND (subscription_cancelled IS NULL OR subscription_cancelled = FALSE)
+                    SET stripe_subscription_id = 'CANCELLED'
+                    WHERE username = %s AND stripe_subscription_id IS NOT NULL AND stripe_subscription_id != 'CANCELLED'
                 ''', (username,))
             else:
                 cursor.execute('''
                     UPDATE users 
-                    SET subscription_cancelled = ?,
-                        stripe_subscription_id = NULL
-                    WHERE username = ? AND (subscription_cancelled IS NULL OR subscription_cancelled = 0)
-                ''', (True, username))
+                    SET stripe_subscription_id = 'CANCELLED'
+                    WHERE username = ? AND stripe_subscription_id IS NOT NULL AND stripe_subscription_id != 'CANCELLED'
+                ''', (username,))
             
             rows_affected = cursor.rowcount
             conn.commit()
@@ -422,15 +386,10 @@ class Database:
                 
                 return True, f"Subscription cancelled successfully. Premium access continues {days_remaining}"
             else:
-                return False, "Subscription is already cancelled or user not found"
+                return False, "Subscription is already cancelled"
                 
         except Exception as e:
             st.write(f"Debug: Error cancelling subscription for {username}: {e}")
-            # Try to close any open connections
-            try:
-                conn.close()
-            except:
-                pass
             return False, f"Database error: {str(e)}"
     
     def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
