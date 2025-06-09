@@ -23,178 +23,209 @@ class EmailHandler:
                 st.write("Debug: Mailjet not configured, simulating email...")
                 return self.simulate_email(to_email, reset_token, username, "password_reset")
             
-            # Create reset URL - point to dedicated reset page
             reset_url = f"{self.domain}/C_🔄_Reset_Password?reset_token={reset_token}"
             
-            # HTML email template
             html_content = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
                 <title>Password Reset - Kaspa Analytics</title>
-                <style>
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        line-height: 1.6; 
-                        color: #333; 
-                        margin: 0;
-                        padding: 20px;
-                        background-color: #f4f4f4;
-                    }}
-                    .container {{ 
-                        max-width: 600px; 
-                        margin: 0 auto; 
-                        background: white;
-                        border-radius: 10px;
-                        overflow: hidden;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    }}
-                    .header {{ 
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                        color: white; 
-                        padding: 30px; 
-                        text-align: center; 
-                    }}
-                    .content {{ 
-                        padding: 30px; 
-                    }}
-                    .button {{ 
-                        display: inline-block; 
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white; 
-                        padding: 15px 30px; 
-                        text-decoration: none; 
-                        border-radius: 8px; 
-                        margin: 20px 0;
-                        font-weight: bold;
-                    }}
-                    .success-box {{
-                        background: #d4edda;
-                        border: 1px solid #c3e6cb;
-                        color: #155724;
-                        padding: 20px;
-                        margin: 20px 0;
-                        border-radius: 8px;
-                        border-left: 4px solid #28a745;
-                    }}
-                    .info-box {{
-                        background: #e9ecef;
-                        border: 1px solid #ced4da;
-                        padding: 20px;
-                        margin: 20px 0;
-                        border-radius: 8px;
-                    }}
-                    .footer {{ 
-                        background: #f8f9fa;
-                        text-align: center; 
-                        padding: 30px; 
-                        color: #666; 
-                        font-size: 14px; 
-                    }}
-                </style>
             </head>
             <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🎉 Subscription Renewed!</h1>
-                        <h2>Kaspa Analytics Premium</h2>
-                        <p style="font-size: 18px; margin: 0;">Your premium access continues seamlessly</p>
-                    </div>
-                    <div class="content">
-                        <p>Hello <strong>{username}</strong>,</p>
-                        
-                        <div class="success-box">
-                            <h3>✅ Your {plan_type} subscription has been automatically renewed!</h3>
-                            <p><strong>🗓️ Your premium access is now extended until: {new_expiry_date}</strong></p>
-                        </div>
-                        
-                        <p>Great news! We've successfully processed your subscription renewal. You can continue enjoying all premium features without any interruption.</p>
-                        
-                        <div class="info-box">
-                            <h3>📊 Your Premium Features Continue:</h3>
-                            <ul>
-                                <li><strong>🤖 AI-Powered Insights</strong> - Advanced market predictions</li>
-                                <li><strong>🐋 Whale Tracking</strong> - Monitor large transactions</li>
-                                <li><strong>🔔 Custom Alerts</strong> - Real-time notifications</li>
-                                <li><strong>📈 Advanced Charts</strong> - Professional trading tools</li>
-                                <li><strong>📊 Data Export</strong> - Download your analytics</li>
-                                <li><strong>💎 Priority Support</strong> - Get help when needed</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="{self.domain}" class="button">🚀 Continue Using Premium</a>
-                        </div>
-                        
-                        <h3>💳 Billing Information:</h3>
-                        <ul>
-                            <li><strong>Plan:</strong> {plan_type}</li>
-                            <li><strong>Status:</strong> Active & Auto-Renewing</li>
-                            <li><strong>Next Renewal:</strong> {new_expiry_date}</li>
-                            <li><strong>Billing:</strong> Automatic</li>
-                        </ul>
-                        
-                        <hr style="margin: 30px 0;">
-                        
-                        <h3>🔧 Need to Make Changes?</h3>
-                        <p>You can manage your subscription, update payment methods, or cancel anytime from your account dashboard.</p>
-                        
-                        <div style="text-align: center; margin: 20px 0;">
-                            <a href="{self.domain}/A_👤_Account" class="button" style="background: #6c757d;">⚙️ Manage Subscription</a>
-                        </div>
-                        
-                        <p>Thank you for being a valued Kaspa Analytics Premium member!</p>
-                        
-                        <p>Best regards,<br>
-                        <strong>The Kaspa Analytics Team</strong></p>
-                    </div>
-                    <div class="footer">
-                        <p><strong>© 2025 Kaspa Analytics</strong></p>
-                        <p>Advanced Cryptocurrency Analytics Platform</p>
-                        <p style="margin-top: 16px; opacity: 0.7;">You received this email because your subscription was automatically renewed.</p>
-                    </div>
-                </div>
+                <h1>Password Reset Request</h1>
+                <p>Hello {username},</p>
+                <p>Click the link below to reset your password:</p>
+                <a href="{reset_url}">Reset My Password</a>
+                <p>This link will expire in 1 hour.</p>
             </body>
             </html>
             """
             
-            # Text version
+            text_content = f"""
+            Hello {username},
+            
+            Click this link to reset your password: {reset_url}
+            
+            This link will expire in 1 hour.
+            
+            © 2025 Kaspa Analytics
+            """
+            
+            return self._send_email(to_email, username, "Reset Your Kaspa Analytics Password", html_content, text_content)
+            
+        except Exception as e:
+            st.write(f"Debug: Error sending password reset email: {e}")
+            return self.simulate_email(to_email, reset_token, username, "password_reset")
+    
+    def send_welcome_email(self, to_email, username):
+        """Send welcome email to new users"""
+        try:
+            if not self.mailjet:
+                st.write("Debug: Mailjet not configured, simulating welcome email...")
+                return self.simulate_email(to_email, None, username, "welcome")
+            
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Welcome to Kaspa Analytics</title>
+            </head>
+            <body>
+                <h1>Welcome to Kaspa Analytics!</h1>
+                <p>Hello {username},</p>
+                <p>Welcome to Kaspa Analytics! We're excited to have you join our community.</p>
+                <p><a href="{self.domain}">Start Exploring Analytics</a></p>
+            </body>
+            </html>
+            """
+            
+            text_content = f"""
+            Welcome to Kaspa Analytics!
+            
+            Hello {username},
+            
+            Welcome to Kaspa Analytics! We're excited to have you join our community.
+            
+            Start exploring: {self.domain}
+            
+            © 2025 Kaspa Analytics
+            """
+            
+            return self._send_email(to_email, username, "Welcome to Kaspa Analytics!", html_content, text_content)
+            
+        except Exception as e:
+            st.write(f"Debug: Error sending welcome email: {e}")
+            return self.simulate_email(to_email, None, username, "welcome")
+    
+    def send_cancellation_email(self, to_email, username):
+        """Send subscription cancellation confirmation email"""
+        try:
+            if not self.mailjet:
+                st.write("Debug: Mailjet not configured, simulating cancellation email...")
+                return self.simulate_email(to_email, None, username, "cancellation")
+            
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Subscription Cancelled - Kaspa Analytics</title>
+            </head>
+            <body>
+                <h1>Subscription Cancelled</h1>
+                <p>Hello {username},</p>
+                <p>We've successfully processed your premium subscription cancellation request.</p>
+                <p>You'll keep premium access until your current billing period ends.</p>
+                <p><a href="{self.domain}">Continue Using Free Features</a></p>
+            </body>
+            </html>
+            """
+            
+            text_content = f"""
+            Subscription Cancelled - Kaspa Analytics
+            
+            Hello {username},
+            
+            We've successfully processed your premium subscription cancellation request.
+            You'll keep premium access until your current billing period ends.
+            
+            Continue using: {self.domain}
+            
+            © 2025 Kaspa Analytics
+            """
+            
+            return self._send_email(to_email, username, "Subscription Cancelled - Kaspa Analytics", html_content, text_content)
+            
+        except Exception as e:
+            st.write(f"Debug: Error sending cancellation email: {e}")
+            return self.simulate_email(to_email, None, username, "cancellation")
+    
+    def send_premium_subscription_email(self, to_email, username, plan_type="Premium"):
+        """Send premium subscription confirmation email"""
+        try:
+            if not self.mailjet:
+                st.write("Debug: Mailjet not configured, simulating premium subscription email...")
+                return self.simulate_email(to_email, None, username, "premium_subscription")
+            
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Welcome to Premium - Kaspa Analytics</title>
+            </head>
+            <body>
+                <h1>Welcome to Premium!</h1>
+                <p>Hello {username},</p>
+                <p>Congratulations! Your {plan_type} subscription has been successfully activated.</p>
+                <p>All premium features are now available to you.</p>
+                <p><a href="{self.domain}">Explore Premium Analytics</a></p>
+            </body>
+            </html>
+            """
+            
+            text_content = f"""
+            Welcome to Premium - Kaspa Analytics!
+            
+            Hello {username},
+            
+            Congratulations! Your {plan_type} subscription has been successfully activated.
+            All premium features are now available to you.
+            
+            Start exploring: {self.domain}
+            
+            © 2025 Kaspa Analytics
+            """
+            
+            return self._send_email(to_email, username, "Welcome to Premium - Kaspa Analytics!", html_content, text_content)
+            
+        except Exception as e:
+            st.write(f"Debug: Error sending premium subscription email: {e}")
+            return self.simulate_email(to_email, None, username, "premium_subscription")
+
+    def send_renewal_notification_email(self, to_email, username, plan_type, new_expiry_date):
+        """Send automatic renewal notification email"""
+        try:
+            if not self.mailjet:
+                st.write("Debug: Mailjet not configured, simulating renewal notification email...")
+                return self.simulate_email(to_email, None, username, "renewal_notification")
+            
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Subscription Renewed - Kaspa Analytics</title>
+            </head>
+            <body>
+                <h1>Subscription Renewed!</h1>
+                <p>Hello {username},</p>
+                <p>Great news! Your {plan_type} subscription has been automatically renewed.</p>
+                <p>Your premium access is now extended until: {new_expiry_date}</p>
+                <p>You can continue enjoying all premium features without any interruption.</p>
+                <p><a href="{self.domain}">Continue Using Premium</a></p>
+                <p><a href="{self.domain}/A_👤_Account">Manage Subscription</a></p>
+            </body>
+            </html>
+            """
+            
             text_content = f"""
             Subscription Renewed - Kaspa Analytics!
             
             Hello {username},
             
             Great news! Your {plan_type} subscription has been automatically renewed.
-            
             Your premium access is now extended until: {new_expiry_date}
-            
-            Your Premium Features Continue:
-            • AI-Powered Insights - Advanced market predictions
-            • Whale Tracking - Monitor large transactions  
-            • Custom Alerts - Real-time notifications
-            • Advanced Charts - Professional trading tools
-            • Data Export - Download your analytics
-            • Priority Support - Get help when needed
-            
-            Billing Information:
-            • Plan: {plan_type}
-            • Status: Active & Auto-Renewing
-            • Next Renewal: {new_expiry_date}
-            • Billing: Automatic
             
             Continue using premium: {self.domain}
             Manage subscription: {self.domain}/A_👤_Account
             
-            Thank you for being a valued Premium member!
-            
-            Best regards,
-            The Kaspa Analytics Team
-            
             © 2025 Kaspa Analytics
             """
             
-            return self._send_email(to_email, username, "🎉 Subscription Renewed - Kaspa Analytics", html_content, text_content)
+            return self._send_email(to_email, username, "Subscription Renewed - Kaspa Analytics", html_content, text_content)
             
         except Exception as e:
             st.write(f"Debug: Error sending renewal notification email: {e}")
@@ -203,7 +234,6 @@ class EmailHandler:
     def _send_email(self, to_email, username, subject, html_content, text_content):
         """Helper method to send email via Mailjet"""
         try:
-            # Prepare email data for Mailjet
             data = {
                 'Messages': [
                     {
@@ -224,7 +254,6 @@ class EmailHandler:
                 ]
             }
             
-            # Send email via Mailjet
             result = self.mailjet.send.create(data=data)
             
             if result.status_code == 200:
@@ -248,724 +277,54 @@ class EmailHandler:
             📧 **Password Reset Email Simulated**
             
             **To:** {to_email}  
-            **Subject:** 🔑 Reset Your Kaspa Analytics Password
+            **Subject:** Reset Your Kaspa Analytics Password
             
             Hello {username}, we received a request to reset your password.
             **Reset Link:** {reset_url}
             """)
-            st.markdown(f"**[🔄 CLICK HERE TO RESET PASSWORD]({reset_url})**")
             
         elif email_type == "welcome":
             st.info(f"""
             📧 **Welcome Email Simulated**
             
             **To:** {to_email}  
-            **Subject:** 🎉 Welcome to Kaspa Analytics!
+            **Subject:** Welcome to Kaspa Analytics!
             
             Hello {username}, welcome to Kaspa Analytics! 
             Start exploring our features and consider upgrading to premium.
             """)
-            st.markdown(f"**[🔥 Start Exploring Analytics]({self.domain})**")
             
         elif email_type == "premium_subscription":
             st.success(f"""
             📧 **Premium Subscription Email Simulated**
             
             **To:** {to_email}  
-            **Subject:** 👑 Welcome to Premium - Kaspa Analytics!
+            **Subject:** Welcome to Premium - Kaspa Analytics!
             
             Hello {username}, congratulations! Your premium subscription is now active.
             All premium features are now available to you.
             """)
-            st.markdown(f"**[🔬 Explore Premium Analytics]({self.domain}/8_👑_Premium_Analytics)**")
             
         elif email_type == "cancellation":
             st.info(f"""
             📧 **Cancellation Email Simulated**
             
             **To:** {to_email}  
-            **Subject:** 📋 Subscription Cancelled - Kaspa Analytics
+            **Subject:** Subscription Cancelled - Kaspa Analytics
             
             Hello {username}, your premium subscription has been cancelled.
             You'll keep access until your billing period ends.
             """)
-            st.markdown(f"**[🔙 Continue Using Free Features]({self.domain})**")
         
         elif email_type == "renewal_notification":
             st.success(f"""
             📧 **Renewal Notification Email Simulated**
             
             **To:** {to_email}  
-            **Subject:** 🎉 Subscription Renewed - Kaspa Analytics
+            **Subject:** Subscription Renewed - Kaspa Analytics
             
             Hello {username}, great news! Your subscription has been automatically renewed.
             Your premium access continues without interruption.
             """)
-            st.markdown(f"**[🚀 Continue Using Premium]({self.domain})**")
         
-        return True linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white; 
-                        padding: 15px 30px; 
-                        text-decoration: none; 
-                        border-radius: 8px; 
-                        margin: 20px 0;
-                        font-weight: bold;
-                    }}
-                    .footer {{ 
-                        background: #f8f9fa;
-                        text-align: center; 
-                        padding: 20px; 
-                        color: #666; 
-                        font-size: 14px; 
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🔑 Kaspa Analytics</h1>
-                        <h2>Password Reset Request</h2>
-                    </div>
-                    <div class="content">
-                        <p>Hello <strong>{username}</strong>,</p>
-                        
-                        <p>We received a request to reset your password for your Kaspa Analytics account.</p>
-                        
-                        <p>Click the button below to reset your password:</p>
-                        
-                        <div style="text-align: center;">
-                            <a href="{reset_url}" class="button">🔄 Reset My Password</a>
-                        </div>
-                        
-                        <p>Or copy and paste this link into your browser:</p>
-                        <p style="background: #f0f0f0; padding: 10px; border-radius: 5px; word-break: break-all; font-family: monospace;">
-                            {reset_url}
-                        </p>
-                        
-                        <p><strong>⏰ This link will expire in 1 hour for security reasons.</strong></p>
-                        
-                        <p>If you didn't request this password reset, please ignore this email.</p>
-                        
-                        <hr style="margin: 30px 0;">
-                        
-                        <p>Need help? Contact support@kaspaanalytics.com</p>
-                    </div>
-                    <div class="footer">
-                        <p>© 2025 Kaspa Analytics. All rights reserved.</p>
-                        <p>This is an automated message, please do not reply to this email.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
-            
-            # Text version
-            text_content = f"""
-            Kaspa Analytics - Password Reset
-            
-            Hello {username},
-            
-            We received a request to reset your password for your Kaspa Analytics account.
-            
-            To reset your password, visit this link:
-            {reset_url}
-            
-            This link will expire in 1 hour for security reasons.
-            
-            If you didn't request this password reset, please ignore this email.
-            
-            Need help? Contact support@kaspaanalytics.com
-            
-            © 2025 Kaspa Analytics
-            """
-            
-            return self._send_email(to_email, username, "🔑 Reset Your Kaspa Analytics Password", html_content, text_content)
-            
-        except Exception as e:
-            st.write(f"Debug: Error sending password reset email: {e}")
-            return self.simulate_email(to_email, reset_token, username, "password_reset")
-    
-    def send_welcome_email(self, to_email, username):
-        """Send welcome email to new users"""
-        try:
-            if not self.mailjet:
-                st.write("Debug: Mailjet not configured, simulating welcome email...")
-                return self.simulate_email(to_email, None, username, "welcome")
-            
-            # HTML welcome email template
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Welcome to Kaspa Analytics</title>
-                <style>
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        line-height: 1.6; 
-                        color: #333; 
-                        margin: 0;
-                        padding: 20px;
-                        background-color: #f4f4f4;
-                    }}
-                    .container {{ 
-                        max-width: 600px; 
-                        margin: 0 auto; 
-                        background: white;
-                        border-radius: 10px;
-                        overflow: hidden;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    }}
-                    .header {{ 
-                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
-                        color: white; 
-                        padding: 40px 30px; 
-                        text-align: center; 
-                    }}
-                    .content {{ 
-                        padding: 40px 30px; 
-                    }}
-                    .button {{ 
-                        display: inline-block; 
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white; 
-                        padding: 15px 30px; 
-                        text-decoration: none; 
-                        border-radius: 8px; 
-                        margin: 20px 0;
-                        font-weight: bold;
-                    }}
-                    .feature-box {{
-                        background: #f8f9fa;
-                        border-left: 4px solid #28a745;
-                        padding: 20px;
-                        margin: 20px 0;
-                        border-radius: 5px;
-                    }}
-                    .footer {{ 
-                        background: #f8f9fa;
-                        text-align: center; 
-                        padding: 30px; 
-                        color: #666; 
-                        font-size: 14px; 
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🎉 Welcome to Kaspa Analytics!</h1>
-                        <p>Your gateway to advanced Kaspa blockchain insights</p>
-                    </div>
-                    <div class="content">
-                        <p>Hello <strong>{username}</strong>,</p>
-                        
-                        <p>Welcome to Kaspa Analytics! We're excited to have you join our community of crypto enthusiasts and analysts.</p>
-                        
-                        <div class="feature-box">
-                            <h3>🚀 What you can do now:</h3>
-                            <ul>
-                                <li><strong>⛏️ Mining Analytics</strong> - Track network hashrate and difficulty</li>
-                                <li><strong>💰 Market Data</strong> - Real-time price, volume, and market cap</li>
-                                <li><strong>📱 Social Insights</strong> - Community sentiment and trends</li>
-                                <li><strong>📊 Interactive Charts</strong> - Beautiful data visualizations</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="{self.domain}" class="button">🔥 Start Exploring Analytics</a>
-                        </div>
-                        
-                        <div class="feature-box">
-                            <h3>👑 Want More? Upgrade to Premium!</h3>
-                            <ul>
-                                <li><strong>🤖 AI-Powered Insights</strong> - Machine learning predictions</li>
-                                <li><strong>🐋 Whale Tracking</strong> - Monitor large transactions</li>
-                                <li><strong>🔔 Custom Alerts</strong> - Get notified of important events</li>
-                                <li><strong>📈 Advanced Charts</strong> - Professional trading tools</li>
-                                <li><strong>📧 Priority Support</strong> - Get help when you need it</li>
-                            </ul>
-                            <p><strong>Plans starting at just $9.99/month</strong></p>
-                        </div>
-                        
-                        <hr style="margin: 30px 0;">
-                        
-                        <h3>📚 Getting Started Tips:</h3>
-                        <ol>
-                            <li><strong>Explore the Dashboard</strong> - Check out our real-time metrics</li>
-                            <li><strong>Browse Mining Data</strong> - Understand network health</li>
-                            <li><strong>Monitor Price Trends</strong> - Track market movements</li>
-                            <li><strong>Consider Premium</strong> - Unlock advanced features</li>
-                        </ol>
-                        
-                        <p>If you have any questions, our support team is here to help at <strong>support@kaspaanalytics.com</strong></p>
-                        
-                        <p>Thank you for choosing Kaspa Analytics!</p>
-                        
-                        <p>Best regards,<br>
-                        <strong>The Kaspa Analytics Team</strong></p>
-                    </div>
-                    <div class="footer">
-                        <p><strong>© 2025 Kaspa Analytics</strong></p>
-                        <p>Advanced Cryptocurrency Analytics Platform</p>
-                        <p style="margin-top: 16px; opacity: 0.7;">You received this email because you created an account with us.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
-            
-            # Text version
-            text_content = f"""
-            Welcome to Kaspa Analytics!
-            
-            Hello {username},
-            
-            Welcome to Kaspa Analytics! We're excited to have you join our community.
-            
-            What you can do now:
-            • Mining Analytics - Track network hashrate and difficulty
-            • Market Data - Real-time price, volume, and market cap  
-            • Social Insights - Community sentiment and trends
-            • Interactive Charts - Beautiful data visualizations
-            
-            Start exploring: {self.domain}
-            
-            Want more? Upgrade to Premium for:
-            • AI-Powered Insights
-            • Whale Tracking
-            • Custom Alerts
-            • Advanced Charts
-            • Priority Support
-            
-            Plans starting at just $9.99/month
-            
-            Questions? Contact us at support@kaspaanalytics.com
-            
-            Best regards,
-            The Kaspa Analytics Team
-            
-            © 2025 Kaspa Analytics
-            """
-            
-            return self._send_email(to_email, username, "🎉 Welcome to Kaspa Analytics!", html_content, text_content)
-            
-        except Exception as e:
-            st.write(f"Debug: Error sending welcome email: {e}")
-            return self.simulate_email(to_email, None, username, "welcome")
-    
-    def send_cancellation_email(self, to_email, username):
-        """Send subscription cancellation confirmation email"""
-        try:
-            if not self.mailjet:
-                st.write("Debug: Mailjet not configured, simulating cancellation email...")
-                return self.simulate_email(to_email, None, username, "cancellation")
-            
-            # HTML cancellation email template
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Subscription Cancelled - Kaspa Analytics</title>
-                <style>
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        line-height: 1.6; 
-                        color: #333; 
-                        margin: 0;
-                        padding: 20px;
-                        background-color: #f4f4f4;
-                    }}
-                    .container {{ 
-                        max-width: 600px; 
-                        margin: 0 auto; 
-                        background: white;
-                        border-radius: 10px;
-                        overflow: hidden;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    }}
-                    .header {{ 
-                        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
-                        color: white; 
-                        padding: 30px; 
-                        text-align: center; 
-                    }}
-                    .content {{ 
-                        padding: 40px 30px; 
-                    }}
-                    .button {{ 
-                        display: inline-block; 
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white; 
-                        padding: 15px 30px; 
-                        text-decoration: none; 
-                        border-radius: 8px; 
-                        margin: 20px 0;
-                        font-weight: bold;
-                    }}
-                    .info-box {{
-                        background: #e9ecef;
-                        border: 1px solid #ced4da;
-                        padding: 20px;
-                        margin: 20px 0;
-                        border-radius: 8px;
-                    }}
-                    .highlight-box {{
-                        background: #fff3cd;
-                        border: 1px solid #ffeaa7;
-                        color: #856404;
-                        padding: 20px;
-                        margin: 20px 0;
-                        border-radius: 8px;
-                    }}
-                    .footer {{ 
-                        background: #f8f9fa;
-                        text-align: center; 
-                        padding: 20px; 
-                        color: #666; 
-                        font-size: 14px; 
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>📋 Subscription Cancelled</h1>
-                        <p>Kaspa Analytics Premium</p>
-                    </div>
-                    <div class="content">
-                        <p>Hello <strong>{username}</strong>,</p>
-                        
-                        <p>We've successfully processed your premium subscription cancellation request.</p>
-                        
-                        <div class="info-box">
-                            <h3>📅 What happens now:</h3>
-                            <ul>
-                                <li><strong>✅ Immediate:</strong> No future charges will be made</li>
-                                <li><strong>📊 Current Period:</strong> You'll keep premium access until your current billing period ends</li>
-                                <li><strong>🔄 After Expiry:</strong> Your account will automatically switch to free tier</li>
-                                <li><strong>💾 Data Saved:</strong> All your account data and preferences are preserved</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="highlight-box">
-                            <h3>🎯 You'll still have access to:</h3>
-                            <ul>
-                                <li><strong>⛏️ Mining Analytics</strong> - Network hashrate and difficulty tracking</li>
-                                <li><strong>💰 Market Data</strong> - Real-time price, volume, and market cap</li>
-                                <li><strong>📱 Social Insights</strong> - Community sentiment and trends</li>
-                                <li><strong>📊 Basic Charts</strong> - Essential data visualizations</li>
-                            </ul>
-                        </div>
-                        
-                        <h3>💔 We're sorry to see you go!</h3>
-                        <p>We'd love to understand how we can improve. If you have a moment, please let us know why you cancelled:</p>
-                        
-                        <ul>
-                            <li>📧 Email us at <strong>feedback@kaspaanalytics.com</strong></li>
-                            <li>💬 Or reply to this email with your thoughts</li>
-                        </ul>
-                        
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="{self.domain}" class="button">🔙 Continue Using Free Features</a>
-                        </div>
-                        
-                        <h3>🔄 Want to reactivate later?</h3>
-                        <p>You can upgrade to premium again anytime from your account dashboard. Your preferences and settings will be waiting for you!</p>
-                        
-                        <hr style="margin: 30px 0;">
-                        
-                        <p>Thank you for being part of the Kaspa Analytics community. We hope to see you back soon!</p>
-                        
-                        <p>Best regards,<br>
-                        <strong>The Kaspa Analytics Team</strong></p>
-                    </div>
-                    <div class="footer">
-                        <p><strong>© 2025 Kaspa Analytics</strong></p>
-                        <p>Advanced Cryptocurrency Analytics Platform</p>
-                        <p style="margin-top: 16px; opacity: 0.7;">You received this email to confirm your subscription cancellation.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
-            
-            # Text version
-            text_content = f"""
-            Subscription Cancelled - Kaspa Analytics
-            
-            Hello {username},
-            
-            We've successfully processed your premium subscription cancellation request.
-            
-            What happens now:
-            • No future charges will be made
-            • You'll keep premium access until your current billing period ends
-            • After expiry, your account switches to free tier
-            • All your data and preferences are preserved
-            
-            You'll still have access to:
-            • Mining Analytics
-            • Market Data  
-            • Social Insights
-            • Basic Charts
-            
-            We're sorry to see you go! Please share feedback at feedback@kaspaanalytics.com
-            
-            Want to reactivate later? You can upgrade anytime from your dashboard.
-            
-            Continue using free features: {self.domain}
-            
-            Thank you for being part of our community!
-            
-            Best regards,
-            The Kaspa Analytics Team
-            
-            © 2025 Kaspa Analytics
-            """
-            
-            return self._send_email(to_email, username, "📋 Subscription Cancelled - Kaspa Analytics", html_content, text_content)
-            
-        except Exception as e:
-            st.write(f"Debug: Error sending cancellation email: {e}")
-            return self.simulate_email(to_email, None, username, "cancellation")
-    
-    def send_premium_subscription_email(self, to_email, username, plan_type="Premium"):
-        """Send premium subscription confirmation email"""
-        try:
-            if not self.mailjet:
-                st.write("Debug: Mailjet not configured, simulating premium subscription email...")
-                return self.simulate_email(to_email, None, username, "premium_subscription")
-            
-            # HTML premium subscription email template
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Welcome to Premium - Kaspa Analytics</title>
-                <style>
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        line-height: 1.6; 
-                        color: #333; 
-                        margin: 0;
-                        padding: 20px;
-                        background-color: #f4f4f4;
-                    }}
-                    .container {{ 
-                        max-width: 600px; 
-                        margin: 0 auto; 
-                        background: white;
-                        border-radius: 10px;
-                        overflow: hidden;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    }}
-                    .header {{ 
-                        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); 
-                        color: #333; 
-                        padding: 40px 30px; 
-                        text-align: center; 
-                    }}
-                    .content {{ 
-                        padding: 40px 30px; 
-                    }}
-                    .button {{ 
-                        display: inline-block; 
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white; 
-                        padding: 15px 30px; 
-                        text-decoration: none; 
-                        border-radius: 8px; 
-                        margin: 20px 0;
-                        font-weight: bold;
-                    }}
-                    .feature-box {{
-                        background: #fff3cd;
-                        border: 1px solid #ffeaa7;
-                        padding: 20px;
-                        margin: 20px 0;
-                        border-radius: 8px;
-                        border-left: 4px solid #ffd700;
-                    }}
-                    .premium-features {{
-                        background: #e7f3ff;
-                        border: 1px solid #b3d9ff;
-                        padding: 20px;
-                        margin: 20px 0;
-                        border-radius: 8px;
-                    }}
-                    .footer {{ 
-                        background: #f8f9fa;
-                        text-align: center; 
-                        padding: 30px; 
-                        color: #666; 
-                        font-size: 14px; 
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>👑 Welcome to Premium!</h1>
-                        <h2>Kaspa Analytics Premium Activated</h2>
-                        <p style="font-size: 18px; margin: 0;">Thank you for upgrading, {username}!</p>
-                    </div>
-                    <div class="content">
-                        <p>Hello <strong>{username}</strong>,</p>
-                        
-                        <p>🎉 <strong>Congratulations!</strong> Your {plan_type} subscription has been successfully activated.</p>
-                        
-                        <div class="feature-box">
-                            <h3>🚀 Your Premium Features Are Now Active:</h3>
-                            <ul>
-                                <li><strong>🤖 AI-Powered Insights</strong> - Machine learning market predictions</li>
-                                <li><strong>🐋 Whale Tracking</strong> - Monitor large holder transactions</li>
-                                <li><strong>🔔 Custom Alerts</strong> - Get notified of important events</li>
-                                <li><strong>📈 Advanced Charts</strong> - Professional trading tools</li>
-                                <li><strong>📊 Data Export</strong> - Download data in CSV/PDF format</li>
-                                <li><strong>💎 Priority Support</strong> - Get help when you need it most</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="{self.domain}/8_👑_Premium_Analytics" class="button">🔬 Explore Premium Analytics</a>
-                        </div>
-                        
-                        <div class="premium-features">
-                            <h3>🎯 Getting Started with Premium:</h3>
-                            <ol>
-                                <li><strong>🔬 Premium Analytics</strong> - Check out AI-powered market insights</li>
-                                <li><strong>📊 Advanced Metrics</strong> - Explore professional-grade indicators</li>
-                                <li><strong>🔔 Set Up Alerts</strong> - Configure custom notifications</li>
-                                <li><strong>🐋 Monitor Whales</strong> - Track large holder activity</li>
-                                <li><strong>📈 Advanced Charts</strong> - Use professional trading tools</li>
-                            </ol>
-                        </div>
-                        
-                        <h3>💡 Pro Tips for Premium Users:</h3>
-                        <ul>
-                            <li><strong>🎯 Combine Metrics:</strong> Use multiple indicators for better insights</li>
-                            <li><strong>⏰ Set Smart Alerts:</strong> Get notified of significant price movements</li>
-                            <li><strong>📊 Export Data:</strong> Download charts for your own analysis</li>
-                            <li><strong>🔬 Check AI Insights:</strong> Review daily market predictions</li>
-                        </ul>
-                        
-                        <hr style="margin: 30px 0;">
-                        
-                        <h3>📋 Subscription Details:</h3>
-                        <ul>
-                            <li><strong>Plan:</strong> {plan_type}</li>
-                            <li><strong>Status:</strong> Active</li>
-                            <li><strong>Billing:</strong> Automatic renewal</li>
-                            <li><strong>Support:</strong> Priority access included</li>
-                        </ul>
-                        
-                        <p><strong>Need help getting started?</strong> Our premium support team is here to assist you at <strong>premium-support@kaspaanalytics.com</strong></p>
-                        
-                        <p>Thank you for choosing Kaspa Analytics Premium!</p>
-                        
-                        <p>Best regards,<br>
-                        <strong>The Kaspa Analytics Team</strong></p>
-                    </div>
-                    <div class="footer">
-                        <p><strong>© 2025 Kaspa Analytics</strong></p>
-                        <p>Advanced Cryptocurrency Analytics Platform</p>
-                        <p style="margin-top: 16px; opacity: 0.7;">You received this email because you subscribed to our premium service.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
-            
-            # Text version
-            text_content = f"""
-            Welcome to Premium - Kaspa Analytics!
-            
-            Hello {username},
-            
-            Congratulations! Your {plan_type} subscription has been successfully activated.
-            
-            Your Premium Features Are Now Active:
-            • AI-Powered Insights - Machine learning market predictions
-            • Whale Tracking - Monitor large holder transactions  
-            • Custom Alerts - Get notified of important events
-            • Advanced Charts - Professional trading tools
-            • Data Export - Download data in CSV/PDF format
-            • Priority Support - Get help when you need it most
-            
-            Getting Started with Premium:
-            1. Premium Analytics - Check out AI-powered market insights
-            2. Advanced Metrics - Explore professional-grade indicators
-            3. Set Up Alerts - Configure custom notifications
-            4. Monitor Whales - Track large holder activity
-            5. Advanced Charts - Use professional trading tools
-            
-            Subscription Details:
-            • Plan: {plan_type}
-            • Status: Active
-            • Billing: Automatic renewal
-            • Support: Priority access included
-            
-            Start exploring: {self.domain}/8_👑_Premium_Analytics
-            
-            Need help? Contact premium-support@kaspaanalytics.com
-            
-            Thank you for choosing Kaspa Analytics Premium!
-            
-            Best regards,
-            The Kaspa Analytics Team
-            
-            © 2025 Kaspa Analytics
-            """
-            
-            return self._send_email(to_email, username, "👑 Welcome to Premium - Kaspa Analytics!", html_content, text_content)
-            
-        except Exception as e:
-            st.write(f"Debug: Error sending premium subscription email: {e}")
-            return self.simulate_email(to_email, None, username, "premium_subscription")
-
-    def send_renewal_notification_email(self, to_email, username, plan_type, new_expiry_date):
-        """Send automatic renewal notification email"""
-        try:
-            if not self.mailjet:
-                st.write("Debug: Mailjet not configured, simulating renewal notification email...")
-                return self.simulate_email(to_email, None, username, "renewal_notification")
-            
-            # HTML renewal notification email template
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Subscription Renewed - Kaspa Analytics</title>
-                <style>
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        line-height: 1.6; 
-                        color: #333; 
-                        margin: 0;
-                        padding: 20px;
-                        background-color: #f4f4f4;
-                    }}
-                    .container {{ 
-                        max-width: 600px; 
-                        margin: 0 auto; 
-                        background: white;
-                        border-radius: 10px;
-                        overflow: hidden;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    }}
-                    .header {{ 
-                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
-                        color: white; 
-                        padding: 40px 30px; 
-                        text-align: center; 
-                    }}
-                    .content {{ 
-                        padding: 40px 30px; 
-                    }}
-                    .button {{ 
-                        display: inline-block; 
-                        background:
+        return True
