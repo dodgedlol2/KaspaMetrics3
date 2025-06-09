@@ -347,33 +347,52 @@ class Database:
             if not user['is_premium']:
                 return False, "User is not currently premium"
             
-            # Instead of immediately removing premium, we'll mark it to expire naturally
-            # In a real system, you'd integrate with Stripe to cancel the subscription
-            # For now, we'll just remove premium immediately for demo purposes
+            # Add a 'cancelled' flag to track cancelled subscriptions
+            # First, add the cancelled column if it doesn't exist
+            try:
+                if self.use_postgres:
+                    cursor.execute('ALTER TABLE users ADD COLUMN subscription_cancelled BOOLEAN DEFAULT FALSE')
+                else:
+                    cursor.execute('ALTER TABLE users ADD COLUMN subscription_cancelled BOOLEAN DEFAULT FALSE')
+                conn.commit()
+            except:
+                pass  # Column already exists
             
+            # Mark subscription as cancelled but keep premium until expiry
             if self.use_postgres:
                 cursor.execute('''
                     UPDATE users 
-                    SET is_premium = FALSE, 
-                        premium_expires_at = NULL,
+                    SET subscription_cancelled = TRUE,
                         stripe_subscription_id = NULL
                     WHERE username = %s
                 ''', (username,))
             else:
                 cursor.execute('''
                     UPDATE users 
-                    SET is_premium = ?, 
-                        premium_expires_at = NULL,
+                    SET subscription_cancelled = ?,
                         stripe_subscription_id = NULL
                     WHERE username = ?
-                ''', (False, username))
+                ''', (True, username))
             
             rows_affected = cursor.rowcount
             conn.commit()
             conn.close()
             
             if rows_affected > 0:
-                return True, "Subscription cancelled successfully"
+                # Calculate days remaining
+                expires_at = user.get('premium_expires_at')
+                days_remaining = "until expiry"
+                if expires_at:
+                    try:
+                        if isinstance(expires_at, str):
+                            expiry_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                        else:
+                            expiry_date = expires_at
+                        days_remaining = f"until {expiry_date.strftime('%Y-%m-%d')}"
+                    except:
+                        pass
+                
+                return True, f"Subscription cancelled successfully. Premium access continues {days_remaining}"
             else:
                 return False, "Failed to cancel subscription"
                 
