@@ -28,6 +28,23 @@ def add_navigation():
             margin-top: 80px;
         }
         
+        /* FIX COLLAPSE/EXPAND BUTTON POSITION */
+        [data-testid="stSidebarCollapseButton"] {
+            margin-top: 80px;
+        }
+        
+        /* Alternative selectors for collapse button */
+        div[data-testid="stSidebarCollapseButton"] {
+            position: relative;
+            top: 80px;
+        }
+        
+        /* Try button element directly */
+        [data-testid="stSidebarCollapseButton"] button {
+            position: relative;
+            top: 80px;
+        }
+        
         .kaspa-logo {
             display: flex;
             align-items: center;
