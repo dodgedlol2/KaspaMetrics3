@@ -138,12 +138,15 @@ if st.session_state.get('username') and st.checkbox("🧪 Enable Testing Mode"):
                         subscription = stripe.Subscription.retrieve(user_test['stripe_subscription_id'])
                         st.success(f"✅ Stripe Status: **{subscription.status}**")
                         st.write(f"• Plan: {subscription.plan.interval}")
-                        st.write(f"• Current period end: {subscription.current_period_end}")
                         
-                        # Convert timestamp to readable date
-                        from datetime import datetime
-                        end_date = datetime.fromtimestamp(subscription.current_period_end)
-                        st.write(f"• Next billing: {end_date.strftime('%Y-%m-%d %H:%M')}")
+                        # Try to access current_period_end safely
+                        try:
+                            st.write(f"• Current period end: {subscription.current_period_end}")
+                            # Convert timestamp to readable date
+                            end_date = datetime.fromtimestamp(subscription.current_period_end)
+                            st.write(f"• Next billing: {end_date.strftime('%Y-%m-%d %H:%M')}")
+                        except:
+                            st.write("• Current period end: Not available")
                         
                     except Exception as e:
                         st.error(f"❌ Stripe Error: {e}")
@@ -173,22 +176,20 @@ if st.session_state.get('username') and st.checkbox("🧪 Enable Testing Mode"):
                 from datetime import datetime, timedelta
                 test_expiry = datetime.now() - timedelta(minutes=1)
                 
-                conn = db.get_connection()
-                cursor = conn.cursor()
+                # Update in database using the update_premium_status method
+                success = db.update_premium_status(
+                    st.session_state['username'], 
+                    True,  # Keep premium true
+                    test_expiry.isoformat(),  # But set past expiry
+                    user_test['stripe_subscription_id']  # Keep subscription ID
+                )
                 
-                if db.use_postgres:
-                    cursor.execute('UPDATE users SET premium_expires_at = %s WHERE username = %s', 
-                                 (test_expiry, st.session_state['username']))
+                if success:
+                    st.success(f"✅ Set premium to expire at: {test_expiry.strftime('%Y-%m-%d %H:%M:%S')}")
+                    st.info("Now click 'Test Renewal Check' to see if it renews!")
+                    st.rerun()
                 else:
-                    cursor.execute('UPDATE users SET premium_expires_at = ? WHERE username = ?', 
-                                 (test_expiry, st.session_state['username']))
-                
-                conn.commit()
-                conn.close()
-                
-                st.success("✅ Set premium to expire 1 minute ago")
-                st.info("Now click 'Test Renewal Check' to see if it renews!")
-                st.rerun()
+                    st.error("❌ Failed to update expiry")
     
     st.markdown("---")
 
