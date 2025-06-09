@@ -35,20 +35,24 @@ def add_navigation():
             z-index: 1000000 !important;
         }
         
-        /* FIX EXPAND BUTTON WHEN SIDEBAR IS COLLAPSED - try all possible selectors */
-        [data-testid="collapsedControl"],
-        button[kind="headerNoPadding"],
-        .st-emotion-cache-bzr000,
-        [data-testid="stBaseButton-headerNoPadding"] {
+        /* FIX EXPAND BUTTON WHEN SIDEBAR IS COLLAPSED - CORRECT SELECTOR! */
+        div[data-testid="stSidebarCollapsedControl"] {
             top: 90px !important;
             z-index: 999999 !important;
             position: fixed !important;
         }
         
-        /* Target any button element that might be positioned on far left */
-        button[style*="position: fixed"][style*="left"] {
-            top: 90px !important;
-            z-index: 999999 !important;
+        /* Also target the button inside */
+        div[data-testid="stSidebarCollapsedControl"] button[data-testid="stBaseButton-headerNoPadding"] {
+            position: relative !important;
+            top: 0px !important;
+        }
+        
+        /* Make sure it's clickable */
+        div[data-testid="stSidebarCollapsedControl"],
+        div[data-testid="stSidebarCollapsedControl"] button {
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
         
         /* Make sure all buttons work */
