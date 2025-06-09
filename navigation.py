@@ -1,50 +1,32 @@
 import streamlit as st
-import os
-
-def load_global_css():
-    """Load global CSS file if it exists"""
-    try:
-        css_file_path = os.path.join('.streamlit', 'style.css')
-        if os.path.exists(css_file_path):
-            with open(css_file_path) as f:
-                st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-        else:
-            # Fallback CSS if file doesn't exist
-            st.markdown("""
-                <style>
-                /* Hide native Streamlit page navigation */
-                .css-1q1n0ol[data-testid="stSidebarNav"] {
-                    display: none !important;
-                }
-                
-                div[data-testid="stSidebarNav"] {
-                    display: none !important;
-                }
-                
-                section[data-testid="stSidebar"] nav {
-                    display: none !important;
-                }
-                
-                /* Ensure our content remains visible */
-                section[data-testid="stSidebar"] > div {
-                    display: block !important;
-                }
-                </style>
-            """, unsafe_allow_html=True)
-    except Exception as e:
-        # If anything fails, use basic CSS
-        st.markdown("""
-            <style>
-            [data-testid="stSidebarNav"] { display: none !important; }
-            section[data-testid="stSidebar"] nav { display: none !important; }
-            </style>
-        """, unsafe_allow_html=True)
 
 def add_navigation():
     """Add organized navigation to sidebar (shared across all pages)"""
     
-    # Load global CSS first
-    load_global_css()
+    # More precise CSS to hide only native page navigation
+    st.markdown("""
+        <style>
+        /* Hide only the native Streamlit page list */
+        .css-1q1n0ol[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        
+        /* Alternative selectors for native page navigation */
+        div[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        
+        /* Keep sidebar visible but hide page selector */
+        section[data-testid="stSidebar"] nav {
+            display: none;
+        }
+        
+        /* Ensure our content remains visible */
+        section[data-testid="stSidebar"] > div {
+            display: block !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
     
     # Add home button at top
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
@@ -68,14 +50,14 @@ def add_navigation():
     
     st.sidebar.markdown("---")
     
-    # Mining Section (COLLAPSED by default)
-    with st.sidebar.expander("⛏️ Mining", expanded=False):
+    # Mining Section (REMOVED "📊 Analytics" header text/icon)
+    with st.sidebar.expander("⛏️ Mining", expanded=True):
         if st.button("📈 Hashrate", key="sidebar_hashrate", use_container_width=True):
             st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
         if st.button("⚙️ Difficulty", key="sidebar_difficulty", use_container_width=True):
             st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
     
-    # Spot Section (EXPANDED by default - main focus for new visitors)
+    # Spot Section
     with st.sidebar.expander("💰 Spot Market", expanded=True):
         if st.button("💵 Price", key="sidebar_price", use_container_width=True):
             st.switch_page("pages/3_💰_Spot_Price.py")
@@ -84,16 +66,16 @@ def add_navigation():
         if st.button("🏦 Market Cap", key="sidebar_marketcap", use_container_width=True):
             st.switch_page("pages/5_💰_Spot_Market_Cap.py")
     
-    # Social Section (COLLAPSED by default)
-    with st.sidebar.expander("📱 Social Data", expanded=False):
+    # Social Section
+    with st.sidebar.expander("📱 Social Data", expanded=True):
         if st.button("📈 Social Metrics", key="sidebar_social1", use_container_width=True):
             st.switch_page("pages/6_📱_Social_Metrics.py")
         if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section (COLLAPSED by default)
+    # Premium Analytics Section (MOVED Premium Features here + access control)
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
-        with st.sidebar.expander("👑 Premium Analytics", expanded=False):
+        with st.sidebar.expander("👑 Premium Analytics", expanded=True):
             if st.button("👑 Premium Features", key="sidebar_premium_features", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             if st.button("🔬 Premium Analytics", key="sidebar_premium1", use_container_width=True):
