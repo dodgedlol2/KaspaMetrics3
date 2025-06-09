@@ -14,6 +14,7 @@ sys.path.append(parent_dir)
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
+from email_handler import EmailHandler
 from navigation import add_navigation
 
 # Add shared navigation to sidebar
@@ -25,9 +26,10 @@ def init_handlers():
     db = Database()
     auth_handler = AuthHandler(db)
     payment_handler = PaymentHandler()
-    return db, auth_handler, payment_handler
+    email_handler = EmailHandler()
+    return db, auth_handler, payment_handler, email_handler
 
-db, auth_handler, payment_handler = init_handlers()
+db, auth_handler, payment_handler, email_handler = init_handlers()
 
 # Check if user is logged in
 if not st.session_state.get('authentication_status'):
@@ -100,7 +102,7 @@ st.markdown("---")
 st.subheader("💳 Subscription Management")
 
 if st.session_state.get('is_premium'):
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     
     with col1:
         st.success("✅ **Current Plan: Premium**")
@@ -109,18 +111,61 @@ if st.session_state.get('is_premium'):
         st.write("• Custom alerts")
         st.write("• Data export")
         st.write("• Priority support")
+        
+        # Subscription status
+        st.info("💡 **Subscription Details**")
+        st.write("Your premium subscription is currently active.")
+        st.write("All premium features are available.")
     
     with col2:
-        st.info("🔄 **Manage Subscription**")
-        st.write("To cancel or modify your subscription, please contact our support team.")
-        if st.button("📧 Contact Support", use_container_width=True):
-            st.info("📧 Send an email to: support@kaspaanalytics.com")
-    
-    with col3:
         st.warning("⚠️ **Cancel Subscription**")
-        st.write("Your subscription will remain active until the expiration date.")
-        if st.button("❌ Request Cancellation", use_container_width=True):
-            st.error("Please contact support to cancel your subscription.")
+        st.write("Your subscription will be cancelled immediately.")
+        st.write("You'll lose access to premium features.")
+        
+        # Cancellation confirmation
+        if st.button("❌ Cancel My Subscription", use_container_width=True, type="secondary"):
+            st.session_state['show_cancel_confirmation'] = True
+        
+        # Show confirmation dialog
+        if st.session_state.get('show_cancel_confirmation'):
+            st.error("🚨 **Are you sure you want to cancel?**")
+            st.write("This action cannot be undone. You will:")
+            st.write("• ❌ Lose access to all premium features")
+            st.write("• ❌ Lose AI-powered insights")
+            st.write("• ❌ Lose custom alerts")
+            st.write("• ✅ Keep your account and free features")
+            
+            col_cancel, col_keep = st.columns(2)
+            with col_cancel:
+                if st.button("🗑️ Yes, Cancel Subscription", use_container_width=True, type="primary"):
+                    # Process cancellation
+                    success, message = db.cancel_premium_subscription(username)
+                    
+                    if success:
+                        # Update session state
+                        st.session_state['is_premium'] = False
+                        st.session_state['premium_expires_at'] = None
+                        st.session_state.pop('show_cancel_confirmation', None)
+                        
+                        # Send cancellation email
+                        try:
+                            email_handler.send_cancellation_email(user['email'], user['name'])
+                            st.success("✅ Subscription cancelled successfully!")
+                            st.info("📧 A confirmation email has been sent to you.")
+                        except Exception as e:
+                            st.success("✅ Subscription cancelled successfully!")
+                            st.warning("⚠️ Could not send confirmation email, but cancellation was processed.")
+                        
+                        st.balloons()
+                        st.rerun()
+                    else:
+                        st.error(f"❌ Failed to cancel subscription: {message}")
+            
+            with col_keep:
+                if st.button("💙 Keep My Subscription", use_container_width=True):
+                    st.session_state.pop('show_cancel_confirmation', None)
+                    st.success("😊 Great choice! Your subscription remains active.")
+                    st.rerun()
 
 else:
     # Upgrade options for free users
