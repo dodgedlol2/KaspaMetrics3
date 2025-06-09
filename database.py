@@ -417,7 +417,7 @@ class Database:
                     except Exception as parse_error:
                         st.write(f"Debug: Error parsing expires_at: {parse_error}")
                         # Fallback to manual calculation
-                        from datetime import datetime, timedelta
+                        from datetime import timedelta
                         plan = st.session_state.get('selected_plan', {'interval': 'month'})
                         if plan['interval'] == 'year':
                             new_expiry = datetime.now() + timedelta(days=365)
