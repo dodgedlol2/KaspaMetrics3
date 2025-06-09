@@ -393,16 +393,16 @@ class Database:
             return False, f"Database error: {str(e)}"
     
     def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
-        """✅ FIXED: Update user's premium status with proper time calculation for resubscriptions"""
+        """Update user's premium status with proper time calculation for resubscriptions"""
         try:
-            # ✅ Get current user data to check for resubscription scenario
+            # Get current user data to check for resubscription scenario
             current_user = self.get_user(username)
             
-            # ✅ Handle resubscription after cancellation
+            # Handle resubscription after cancellation
             if current_user and current_user.get('stripe_subscription_id') == 'CANCELLED' and is_premium:
                 st.write("Debug: Handling resubscription after cancellation...")
                 
-                # ✅ FIXED: Add new time to existing premium time instead of replacing
+                # Add new time to existing premium time instead of replacing
                 if expires_at:
                     try:
                         # Parse the new subscription period from payment handler
@@ -420,10 +420,10 @@ class Database:
                                 else:
                                     current_expiry_date = current_expiry
                                 
-                                # ✅ Calculate new period length from payment
+                                # Calculate new period length from payment
                                 payment_period_days = (new_period_end - datetime.now()).days
                                 
-                                # ✅ Add new period to existing expiry (not current time)
+                                # Add new period to existing expiry (not current time)
                                 final_expiry = current_expiry_date + timedelta(days=payment_period_days)
                                 final_expires_at = final_expiry.isoformat()
                                 
@@ -449,7 +449,7 @@ class Database:
                     st.write("Debug: No expires_at provided - this should not happen")
                     final_expires_at = None
             
-            # ✅ Handle new subscription (not a resubscription)
+            # Handle new subscription (not a resubscription)
             elif is_premium and expires_at:
                 final_expires_at = expires_at
             else:
@@ -517,11 +517,11 @@ class Database:
         except Exception as e:
             return False, "Error"
 
-    # ✅ NEW: AUTOMATIC SUBSCRIPTION RENEWAL SYSTEM
+    # AUTOMATIC SUBSCRIPTION RENEWAL SYSTEM
     
     def auto_check_all_renewals(self):
         """
-        ✅ Automatically check ALL users for renewals
+        Automatically check ALL users for renewals
         This runs automatically when the app starts
         """
         try:
@@ -580,7 +580,7 @@ class Database:
     
     def simple_renewal_check(self, username):
         """
-        ✅ Simple function to check if user should still have premium
+        Simple function to check if user should still have premium
         Returns: True (renewed), False (cancelled), None (no action needed)
         """
         try:
