@@ -483,6 +483,12 @@ class EmailHandler:
             © 2025 Kaspa Analytics
             """
             
+            return self._send_email(to_email, username, "📋 Subscription Cancelled - Kaspa Analytics", html_content, text_content)
+            
+        except Exception as e:
+            st.write(f"Debug: Error sending cancellation email: {e}")
+            return self.simulate_email(to_email, None, username, "cancellation")
+    
     def send_premium_subscription_email(self, to_email, username, plan_type="Premium"):
         """Send premium subscription confirmation email"""
         try:
