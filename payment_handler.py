@@ -98,7 +98,7 @@ class PaymentHandler:
                                 'success': True,
                                 'expires_at': expires_at.isoformat(),
                                 'subscription_id': subscription_id,
-                                'amount': session.amount_total
+                                'amount': session.amount_total if hasattr(session, 'amount_total') else 0
                             }
                         else:
                             # No current_period_end, fall back to manual calculation
@@ -124,7 +124,7 @@ class PaymentHandler:
                             'success': True,
                             'expires_at': expires_at.isoformat(),
                             'subscription_id': subscription_id,
-                            'amount': session.amount_total
+                            'amount': session.amount_total if hasattr(session, 'amount_total') else 0
                         }
                 else:
                     # No subscription ID, use manual calculation
@@ -144,7 +144,7 @@ class PaymentHandler:
                         'success': True,
                         'expires_at': expires_at.isoformat(),
                         'subscription_id': None,
-                        'amount': session.amount_total
+                        'amount': session.amount_total if hasattr(session, 'amount_total') else 0
                     }
             else:
                 st.write(f"Debug: Payment not completed. Status: {session.payment_status}")
