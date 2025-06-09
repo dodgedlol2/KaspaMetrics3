@@ -10,9 +10,15 @@ import base64
 class AuthHandler:
     def __init__(self, database):
         self.db = database
-        self.cookie_controller = CookieController()
+        self.cookie_controller = None  # Initialize as None
         self.cookie_name = "kaspa_auth_token"
         self.cookie_expiry_days = 30
+    
+    def _get_cookie_controller(self):
+        """Lazy initialization of cookie controller to avoid cached widget warning"""
+        if self.cookie_controller is None:
+            self.cookie_controller = CookieController()
+        return self.cookie_controller
     
     def authenticate(self, username, password):
         """Authenticate user with username and password"""
@@ -88,7 +94,7 @@ class AuthHandler:
             token = self.create_auth_token(username)
             if token:
                 # Set cookie to expire in 30 days
-                self.cookie_controller.set(
+                self._get_cookie_controller().set(
                     self.cookie_name, 
                     token,
                     max_age=self.cookie_expiry_days * 24 * 60 * 60  # 30 days in seconds
@@ -101,7 +107,7 @@ class AuthHandler:
     def check_persistent_login(self):
         """Check if user has valid persistent login cookie"""
         try:
-            token = self.cookie_controller.get(self.cookie_name)
+            token = self._get_cookie_controller().get(self.cookie_name)
             if token:
                 username = self.verify_auth_token(token)
                 if username:
@@ -128,7 +134,7 @@ class AuthHandler:
         """Logout user and clear persistent login"""
         try:
             # Clear cookie
-            self.cookie_controller.remove(self.cookie_name)
+            self._get_cookie_controller().remove(self.cookie_name)
             
             # Clear session state
             for key in ['authentication_status', 'username', 'name', 'is_premium', 'premium_expires_at']:
