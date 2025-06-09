@@ -46,8 +46,56 @@ if not reset_token:
             reset_token = value
             break
 
+# Check if we just completed a successful password reset
+if st.session_state.get('password_reset_success'):
+    st.title("🎉 Password Reset Complete!")
+    st.success("**Your password has been successfully updated!**")
+    st.balloons()
+    
+    st.markdown("### ✅ What's Next?")
+    st.write("Your password has been successfully updated. You can now login with your new credentials.")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button("🔑 Go to Login", use_container_width=True, type="primary"):
+            st.session_state.pop('password_reset_success', None)  # Clear the flag
+            st.switch_page("pages/0_🔑_Login.py")
+    with col2:
+        if st.button("🏠 Go to Home", use_container_width=True):
+            st.session_state.pop('password_reset_success', None)  # Clear the flag
+            st.switch_page("Home.py")
+    with col3:
+        if st.button("📊 Browse Analytics", use_container_width=True):
+            st.session_state.pop('password_reset_success', None)  # Clear the flag
+            st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
+    
+    # Security information
+    st.markdown("---")
+    st.subheader("🔒 Security Information")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.info("""
+        **🛡️ Password Updated Successfully**
+        
+        • Your new password is now active
+        • The reset link has been invalidated
+        • Your premium status is preserved
+        • You can now login normally
+        """)
+    
+    with col2:
+        st.success("""
+        **✅ Next Steps**
+        
+        • Use your new password to login
+        • Update your password manager
+        • Keep your credentials secure
+        • Contact support if you have issues
+        """)
+
 # Main page content
-if reset_token:
+elif reset_token:
     st.title("🔄 Reset Your Password")
     st.write("You've clicked a password reset link from your email. Please set your new password below.")
     
@@ -92,14 +140,9 @@ if reset_token:
                     if new_password == confirm_password:
                         if len(new_password) >= 6:
                             if db.reset_password(reset_token, new_password):
-                                st.success("🎉 **Password Reset Successful!**")
-                                st.balloons()
-                                
-                                # Clear URL parameters
-                                st.query_params.clear()
-                                
-                                # Set a session state flag to show success outside the form
+                                # Set success flag and clear URL parameters
                                 st.session_state['password_reset_success'] = True
+                                st.query_params.clear()
                                 st.rerun()
                                 
                             else:
@@ -110,26 +153,6 @@ if reset_token:
                         st.error("⚠️ Passwords do not match. Please try again.")
                 else:
                     st.error("⚠️ Please fill in both password fields")
-        
-        # Show success message and navigation OUTSIDE the form
-        if st.session_state.get('password_reset_success'):
-            st.markdown("---")
-            st.subheader("✅ What's Next?")
-            st.write("Your password has been successfully updated. You can now login with your new credentials.")
-            
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                if st.button("🔑 Go to Login", use_container_width=True, type="primary"):
-                    st.session_state.pop('password_reset_success', None)  # Clear the flag
-                    st.switch_page("pages/0_🔑_Login.py")
-            with col2:
-                if st.button("🏠 Go to Home", use_container_width=True):
-                    st.session_state.pop('password_reset_success', None)  # Clear the flag
-                    st.switch_page("Home.py")
-            with col3:
-                if st.button("📊 Browse Analytics", use_container_width=True):
-                    st.session_state.pop('password_reset_success', None)  # Clear the flag
-                    st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
         
         # Security information
         st.markdown("---")
