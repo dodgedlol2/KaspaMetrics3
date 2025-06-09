@@ -10,7 +10,7 @@ import base64
 class AuthHandler:
     def __init__(self, database):
         self.db = database
-        self.cookie_controller = None  # Initialize as None
+        self.cookie_controller = None  # Initialize as None - lazy loading
         self.cookie_name = "kaspa_auth_token"
         self.cookie_expiry_days = 30
     
