@@ -107,16 +107,24 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
                     st.session_state['is_premium'] = True
                     st.session_state['premium_expires_at'] = expires_at
                     
-                    # ✅ Send premium subscription email ONLY ONCE
+                    # ✅ Send premium subscription email ONLY ONCE with correct plan type
                     email_sent_key = f"email_sent_{session_id}"
                     if not st.session_state.get(email_sent_key, False):
                         try:
                             user = db.get_user(username_from_stripe)
                             if user:
-                                # Determine plan type based on selected plan in session
-                                plan = st.session_state.get('selected_plan', {'interval': 'month'})
-                                plan_type = "Annual Premium" if plan['interval'] == 'year' else "Monthly Premium"
+                                # ✅ FIXED: Determine plan type based on amount from payment result
+                                amount = payment_result.get('amount', 0)
+                                if amount >= 9900:  # $99 or more = Annual
+                                    plan_type = "Annual Premium"
+                                elif amount >= 999:  # $9.99 or more = Monthly
+                                    plan_type = "Monthly Premium"
+                                else:
+                                    # Fallback to session state
+                                    plan = st.session_state.get('selected_plan', {'interval': 'month'})
+                                    plan_type = "Annual Premium" if plan['interval'] == 'year' else "Monthly Premium"
                                 
+                                st.write(f"Debug: Sending {plan_type} email (amount: ${amount/100:.2f})")
                                 email_handler.send_premium_subscription_email(user['email'], user['name'], plan_type)
                                 st.session_state[email_sent_key] = True
                                 st.info("📧 Premium welcome email sent to your inbox!")
