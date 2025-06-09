@@ -28,6 +28,19 @@ def _add_custom_header():
             background: rgba(15, 23, 42, 0.95) !important;
             display: flex !important;
         }
+        
+        /* SIDEBAR FIX: Proven solution from YouTube comment */
+        /* The whole sidebar */
+        .css-1lcbmhc.e1fqkh3o0 {
+            margin-top: 3.8rem !important;
+        }
+        
+        /* The display arrow (collapse/expand button) */
+        .css-sg054d.e1fqkh3o3 {
+            margin-top: 5rem !important;
+        }
+        
+        /* Additional modern Streamlit fallbacks */
         [data-testid="stSidebar"] { margin-top: 80px !important; }
         [data-testid="collapsedControl"] { top: 90px !important; z-index: 1000000 !important; }
     </style>
@@ -205,7 +218,20 @@ def _add_custom_header():
             display: none !important;
         }
         
-        /* ENHANCED: Better sidebar positioning with no flicker */
+        /* ENHANCED: Better sidebar positioning with proven solution */
+        /* The whole sidebar - PROVEN YOUTUBE SOLUTION */
+        .css-1lcbmhc.e1fqkh3o0 {
+            margin-top: 3.8rem !important;
+            transition: none !important;
+        }
+        
+        /* The display arrow (collapse/expand button) - PROVEN YOUTUBE SOLUTION */
+        .css-sg054d.e1fqkh3o3 {
+            margin-top: 5rem !important;
+            transition: none !important;
+        }
+        
+        /* Modern Streamlit fallbacks */
         [data-testid="stSidebar"] {
             margin-top: 80px !important;
             transition: none !important;
@@ -217,18 +243,7 @@ def _add_custom_header():
             transition: none !important;
         }
         
-        /* Force immediate positioning without animation */
-        .css-1lcbmhc.e1fqkh3o0 {
-            margin-top: 3.8rem !important;
-            transition: none !important;
-        }
-        
-        .css-sg054d.e1fqkh3o3 {
-            margin-top: 5rem !important;
-            transition: none !important;
-        }
-        
-        /* Additional modern Streamlit sidebar selectors */
+        /* Additional modern selectors */
         .st-emotion-cache-1cypcdb {
             margin-top: 80px !important;
             transition: none !important;
