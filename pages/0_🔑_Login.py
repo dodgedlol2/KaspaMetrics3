@@ -32,11 +32,12 @@ db, auth_handler, payment_handler, email_handler = init_handlers()
 
 # Check for password reset token in URL
 query_params = st.query_params
-reset_token = query_params.get("reset_token")
+reset_token = query_params.get("reset_token", [None])[0] if isinstance(query_params.get("reset_token"), list) else query_params.get("reset_token")
 
 if reset_token:
     st.markdown("---")
     st.subheader("🔄 Reset Your Password")
+    st.info("You've been redirected from a password reset email. Please set your new password below.")
     
     # Verify token
     user = db.verify_reset_token(reset_token)
@@ -70,6 +71,9 @@ if reset_token:
     else:
         st.error("❌ Invalid or expired reset token")
         st.info("Please request a new password reset if needed.")
+        if st.button("🔄 Request New Reset", use_container_width=True):
+            st.query_params.clear()
+            st.rerun()
     
     st.markdown("---")
 
