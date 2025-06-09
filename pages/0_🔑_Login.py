@@ -44,17 +44,10 @@ if hasattr(query_params, 'get'):
 # Also try accessing it directly from the URL
 if not reset_token:
     try:
-        import urllib.parse as urlparse
-        url = st._get_option("browser.serverAddress", "")
-        if "reset_token=" in str(st.query_params):
-            # Extract token from query params string
-            params_str = str(st.query_params)
-            if "reset_token" in params_str:
-                # Try to find the token in the params
-                for key, value in st.query_params.items():
-                    if key == "reset_token":
-                        reset_token = value
-                        break
+        for key, value in st.query_params.items():
+            if key == "reset_token":
+                reset_token = value
+                break
     except:
         pass
 
@@ -240,6 +233,15 @@ with col2:
                         st.success("🎉 Account created successfully!")
                         st.info("👆 Please sign in using the form on the left")
                         st.balloons()
+                        
+                        # Send welcome email to new user
+                        try:
+                            email_handler.send_welcome_email(new_email, new_name)
+                            st.success("📧 Welcome email sent! Check your inbox.")
+                        except Exception as e:
+                            st.warning("⚠️ Account created but welcome email could not be sent.")
+                            st.write(f"Debug: Email error - {e}")
+                        
                     else:
                         st.error("❌ Username or email already exists")
                 else:
