@@ -1,13 +1,90 @@
 import streamlit as st
 
 def add_navigation():
-    """Add organized navigation to sidebar ONLY - NO HEADER FOR NOW"""
+    """Add organized navigation to sidebar AND header (shared across all pages)"""
     
-    # NO HEADER CSS AT ALL - Just sidebar
-    # Let's see if this brings back the sidebar
+    # Add header CSS back - but test in Chrome first
+    st.markdown("""
+    <style>
+        /* Simple header that should work in Chrome */
+        .kaspa-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100vw;
+            height: 70px;
+            z-index: 999999;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        /* WORKING SIDEBAR FIX - test in Chrome */
+        [data-testid="stSidebar"] {
+            margin-top: 80px;
+        }
+        
+        .kaspa-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        
+        .kaspa-user-info {
+            color: #f1f5f9;
+            font-size: 14px;
+        }
+        
+        .kaspa-user-status {
+            color: #00d4ff;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        
+        .kaspa-user-status.premium {
+            color: #fbbf24;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    # Add header HTML back
+    if st.session_state.get('authentication_status'):
+        user_name = st.session_state.get('name', 'User')
+        is_premium = st.session_state.get('is_premium', False)
+        status_text = "👑 PREMIUM" if is_premium else "FREE TIER"
+        status_class = "premium" if is_premium else ""
+        
+        header_html = f"""
+        <div class="kaspa-header">
+            <div class="kaspa-logo">
+                <span>⚡ Kaspa Analytics</span>
+            </div>
+            <div class="kaspa-user-info">
+                <div>Welcome, {user_name}</div>
+                <div class="kaspa-user-status {status_class}">{status_text}</div>
+            </div>
+        </div>
+        """
+    else:
+        header_html = """
+        <div class="kaspa-header">
+            <div class="kaspa-logo">
+                <span>⚡ Kaspa Analytics</span>
+            </div>
+            <div class="kaspa-user-info">
+                <div>Please log in</div>
+                <div class="kaspa-user-status">GUEST</div>
+            </div>
+        </div>
+        """
     
-    # NO HEADER HTML AT ALL FOR NOW
-    # st.markdown(header_html, unsafe_allow_html=True)
+    st.markdown(header_html, unsafe_allow_html=True)
 
     # YOUR ORIGINAL SIDEBAR CODE - EXACTLY AS IT WAS
     # More precise CSS to hide only native page navigation
