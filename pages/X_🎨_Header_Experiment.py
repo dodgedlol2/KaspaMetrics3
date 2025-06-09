@@ -50,19 +50,24 @@ st.markdown("""
         margin-top: -80px;
     }
     
-    /* Fix sidebar positioning - move it down below the header */
-    [data-testid="collapsedControl"] {
-        top: 80px !important;
+    /* Better sidebar positioning solution from YouTube comment */
+    /* The whole sidebar */
+    .css-1lcbmhc.e1fqkh3o0 {
+        margin-top: 3.8rem;
     }
     
-    /* Move the entire sidebar down to avoid header overlap */
+    /* The display arrow */
+    .css-sg054d.e1fqkh3o3 {
+        margin-top: 5rem;
+    }
+    
+    /* Fallback for newer Streamlit versions */
     [data-testid="stSidebar"] {
-        margin-top: 70px !important;
+        margin-top: 80px !important;
     }
     
-    /* Ensure sidebar content starts below header */
-    [data-testid="stSidebar"] > div {
-        padding-top: 1rem !important;
+    [data-testid="collapsedControl"] {
+        top: 90px !important;
     }
     
     /* Custom Real Website Header */
@@ -461,8 +466,8 @@ st.markdown('<div class="main-content">', unsafe_allow_html=True)
 # Welcome Section
 welcome_html = """
 <div class="welcome-section">
-    <h1 class="welcome-title">Header Design Experiment</h1>
-    <p class="welcome-subtitle">Testing real website-style header with Kaspa Analytics branding and user account integration</p>
+    <h1 class="welcome-title">Clean Header Design</h1>
+    <p class="welcome-subtitle">Simple fixed header with logo and user status - no buttons</p>
 </div>
 """
 st.markdown(welcome_html, unsafe_allow_html=True)
@@ -495,45 +500,37 @@ stats_html = """
 st.markdown(stats_html, unsafe_allow_html=True)
 
 # Test Section
-st.markdown("## 🧪 Header Design Test")
+st.markdown("## 🧪 Clean Header Test")
 
 st.info("""
-**✅ Fixed Issues:**
-- Removed Account and Logout buttons from header
-- Fixed header flickering on page load
-- Moved sidebar down below header (collapse button now visible)
-- Removed all debugging messages and hidden buttons
-- Clean, simple header with just logo and user status
+**✅ Completed Fixes:**
+- ❌ All buttons removed from header (Account, Logout)
+- ❌ All hidden buttons removed from page
+- ❌ All debug messages removed
+- ✅ Applied YouTube comment sidebar fix
+- ✅ Clean header with only logo and user status
+- ✅ Sidebar collapse button now visible
 """)
 
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### ✅ Working Features")
+    st.markdown("### ✅ Current Features")
     st.write("• Fixed position header")
-    st.write("• Logo with gradient effect")
+    st.write("• Kaspa Analytics logo")
     st.write("• User status display")
     st.write("• Premium status indicator")
-    st.write("• Sidebar positioned correctly")
-    st.write("• No button functionality issues")
+    st.write("• Proper sidebar positioning")
+    st.write("• No button conflicts")
 
 with col2:
     st.markdown("### 🎨 Design Elements")
-    st.write("• Gradient backgrounds")
-    st.write("• Backdrop blur effects")
+    st.write("• Gradient background")
+    st.write("• Backdrop blur effect")
     st.write("• Professional typography")
     st.write("• Kaspa brand colors")
-    st.write("• Clean, minimal design")
-    st.write("• Proper z-index layering")
-
-with col3:
-    st.markdown("### 🔧 Technical Fixes")
-    st.write("• Fixed sidebar positioning")
-    st.write("• Removed button complexity")
-    st.write("• Eliminated debug messages")
-    st.write("• Clean HTML structure")
-    st.write("• No JavaScript conflicts")
-    st.write("• Stable header rendering")
+    st.write("• Clean, minimal layout")
+    st.write("• Stable rendering")
 
 # Action Buttons
 st.markdown("### 🚀 Navigation Test")
@@ -564,11 +561,12 @@ with col4:
 # Info Section
 st.markdown("---")
 st.success("""
-**🎯 Current Status:**
-- Clean header with logo and user info only
-- Sidebar properly positioned below header
-- No flickering or debug messages
+**🎯 Header Status:**
+- Clean, button-free header design
+- Properly positioned sidebar
+- No debug messages or hidden elements
 - Ready for further customization
+- Stable and professional appearance
 """)
 
 # Footer
