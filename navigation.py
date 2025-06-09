@@ -25,7 +25,7 @@ def add_navigation():
         
         /* WORKING SIDEBAR FIX */
         [data-testid="stSidebar"] {
-            margin-top: 80px;
+            margin-top: 70px;
         }
         
         /* FIX COLLAPSE BUTTON WHEN SIDEBAR IS OPEN */
