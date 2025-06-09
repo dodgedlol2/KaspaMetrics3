@@ -1,29 +1,12 @@
 import streamlit as st
 
 def add_navigation():
-    """Add organized navigation to sidebar AND custom header (shared across all pages)"""
+    """Add organized navigation to sidebar AND minimal header (shared across all pages)"""
     
-    # First add the header
-    _add_custom_header()
-    
-    # Then add the sidebar navigation (your original code)
-    _add_sidebar_navigation()
-
-def _add_custom_header():
-    """Add the custom website header"""
-    
-    # CSS for header and the WORKING sidebar fix
+    # MINIMAL header CSS - don't touch sidebar at all
     st.markdown("""
     <style>
-        /* Header positioning */
-        .stApp { margin-top: -80px !important; }
-        
-        /* WORKING SIDEBAR FIX - exactly what worked in console */
-        [data-testid="stSidebar"] {
-            margin-top: 80px !important;
-        }
-        
-        /* Custom header */
+        /* ONLY header positioning - NO sidebar changes */
         .real-website-header {
             position: fixed !important;
             top: 0 !important;
@@ -91,11 +74,6 @@ def _add_custom_header():
         .user-status.premium {
             color: #fbbf24 !important;
         }
-        
-        /* Main content positioning */
-        .main-content {
-            margin-top: 90px !important;
-        }
     </style>
     """, unsafe_allow_html=True)
     
@@ -154,13 +132,8 @@ def _add_custom_header():
         """
     
     st.markdown(header_html, unsafe_allow_html=True)
-    
-    # Add margin to main content
-    st.markdown('<div class="main-content">', unsafe_allow_html=True)
 
-def _add_sidebar_navigation():
-    """Add the sidebar navigation (your original code)"""
-    
+    # YOUR ORIGINAL SIDEBAR CODE - EXACTLY AS IT WAS
     # More precise CSS to hide only native page navigation
     st.markdown("""
         <style>
