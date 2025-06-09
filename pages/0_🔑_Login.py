@@ -30,13 +30,40 @@ def init_handlers():
 
 db, auth_handler, payment_handler, email_handler = init_handlers()
 
-# Check for password reset token in URL
+# Check for password reset token in URL - Multiple ways to get it
 query_params = st.query_params
-reset_token = query_params.get("reset_token", [None])[0] if isinstance(query_params.get("reset_token"), list) else query_params.get("reset_token")
+reset_token = None
+
+# Try different ways to get the reset token
+if hasattr(query_params, 'get'):
+    if isinstance(query_params.get("reset_token"), list):
+        reset_token = query_params.get("reset_token")[0] if query_params.get("reset_token") else None
+    else:
+        reset_token = query_params.get("reset_token")
+
+# Also try accessing it directly from the URL
+if not reset_token:
+    try:
+        import urllib.parse as urlparse
+        url = st._get_option("browser.serverAddress", "")
+        if "reset_token=" in str(st.query_params):
+            # Extract token from query params string
+            params_str = str(st.query_params)
+            if "reset_token" in params_str:
+                # Try to find the token in the params
+                for key, value in st.query_params.items():
+                    if key == "reset_token":
+                        reset_token = value
+                        break
+    except:
+        pass
+
+# Debug: Show what we found
+if reset_token:
+    st.write(f"Debug: Found reset token: {reset_token[:10]}...")
 
 if reset_token:
-    st.markdown("---")
-    st.subheader("🔄 Reset Your Password")
+    st.title("🔄 Reset Your Password")
     st.info("You've been redirected from a password reset email. Please set your new password below.")
     
     # Verify token
@@ -45,7 +72,8 @@ if reset_token:
         st.success(f"✅ Token verified for {user['username']}!")
         
         with st.form("reset_password_form"):
-            new_password = st.text_input("New Password", type="password", placeholder="Enter your new password")
+            st.write("**Set your new password:**")
+            new_password = st.text_input("New Password", type="password", placeholder="Enter your new password (min 6 characters)")
             confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm your new password")
             reset_submit = st.form_submit_button("🔄 Reset Password", use_container_width=True)
             
@@ -55,9 +83,9 @@ if reset_token:
                         if len(new_password) >= 6:
                             if db.reset_password(reset_token, new_password):
                                 st.success("🎉 Password reset successfully!")
-                                st.info("👆 You can now login with your new password")
+                                st.info("👆 You can now login with your new password using the form below")
                                 st.balloons()
-                                # Clear the URL parameter
+                                # Clear the reset token
                                 st.query_params.clear()
                                 st.rerun()
                             else:
@@ -68,14 +96,29 @@ if reset_token:
                         st.error("⚠️ Passwords do not match")
                 else:
                     st.error("⚠️ Please fill in both password fields")
+        
+        # Add option to go back if needed
+        if st.button("← Back to Home", key="back_to_home"):
+            st.query_params.clear()
+            st.switch_page("Home.py")
+            
     else:
         st.error("❌ Invalid or expired reset token")
-        st.info("Please request a new password reset if needed.")
-        if st.button("🔄 Request New Reset", use_container_width=True):
-            st.query_params.clear()
-            st.rerun()
+        st.info("The reset token may have expired (valid for 1 hour) or is invalid.")
+        st.write("Please request a new password reset if needed.")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔄 Request New Reset", use_container_width=True):
+                st.query_params.clear()
+                st.rerun()
+        with col2:
+            if st.button("🏠 Go Home", use_container_width=True):
+                st.query_params.clear()
+                st.switch_page("Home.py")
     
     st.markdown("---")
+    st.markdown("### 🔐 Or Login with Existing Credentials")
 
 # Check if already logged in
 if st.session_state.get('authentication_status'):
