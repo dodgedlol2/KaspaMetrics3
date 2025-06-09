@@ -28,23 +28,32 @@ def add_navigation():
             margin-top: 80px;
         }
         
-        /* FIX COLLAPSE BUTTON - Use exact class from your HTML */
+        /* FIX COLLAPSE BUTTON WHEN SIDEBAR IS OPEN */
         div[data-testid="stSidebarCollapseButton"].st-emotion-cache-lmskyu {
             position: relative !important;
             top: 0px !important;
             z-index: 1000000 !important;
         }
         
-        /* Make sure button functionality works */
-        div[data-testid="stSidebarCollapseButton"] button {
-            pointer-events: auto !important;
-            cursor: pointer !important;
+        /* FIX EXPAND BUTTON WHEN SIDEBAR IS COLLAPSED */
+        [data-testid="collapsedControl"] {
+            top: 90px !important;
+            z-index: 1000000 !important;
+            position: fixed !important;
         }
         
-        /* Alternative: try positioning the sidebar header container */
-        div[data-testid="stSidebarHeader"] {
-            position: relative !important;
-            top: 0px !important;
+        /* Alternative selector for collapsed button */
+        button[data-testid="collapsedControl"] {
+            top: 90px !important;
+            z-index: 1000000 !important;
+            position: fixed !important;
+        }
+        
+        /* Make sure all buttons work */
+        div[data-testid="stSidebarCollapseButton"] button,
+        button[data-testid="collapsedControl"] {
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
         
         .kaspa-logo {
