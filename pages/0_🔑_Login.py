@@ -35,6 +35,9 @@ if not st.session_state.get('authentication_status'):
     if auth_handler.check_persistent_login():
         st.success("🔐 **Welcome back!** Auto-logged in from saved session.")
         st.info("Redirecting to home page...")
+        # Small delay to show the message, then redirect
+        import time
+        time.sleep(1)
         st.switch_page("Home.py")
 
 # Check for password reset token in URL - Multiple ways to get it
