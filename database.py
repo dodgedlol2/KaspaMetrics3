@@ -402,20 +402,46 @@ class Database:
             if current_user and current_user.get('stripe_subscription_id') == 'CANCELLED' and is_premium:
                 st.write("Debug: Handling resubscription after cancellation...")
                 
-                # ✅ FIXED: Use expires_at from payment handler directly (already calculated correctly)
+                # ✅ FIXED: Add new time to existing premium time instead of replacing
                 if expires_at:
                     try:
-                        # Parse the expiration time from payment handler
+                        # Parse the new subscription period from payment handler
                         if isinstance(expires_at, str):
-                            new_expiry = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                            new_period_end = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
                         else:
-                            new_expiry = expires_at
+                            new_period_end = expires_at
                         
-                        # Use the payment handler provided expiration date directly
-                        final_expires_at = new_expiry.isoformat()
-                        st.write(f"Debug: New subscription expires at: {final_expires_at}")
+                        # Get current expiry date
+                        current_expiry = current_user.get('premium_expires_at')
+                        if current_expiry:
+                            try:
+                                if isinstance(current_expiry, str):
+                                    current_expiry_date = datetime.fromisoformat(current_expiry.replace('Z', '+00:00'))
+                                else:
+                                    current_expiry_date = current_expiry
+                                
+                                # ✅ Calculate new period length from payment
+                                payment_period_days = (new_period_end - datetime.now()).days
+                                
+                                # ✅ Add new period to existing expiry (not current time)
+                                final_expiry = current_expiry_date + timedelta(days=payment_period_days)
+                                final_expires_at = final_expiry.isoformat()
+                                
+                                st.write(f"Debug: Current expiry: {current_expiry_date.strftime('%Y-%m-%d')}")
+                                st.write(f"Debug: Adding {payment_period_days} days to existing expiry")
+                                st.write(f"Debug: New final expiry: {final_expiry.strftime('%Y-%m-%d')}")
+                                
+                            except Exception as date_error:
+                                st.write(f"Debug: Error parsing current expiry: {date_error}")
+                                # Fallback: use payment handler expiry directly
+                                final_expires_at = new_period_end.isoformat()
+                        else:
+                            # No current expiry, use payment handler expiry directly
+                            final_expires_at = new_period_end.isoformat()
+                            st.write("Debug: No current expiry found, using payment expiry directly")
+                        
                     except Exception as parse_error:
-                        st.write(f"Debug: Error parsing expires_at: {parse_error}")
+                        st.write(f"Debug: Error parsing payment expires_at: {parse_error}")
                         # This should rarely happen since payment_handler provides good dates
                         final_expires_at = expires_at
                 else:
