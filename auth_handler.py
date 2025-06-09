@@ -107,6 +107,10 @@ class AuthHandler:
     def check_persistent_login(self):
         """Check if user has valid persistent login cookie"""
         try:
+            # First check if we already processed the cookie in this session
+            if st.session_state.get('cookie_checked'):
+                return False
+            
             token = self._get_cookie_controller().get(self.cookie_name)
             if token:
                 username = self.verify_auth_token(token)
@@ -120,14 +124,19 @@ class AuthHandler:
                         st.session_state['name'] = user['name']
                         st.session_state['is_premium'] = user['is_premium']
                         st.session_state['premium_expires_at'] = user['premium_expires_at']
+                        st.session_state['cookie_checked'] = True
                         
                         # Refresh cookie expiry
                         self.set_persistent_login(username)
                         
                         return True
+            
+            # Mark as checked even if no valid cookie found
+            st.session_state['cookie_checked'] = True
             return False
         except Exception as e:
             st.write(f"Debug: Error checking persistent login: {e}")
+            st.session_state['cookie_checked'] = True
             return False
     
     def logout(self):
@@ -137,7 +146,7 @@ class AuthHandler:
             self._get_cookie_controller().remove(self.cookie_name)
             
             # Clear session state
-            for key in ['authentication_status', 'username', 'name', 'is_premium', 'premium_expires_at']:
+            for key in ['authentication_status', 'username', 'name', 'is_premium', 'premium_expires_at', 'cookie_checked']:
                 if key in st.session_state:
                     del st.session_state[key]
             
