@@ -35,6 +35,10 @@ db, auth_handler, payment_handler, email_handler = init_handlers()
 if not st.session_state.get('authentication_status'):
     auth_handler.check_persistent_login()
 
+# Clear any debug messages that might have been displayed
+if 'debug_messages' in st.session_state:
+    del st.session_state['debug_messages']
+
 # Add navigation sidebar
 add_navigation()
 
@@ -61,13 +65,31 @@ st.markdown("""
         margin-top: 5rem;
     }
     
-    /* Fallback for newer Streamlit versions */
+    /* Updated selectors for newer Streamlit versions */
     [data-testid="stSidebar"] {
         margin-top: 80px !important;
     }
     
     [data-testid="collapsedControl"] {
         top: 90px !important;
+        z-index: 1000000 !important;
+    }
+    
+    /* Additional modern Streamlit sidebar selectors */
+    .st-emotion-cache-1cypcdb {
+        margin-top: 80px !important;
+    }
+    
+    .st-emotion-cache-16txtl3 {
+        top: 90px !important;
+        z-index: 1000000 !important;
+    }
+    
+    /* Force sidebar collapse button visibility */
+    button[data-testid="collapsedControl"] {
+        top: 90px !important;
+        z-index: 1000000 !important;
+        position: fixed !important;
     }
     
     /* Custom Real Website Header */
