@@ -71,12 +71,93 @@ class EmailHandler:
             <head>
                 <meta charset="utf-8">
                 <title>Welcome to Kaspa Analytics</title>
+                <style>
+                    body {{ 
+                        font-family: Arial, sans-serif; 
+                        line-height: 1.6; 
+                        color: #333; 
+                        margin: 0;
+                        padding: 20px;
+                        background-color: #f4f4f4;
+                    }}
+                    .container {{ 
+                        max-width: 600px; 
+                        margin: 0 auto; 
+                        background: white;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    }}
+                    .header {{ 
+                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+                        color: white; 
+                        padding: 40px 30px; 
+                        text-align: center; 
+                    }}
+                    .content {{ 
+                        padding: 40px 30px; 
+                    }}
+                    .button {{ 
+                        display: inline-block; 
+                        background: #667eea;
+                        color: white; 
+                        padding: 15px 30px; 
+                        text-decoration: none; 
+                        border-radius: 8px; 
+                        margin: 20px 0;
+                        font-weight: bold;
+                    }}
+                    .feature-box {{
+                        background: #f8f9fa;
+                        border-left: 4px solid #28a745;
+                        padding: 20px;
+                        margin: 20px 0;
+                        border-radius: 5px;
+                    }}
+                    .footer {{ 
+                        background: #f8f9fa;
+                        text-align: center; 
+                        padding: 30px; 
+                        color: #666; 
+                        font-size: 14px; 
+                    }}
+                </style>
             </head>
             <body>
-                <h1>Welcome to Kaspa Analytics!</h1>
-                <p>Hello {username},</p>
-                <p>Welcome to Kaspa Analytics! We're excited to have you join our community.</p>
-                <p><a href="{self.domain}">Start Exploring Analytics</a></p>
+                <div class="container">
+                    <div class="header">
+                        <h1>🎉 Welcome to Kaspa Analytics!</h1>
+                        <p>Your gateway to advanced Kaspa blockchain insights</p>
+                    </div>
+                    <div class="content">
+                        <p>Hello <strong>{username}</strong>,</p>
+                        
+                        <p>Welcome to Kaspa Analytics! We're excited to have you join our community of crypto enthusiasts and analysts.</p>
+                        
+                        <div class="feature-box">
+                            <h3>🚀 What you can do now:</h3>
+                            <ul>
+                                <li><strong>⛏️ Mining Analytics</strong> - Track network hashrate and difficulty</li>
+                                <li><strong>💰 Market Data</strong> - Real-time price, volume, and market cap</li>
+                                <li><strong>📱 Social Insights</strong> - Community sentiment and trends</li>
+                                <li><strong>📊 Interactive Charts</strong> - Beautiful data visualizations</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="{self.domain}" class="button">🔥 Start Exploring Analytics</a>
+                        </div>
+                        
+                        <p>Thank you for choosing Kaspa Analytics!</p>
+                        
+                        <p>Best regards,<br>
+                        <strong>The Kaspa Analytics Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p><strong>© 2025 Kaspa Analytics</strong></p>
+                        <p>Advanced Cryptocurrency Analytics Platform</p>
+                    </div>
+                </div>
             </body>
             </html>
             """
@@ -155,13 +236,97 @@ class EmailHandler:
             <head>
                 <meta charset="utf-8">
                 <title>Welcome to Premium - Kaspa Analytics</title>
+                <style>
+                    body {{ 
+                        font-family: Arial, sans-serif; 
+                        line-height: 1.6; 
+                        color: #333; 
+                        margin: 0;
+                        padding: 20px;
+                        background-color: #f4f4f4;
+                    }}
+                    .container {{ 
+                        max-width: 600px; 
+                        margin: 0 auto; 
+                        background: white;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    }}
+                    .header {{ 
+                        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); 
+                        color: #333; 
+                        padding: 40px 30px; 
+                        text-align: center; 
+                    }}
+                    .content {{ 
+                        padding: 40px 30px; 
+                    }}
+                    .button {{ 
+                        display: inline-block; 
+                        background: #667eea;
+                        color: white; 
+                        padding: 15px 30px; 
+                        text-decoration: none; 
+                        border-radius: 8px; 
+                        margin: 20px 0;
+                        font-weight: bold;
+                    }}
+                    .feature-box {{
+                        background: #fff3cd;
+                        border: 1px solid #ffeaa7;
+                        padding: 20px;
+                        margin: 20px 0;
+                        border-radius: 8px;
+                        border-left: 4px solid #ffd700;
+                    }}
+                    .footer {{ 
+                        background: #f8f9fa;
+                        text-align: center; 
+                        padding: 30px; 
+                        color: #666; 
+                        font-size: 14px; 
+                    }}
+                </style>
             </head>
             <body>
-                <h1>Welcome to Premium!</h1>
-                <p>Hello {username},</p>
-                <p>Congratulations! Your {plan_type} subscription has been successfully activated.</p>
-                <p>All premium features are now available to you.</p>
-                <p><a href="{self.domain}">Explore Premium Analytics</a></p>
+                <div class="container">
+                    <div class="header">
+                        <h1>👑 Welcome to Premium!</h1>
+                        <h2>Kaspa Analytics Premium Activated</h2>
+                        <p style="font-size: 18px; margin: 0;">Thank you for upgrading, {username}!</p>
+                    </div>
+                    <div class="content">
+                        <p>Hello <strong>{username}</strong>,</p>
+                        
+                        <p>🎉 <strong>Congratulations!</strong> Your {plan_type} subscription has been successfully activated.</p>
+                        
+                        <div class="feature-box">
+                            <h3>🚀 Your Premium Features Are Now Active:</h3>
+                            <ul>
+                                <li><strong>🤖 AI-Powered Insights</strong> - Machine learning market predictions</li>
+                                <li><strong>🐋 Whale Tracking</strong> - Monitor large holder transactions</li>
+                                <li><strong>🔔 Custom Alerts</strong> - Get notified of important events</li>
+                                <li><strong>📈 Advanced Charts</strong> - Professional trading tools</li>
+                                <li><strong>📊 Data Export</strong> - Download data in CSV/PDF format</li>
+                                <li><strong>💎 Priority Support</strong> - Get help when you need it most</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="{self.domain}" class="button">🔬 Explore Premium Analytics</a>
+                        </div>
+                        
+                        <p>Thank you for choosing Kaspa Analytics Premium!</p>
+                        
+                        <p>Best regards,<br>
+                        <strong>The Kaspa Analytics Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p><strong>© 2025 Kaspa Analytics</strong></p>
+                        <p>Advanced Cryptocurrency Analytics Platform</p>
+                    </div>
+                </div>
             </body>
             </html>
             """
@@ -198,15 +363,128 @@ class EmailHandler:
             <head>
                 <meta charset="utf-8">
                 <title>Subscription Renewed - Kaspa Analytics</title>
+                <style>
+                    body {{ 
+                        font-family: Arial, sans-serif; 
+                        line-height: 1.6; 
+                        color: #333; 
+                        margin: 0;
+                        padding: 20px;
+                        background-color: #f4f4f4;
+                    }}
+                    .container {{ 
+                        max-width: 600px; 
+                        margin: 0 auto; 
+                        background: white;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    }}
+                    .header {{ 
+                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+                        color: white; 
+                        padding: 40px 30px; 
+                        text-align: center; 
+                    }}
+                    .content {{ 
+                        padding: 40px 30px; 
+                    }}
+                    .button {{ 
+                        display: inline-block; 
+                        background: #667eea;
+                        color: white; 
+                        padding: 15px 30px; 
+                        text-decoration: none; 
+                        border-radius: 8px; 
+                        margin: 20px 0;
+                        font-weight: bold;
+                    }}
+                    .success-box {{
+                        background: #d4edda;
+                        border: 1px solid #c3e6cb;
+                        color: #155724;
+                        padding: 20px;
+                        margin: 20px 0;
+                        border-radius: 8px;
+                        border-left: 4px solid #28a745;
+                    }}
+                    .info-box {{
+                        background: #e9ecef;
+                        border: 1px solid #ced4da;
+                        padding: 20px;
+                        margin: 20px 0;
+                        border-radius: 8px;
+                    }}
+                    .footer {{ 
+                        background: #f8f9fa;
+                        text-align: center; 
+                        padding: 30px; 
+                        color: #666; 
+                        font-size: 14px; 
+                    }}
+                </style>
             </head>
             <body>
-                <h1>Subscription Renewed!</h1>
-                <p>Hello {username},</p>
-                <p>Great news! Your {plan_type} subscription has been automatically renewed.</p>
-                <p>Your premium access is now extended until: {new_expiry_date}</p>
-                <p>You can continue enjoying all premium features without any interruption.</p>
-                <p><a href="{self.domain}">Continue Using Premium</a></p>
-                <p><a href="{self.domain}/A_👤_Account">Manage Subscription</a></p>
+                <div class="container">
+                    <div class="header">
+                        <h1>🎉 Subscription Renewed!</h1>
+                        <h2>Kaspa Analytics Premium</h2>
+                        <p style="font-size: 18px; margin: 0;">Your premium access continues seamlessly</p>
+                    </div>
+                    <div class="content">
+                        <p>Hello <strong>{username}</strong>,</p>
+                        
+                        <div class="success-box">
+                            <h3>✅ Your {plan_type} subscription has been automatically renewed!</h3>
+                            <p><strong>🗓️ Your premium access is now extended until: {new_expiry_date}</strong></p>
+                        </div>
+                        
+                        <p>Great news! We've successfully processed your subscription renewal. You can continue enjoying all premium features without any interruption.</p>
+                        
+                        <div class="info-box">
+                            <h3>📊 Your Premium Features Continue:</h3>
+                            <ul>
+                                <li><strong>🤖 AI-Powered Insights</strong> - Advanced market predictions</li>
+                                <li><strong>🐋 Whale Tracking</strong> - Monitor large transactions</li>
+                                <li><strong>🔔 Custom Alerts</strong> - Real-time notifications</li>
+                                <li><strong>📈 Advanced Charts</strong> - Professional trading tools</li>
+                                <li><strong>📊 Data Export</strong> - Download your analytics</li>
+                                <li><strong>💎 Priority Support</strong> - Get help when needed</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="{self.domain}" class="button">🚀 Continue Using Premium</a>
+                        </div>
+                        
+                        <h3>💳 Billing Information:</h3>
+                        <ul>
+                            <li><strong>Plan:</strong> {plan_type}</li>
+                            <li><strong>Status:</strong> Active & Auto-Renewing</li>
+                            <li><strong>Next Renewal:</strong> {new_expiry_date}</li>
+                            <li><strong>Billing:</strong> Automatic</li>
+                        </ul>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <h3>🔧 Need to Make Changes?</h3>
+                        <p>You can manage your subscription, update payment methods, or cancel anytime from your account dashboard.</p>
+                        
+                        <div style="text-align: center; margin: 20px 0;">
+                            <a href="{self.domain}/A_👤_Account" class="button" style="background: #6c757d;">⚙️ Manage Subscription</a>
+                        </div>
+                        
+                        <p>Thank you for being a valued Kaspa Analytics Premium member!</p>
+                        
+                        <p>Best regards,<br>
+                        <strong>The Kaspa Analytics Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p><strong>© 2025 Kaspa Analytics</strong></p>
+                        <p>Advanced Cryptocurrency Analytics Platform</p>
+                        <p style="margin-top: 16px; opacity: 0.7;">You received this email because your subscription was automatically renewed.</p>
+                    </div>
+                </div>
             </body>
             </html>
             """
