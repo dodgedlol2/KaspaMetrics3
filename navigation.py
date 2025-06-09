@@ -3,76 +3,68 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar AND minimal header (shared across all pages)"""
     
-    # MINIMAL header CSS - don't touch sidebar at all
+    # ULTRA-MINIMAL header CSS - absolutely no sidebar interference
     st.markdown("""
     <style>
-        /* ONLY header positioning - NO sidebar changes */
-        .real-website-header {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100vw !important;
-            height: 70px !important;
-            z-index: 999999 !important;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
-            backdrop-filter: blur(20px) !important;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            padding: 0 2rem !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        /* ONLY header styles - NO global changes */
+        .kaspa-header-only {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100vw;
+            height: 70px;
+            z-index: 999999;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         
-        /* Logo styles */
-        .header-logo {
-            display: flex !important;
-            align-items: center !important;
-            gap: 12px !important;
-            font-size: 24px !important;
-            font-weight: 700 !important;
-            color: #00d4ff !important;
+        .kaspa-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #00d4ff;
         }
         
-        .logo-icon {
-            font-size: 28px !important;
-            background: linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            background-clip: text !important;
+        .kaspa-logo-icon {
+            font-size: 28px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        /* User info styles */
-        .header-user-section {
-            display: flex !important;
-            align-items: center !important;
-            gap: 1rem !important;
+        .kaspa-user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
         }
         
-        .user-info {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-end !important;
-            gap: 2px !important;
+        .kaspa-user-name {
+            color: #f1f5f9;
+            font-weight: 600;
+            font-size: 14px;
         }
         
-        .user-name {
-            color: #f1f5f9 !important;
-            font-weight: 600 !important;
-            font-size: 14px !important;
+        .kaspa-user-status {
+            color: #00d4ff;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .user-status {
-            color: #00d4ff !important;
-            font-size: 11px !important;
-            font-weight: 500 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
-        }
-        
-        .user-status.premium {
-            color: #fbbf24 !important;
+        .kaspa-user-status.premium {
+            color: #fbbf24;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -100,16 +92,14 @@ def add_navigation():
         status_class = "premium" if is_premium else ""
         
         header_html = f"""
-        <div class="real-website-header">
-            <div class="header-logo">
-                <span class="logo-icon">⚡</span>
+        <div class="kaspa-header-only">
+            <div class="kaspa-logo">
+                <span class="kaspa-logo-icon">⚡</span>
                 <span>Kaspa Analytics</span>
             </div>
-            <div class="header-user-section">
-                <div class="user-info">
-                    <div class="user-name">Welcome, {user_name}</div>
-                    <div class="user-status {status_class}">{status_text}</div>
-                </div>
+            <div class="kaspa-user-info">
+                <div class="kaspa-user-name">Welcome, {user_name}</div>
+                <div class="kaspa-user-status {status_class}">{status_text}</div>
             </div>
         </div>
         """
@@ -117,16 +107,14 @@ def add_navigation():
     else:
         # Not logged in
         header_html = """
-        <div class="real-website-header">
-            <div class="header-logo">
-                <span class="logo-icon">⚡</span>
+        <div class="kaspa-header-only">
+            <div class="kaspa-logo">
+                <span class="kaspa-logo-icon">⚡</span>
                 <span>Kaspa Analytics</span>
             </div>
-            <div class="header-user-section">
-                <div class="user-info">
-                    <div class="user-name">Please log in</div>
-                    <div class="user-status">GUEST</div>
-                </div>
+            <div class="kaspa-user-info">
+                <div class="kaspa-user-name">Please log in</div>
+                <div class="kaspa-user-status">GUEST</div>
             </div>
         </div>
         """
