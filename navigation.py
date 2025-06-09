@@ -29,32 +29,13 @@ def _add_custom_header():
             display: flex !important;
         }
         
-        /* EXACT SIDEBAR FIX FOR YOUR STREAMLIT VERSION */
-        /* Main sidebar container */
-        section.stSidebar.st-emotion-cache-1a7b3xh {
-            margin-top: 80px !important;
-        }
-        
-        /* Sidebar content area */
-        div[data-testid="stSidebarContent"].st-emotion-cache-jx6q2s {
-            margin-top: 0px !important;
-        }
-        
-        /* Collapse button container */
-        div[data-testid="stSidebarCollapseButton"].st-emotion-cache-lmskyu {
-            position: relative !important;
-            top: 0px !important;
-        }
-        
-        /* Actual collapse button */
-        button[data-testid="stBaseButton-headerNoPadding"].st-emotion-cache-bzr000 {
-            position: relative !important;
-            top: 0px !important;
-        }
-        
-        /* Generic fallbacks */
+        /* REVERT: Remove specific sidebar targeting for now */
+        /* Just use basic fallbacks */
         [data-testid="stSidebar"] { margin-top: 80px !important; }
         [data-testid="collapsedControl"] { top: 90px !important; z-index: 1000000 !important; }
+        
+        /* Fix main content positioning */
+        .main-content { margin-top: 90px !important; }
     </style>
     """, unsafe_allow_html=True)
     
@@ -230,45 +211,7 @@ def _add_custom_header():
             display: none !important;
         }
         
-        /* ENHANCED: Exact sidebar positioning for your Streamlit version */
-        /* Main sidebar container - YOUR EXACT CLASS */
-        section.stSidebar.st-emotion-cache-1a7b3xh {
-            margin-top: 80px !important;
-            transition: none !important;
-        }
-        
-        /* Sidebar content area - YOUR EXACT CLASS */
-        div[data-testid="stSidebarContent"].st-emotion-cache-jx6q2s {
-            margin-top: 0px !important;
-            transition: none !important;
-        }
-        
-        /* Collapse button container - YOUR EXACT CLASS */
-        div[data-testid="stSidebarCollapseButton"].st-emotion-cache-lmskyu {
-            position: relative !important;
-            top: 0px !important;
-            transition: none !important;
-        }
-        
-        /* Actual collapse button - YOUR EXACT CLASS */
-        button[data-testid="stBaseButton-headerNoPadding"].st-emotion-cache-bzr000 {
-            position: relative !important;
-            top: 0px !important;
-            transition: none !important;
-        }
-        
-        /* Legacy fallbacks for older versions */
-        .css-1lcbmhc.e1fqkh3o0 {
-            margin-top: 3.8rem !important;
-            transition: none !important;
-        }
-        
-        .css-sg054d.e1fqkh3o3 {
-            margin-top: 5rem !important;
-            transition: none !important;
-        }
-        
-        /* Modern Streamlit fallbacks */
+        /* REVERT: Go back to basic sidebar positioning */
         [data-testid="stSidebar"] {
             margin-top: 80px !important;
             transition: none !important;
@@ -280,24 +223,12 @@ def _add_custom_header():
             transition: none !important;
         }
         
-        /* Additional modern selectors */
-        .st-emotion-cache-1cypcdb {
-            margin-top: 80px !important;
-            transition: none !important;
-        }
+        /* Remove all the specific emotion-cache targeting for now */
         
-        .st-emotion-cache-16txtl3 {
-            top: 90px !important;
-            z-index: 1000000 !important;
-            transition: none !important;
-        }
-        
-        /* Force sidebar collapse button visibility with no animation */
-        button[data-testid="collapsedControl"] {
-            top: 90px !important;
-            z-index: 1000000 !important;
-            position: fixed !important;
-            transition: none !important;
+        /* Ensure main content is positioned correctly */
+        .main-content {
+            margin-top: 90px !important;
+            padding: 2rem !important;
         }
         
         /* Custom Real Website Header - ANTI-FLICKER VERSION */
