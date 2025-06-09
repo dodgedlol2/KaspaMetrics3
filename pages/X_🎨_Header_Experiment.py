@@ -466,8 +466,8 @@ st.markdown('<div class="main-content">', unsafe_allow_html=True)
 # Welcome Section
 welcome_html = """
 <div class="welcome-section">
-    <h1 class="welcome-title">Clean Header Design</h1>
-    <p class="welcome-subtitle">Simple fixed header with logo and user status - no buttons</p>
+    <h1 class="welcome-title">Header Design Experiment</h1>
+    <p class="welcome-subtitle">Testing real website-style header with Kaspa Analytics branding and user account integration</p>
 </div>
 """
 st.markdown(welcome_html, unsafe_allow_html=True)
@@ -500,37 +500,45 @@ stats_html = """
 st.markdown(stats_html, unsafe_allow_html=True)
 
 # Test Section
-st.markdown("## 🧪 Clean Header Test")
+st.markdown("## 🧪 Header Design Test")
 
 st.info("""
-**✅ Completed Fixes:**
-- ❌ All buttons removed from header (Account, Logout)
-- ❌ All hidden buttons removed from page
-- ❌ All debug messages removed
-- ✅ Applied YouTube comment sidebar fix
-- ✅ Clean header with only logo and user status
-- ✅ Sidebar collapse button now visible
+**✅ Fixed Issues:**
+- Removed Account and Logout buttons from header
+- Fixed header flickering on page load
+- Moved sidebar down below header (collapse button now visible)
+- Removed all debugging messages and hidden buttons
+- Clean, simple header with just logo and user status
 """)
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("### ✅ Current Features")
+    st.markdown("### ✅ Working Features")
     st.write("• Fixed position header")
-    st.write("• Kaspa Analytics logo")
+    st.write("• Logo with gradient effect")
     st.write("• User status display")
     st.write("• Premium status indicator")
-    st.write("• Proper sidebar positioning")
-    st.write("• No button conflicts")
+    st.write("• Sidebar positioned correctly")
+    st.write("• No button functionality issues")
 
 with col2:
     st.markdown("### 🎨 Design Elements")
-    st.write("• Gradient background")
-    st.write("• Backdrop blur effect")
+    st.write("• Gradient backgrounds")
+    st.write("• Backdrop blur effects")
     st.write("• Professional typography")
     st.write("• Kaspa brand colors")
-    st.write("• Clean, minimal layout")
-    st.write("• Stable rendering")
+    st.write("• Clean, minimal design")
+    st.write("• Proper z-index layering")
+
+with col3:
+    st.markdown("### 🔧 Technical Fixes")
+    st.write("• Fixed sidebar positioning")
+    st.write("• Removed button complexity")
+    st.write("• Eliminated debug messages")
+    st.write("• Clean HTML structure")
+    st.write("• No JavaScript conflicts")
+    st.write("• Stable header rendering")
 
 # Action Buttons
 st.markdown("### 🚀 Navigation Test")
@@ -561,12 +569,11 @@ with col4:
 # Info Section
 st.markdown("---")
 st.success("""
-**🎯 Header Status:**
-- Clean, button-free header design
-- Properly positioned sidebar
-- No debug messages or hidden elements
+**🎯 Current Status:**
+- Clean header with logo and user info only
+- Sidebar properly positioned below header
+- No flickering or debug messages
 - Ready for further customization
-- Stable and professional appearance
 """)
 
 # Footer
