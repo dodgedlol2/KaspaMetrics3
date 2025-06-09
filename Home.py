@@ -94,18 +94,25 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
                     
                     db.update_premium_status(username_from_stripe, True, expires_at, subscription_id)
                     
-                    # Auto-login the user if they're not logged in
-                    if not st.session_state.get('authentication_status'):
-                        st.session_state['authentication_status'] = True
-                        st.session_state['username'] = username_from_stripe
-                        user = db.get_user(username_from_stripe)
-                        st.session_state['name'] = user['name']
+                    # ✅ FIXED: Update session state with new database values
+                    # Get fresh user data after database update
+                    updated_user = db.get_user(username_from_stripe)
+                    if updated_user:
+                        # Auto-login the user if they're not logged in
+                        if not st.session_state.get('authentication_status'):
+                            st.session_state['authentication_status'] = True
+                            st.session_state['username'] = username_from_stripe
+                            st.session_state['name'] = updated_user['name']
+                        
+                        # ✅ Update session state with FRESH database values
+                        st.session_state['is_premium'] = updated_user['is_premium']
+                        st.session_state['premium_expires_at'] = updated_user['premium_expires_at']
+                        
+                        st.write(f"Debug: Session state updated - expires at: {updated_user['premium_expires_at']}")
+                    else:
+                        # Fallback to payment result values
                         st.session_state['is_premium'] = True
                         st.session_state['premium_expires_at'] = expires_at
-                    
-                    # Update session state for already logged in users
-                    st.session_state['is_premium'] = True
-                    st.session_state['premium_expires_at'] = expires_at
                     
                     # ✅ Send premium subscription email ONLY ONCE with correct plan type
                     email_sent_key = f"email_sent_{session_id}"
