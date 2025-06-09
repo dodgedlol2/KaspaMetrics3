@@ -50,15 +50,23 @@ st.markdown("""
         margin-top: -80px;
     }
     
-    /* Hide the hidden buttons completely */
-    .hidden-header-buttons {
+    /* Aggressively hide trigger buttons */
+    button[title="Hidden"],
+    button:contains("TRIGGER_"),
+    [data-testid="stButton"]:has(button:contains("TRIGGER_")) {
         display: none !important;
         visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
         position: absolute !important;
         top: -9999px !important;
         left: -9999px !important;
-        opacity: 0 !important;
         pointer-events: none !important;
+        z-index: -9999 !important;
     }
     
     /* Custom Real Website Header */
