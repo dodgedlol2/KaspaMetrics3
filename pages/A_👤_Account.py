@@ -114,6 +114,84 @@ with col2:
         st.info("🔓 **Free Account**")
         st.write("Upgrade to premium for advanced features")
 
+# ✅ TESTING SECTION (Add this temporarily)
+if st.session_state.get('username') and st.checkbox("🧪 Enable Testing Mode"):
+    st.warning("⚠️ **TESTING SECTION** - Remove this in production")
+    
+    user_test = db.get_user(st.session_state['username'])
+    if user_test:
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("**Current Database Values:**")
+            st.write(f"• is_premium: {user_test.get('is_premium')}")
+            st.write(f"• expires_at: {user_test.get('premium_expires_at')}")
+            st.write(f"• subscription_id: {user_test.get('stripe_subscription_id')}")
+        
+        with col2:
+            st.write("**Stripe Check:**")
+            if user_test.get('stripe_subscription_id') and user_test.get('stripe_subscription_id') != 'CANCELLED':
+                if st.button("🔍 Check Stripe Status"):
+                    try:
+                        import stripe
+                        stripe.api_key = st.secrets["default"]["STRIPE_SECRET_KEY"]
+                        subscription = stripe.Subscription.retrieve(user_test['stripe_subscription_id'])
+                        st.success(f"✅ Stripe Status: **{subscription.status}**")
+                        st.write(f"• Plan: {subscription.plan.interval}")
+                        st.write(f"• Current period end: {subscription.current_period_end}")
+                        
+                        # Convert timestamp to readable date
+                        from datetime import datetime
+                        end_date = datetime.fromtimestamp(subscription.current_period_end)
+                        st.write(f"• Next billing: {end_date.strftime('%Y-%m-%d %H:%M')}")
+                        
+                    except Exception as e:
+                        st.error(f"❌ Stripe Error: {e}")
+            else:
+                st.info("No active subscription to check")
+        
+        # Test renewal function
+        st.write("**Test Functions:**")
+        col_test1, col_test2 = st.columns(2)
+        
+        with col_test1:
+            if st.button("🔄 Test Renewal Check"):
+                st.write("Running renewal check...")
+                result = db.simple_renewal_check(st.session_state['username'])
+                if result == True:
+                    st.success("✅ Renewal successful!")
+                    st.rerun()
+                elif result == False:
+                    st.error("❌ Subscription cancelled/expired")
+                    st.rerun()
+                else:
+                    st.info("ℹ️ No action needed - premium still valid")
+        
+        with col_test2:
+            if st.button("⏰ Simulate Expiry"):
+                # Set premium to expire 1 minute ago for testing
+                from datetime import datetime, timedelta
+                test_expiry = datetime.now() - timedelta(minutes=1)
+                
+                conn = db.get_connection()
+                cursor = conn.cursor()
+                
+                if db.use_postgres:
+                    cursor.execute('UPDATE users SET premium_expires_at = %s WHERE username = %s', 
+                                 (test_expiry, st.session_state['username']))
+                else:
+                    cursor.execute('UPDATE users SET premium_expires_at = ? WHERE username = ?', 
+                                 (test_expiry, st.session_state['username']))
+                
+                conn.commit()
+                conn.close()
+                
+                st.success("✅ Set premium to expire 1 minute ago")
+                st.info("Now click 'Test Renewal Check' to see if it renews!")
+                st.rerun()
+    
+    st.markdown("---")
+
 # Subscription management
 st.markdown("---")
 st.subheader("💳 Subscription Management")
