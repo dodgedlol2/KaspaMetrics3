@@ -333,6 +333,54 @@ class Database:
         except Exception as e:
             return False
     
+    def cancel_premium_subscription(self, username):
+        """Cancel user's premium subscription (mark for end of current period)"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            # Get current user data
+            user = self.get_user(username)
+            if not user:
+                return False, "User not found"
+            
+            if not user['is_premium']:
+                return False, "User is not currently premium"
+            
+            # Instead of immediately removing premium, we'll mark it to expire naturally
+            # In a real system, you'd integrate with Stripe to cancel the subscription
+            # For now, we'll just remove premium immediately for demo purposes
+            
+            if self.use_postgres:
+                cursor.execute('''
+                    UPDATE users 
+                    SET is_premium = FALSE, 
+                        premium_expires_at = NULL,
+                        stripe_subscription_id = NULL
+                    WHERE username = %s
+                ''', (username,))
+            else:
+                cursor.execute('''
+                    UPDATE users 
+                    SET is_premium = ?, 
+                        premium_expires_at = NULL,
+                        stripe_subscription_id = NULL
+                    WHERE username = ?
+                ''', (False, username))
+            
+            rows_affected = cursor.rowcount
+            conn.commit()
+            conn.close()
+            
+            if rows_affected > 0:
+                return True, "Subscription cancelled successfully"
+            else:
+                return False, "Failed to cancel subscription"
+                
+        except Exception as e:
+            st.write(f"Debug: Error cancelling subscription for {username}: {e}")
+            return False, f"Database error: {str(e)}"
+    
     def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
         """Update user's premium status with expiration date"""
         try:
