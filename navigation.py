@@ -23,26 +23,28 @@ def add_navigation():
             border-bottom: 1px solid rgba(0, 212, 255, 0.2);
         }
         
-        /* WORKING SIDEBAR FIX - test in Chrome */
+        /* WORKING SIDEBAR FIX */
         [data-testid="stSidebar"] {
             margin-top: 80px;
         }
         
-        /* FIX COLLAPSE/EXPAND BUTTON POSITION */
-        [data-testid="stSidebarCollapseButton"] {
-            margin-top: 80px;
+        /* FIX COLLAPSE BUTTON - Use exact class from your HTML */
+        div[data-testid="stSidebarCollapseButton"].st-emotion-cache-lmskyu {
+            position: relative !important;
+            top: 0px !important;
+            z-index: 1000000 !important;
         }
         
-        /* Alternative selectors for collapse button */
-        div[data-testid="stSidebarCollapseButton"] {
-            position: relative;
-            top: 80px;
+        /* Make sure button functionality works */
+        div[data-testid="stSidebarCollapseButton"] button {
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
         
-        /* Try button element directly */
-        [data-testid="stSidebarCollapseButton"] button {
-            position: relative;
-            top: 80px;
+        /* Alternative: try positioning the sidebar header container */
+        div[data-testid="stSidebarHeader"] {
+            position: relative !important;
+            top: 0px !important;
         }
         
         .kaspa-logo {
