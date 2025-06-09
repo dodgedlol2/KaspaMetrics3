@@ -281,3 +281,131 @@ with col2:
 with col3:
     if st.button("📊 Analytics", use_container_width=True):
         st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
+
+# Add this section to your pages/A_👤_Account.py file after the existing content
+
+# ✅ SUBSCRIPTION MANAGEMENT & TESTING PANEL
+st.markdown("---")
+st.subheader("🔧 Subscription Management (Admin/Testing)")
+
+# Admin panel toggle
+if st.checkbox("🛠️ Show Admin Panel", help="For testing subscription renewals"):
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### 📊 Subscription Summary")
+        
+        # Get subscription status summary
+        summary = db.get_subscription_status_summary()
+        if summary:
+            st.metric("Total Users", summary.get('total_users', 0))
+            st.metric("Premium Users", summary.get('premium_users', 0))
+            st.metric("Cancelled Users", summary.get('cancelled_users', 0))
+            st.metric("⚠️ Expired Users", summary.get('expired_users', 0))
+        
+        # Check expired subscriptions button
+        if st.button("🔄 Check & Process Expired Subscriptions", use_container_width=True):
+            with st.spinner("Checking expired subscriptions..."):
+                renewal_results = db.check_and_process_expired_subscriptions()
+                
+                if renewal_results:
+                    st.success(f"✅ Processed {len(renewal_results)} expired subscriptions")
+                    for result in renewal_results:
+                        username = result['username']
+                        renewal_info = result['result']
+                        if renewal_info['success']:
+                            st.info(f"✅ {username}: {renewal_info['message']}")
+                        else:
+                            st.warning(f"⚠️ {username}: {renewal_info['message']}")
+                else:
+                    st.info("ℹ️ No expired subscriptions found")
+    
+    with col2:
+        st.markdown("### 🧪 Testing Tools")
+        
+        # Test expiration for current user
+        if st.session_state.get('is_premium'):
+            st.write("**Test Subscription Expiry:**")
+            test_minutes = st.selectbox("Expire in:", [1, 5, 10, 30], index=1)
+            
+            if st.button(f"⏰ Set Premium to Expire in {test_minutes} min", use_container_width=True):
+                success = db.create_test_expiration(username, test_minutes)
+                if success:
+                    st.success(f"✅ Premium will expire in {test_minutes} minutes")
+                    st.info("💡 Refresh the page after expiry to test renewal")
+                    st.rerun()
+                else:
+                    st.error("❌ Failed to set test expiration")
+        else:
+            st.info("ℹ️ Need premium subscription to test expiry")
+        
+        # Manual renewal test
+        st.write("**Manual Renewal Test:**")
+        if st.button("🔄 Test Manual Renewal", use_container_width=True):
+            if st.session_state.get('is_premium'):
+                user = db.get_user(username)
+                subscription_id = user.get('stripe_subscription_id')
+                
+                if subscription_id and subscription_id != 'CANCELLED':
+                    with st.spinner("Testing renewal..."):
+                        renewal_result = db.process_subscription_renewal(username, subscription_id)
+                        
+                        if renewal_result['success']:
+                            st.success(f"✅ Renewal successful: {renewal_result['message']}")
+                            st.info(f"🗓️ New expiry: {renewal_result['new_expiry'][:10]}")
+                            # Refresh session state
+                            updated_user = db.get_user(username)
+                            st.session_state['premium_expires_at'] = updated_user['premium_expires_at']
+                            st.rerun()
+                        else:
+                            st.error(f"❌ Renewal failed: {renewal_result['message']}")
+                else:
+                    st.warning("⚠️ No active subscription ID found")
+            else:
+                st.warning("⚠️ User is not premium")
+
+# ✅ AUTOMATIC EXPIRATION CHECK ON PAGE LOAD
+# Add this to the top of your account page (after user authentication check)
+
+# Check for expired subscriptions when user visits account page
+if st.session_state.get('authentication_status'):
+    # Only check once per session to avoid repeated API calls
+    if not st.session_state.get('expiration_checked', False):
+        user = db.get_user(username)
+        if user and user.get('is_premium') and user.get('stripe_subscription_id') not in [None, 'CANCELLED']:
+            # Check if user's premium has expired
+            expires_at = user.get('premium_expires_at')
+            if expires_at:
+                try:
+                    if isinstance(expires_at, str):
+                        expiry_date = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                    else:
+                        expiry_date = expires_at
+                    
+                    # If expired, try to process renewal
+                    if datetime.now() > expiry_date:
+                        st.info("🔄 Checking subscription status...")
+                        renewal_result = db.process_subscription_renewal(username, user['stripe_subscription_id'])
+                        
+                        if renewal_result['success']:
+                            st.success(f"✅ Your {renewal_result.get('plan_type', 'Premium')} subscription has been automatically renewed!")
+                            # Update session state with new expiry
+                            updated_user = db.get_user(username)
+                            st.session_state['premium_expires_at'] = updated_user['premium_expires_at']
+                            st.session_state['is_premium'] = updated_user['is_premium']
+                            st.balloons()
+                            st.rerun()
+                        else:
+                            # Renewal failed - show appropriate message
+                            if "canceled" in renewal_result['message'] or "unpaid" in renewal_result['message']:
+                                st.error("❌ Your subscription has been cancelled or payment failed. Premium access has been revoked.")
+                                st.session_state['is_premium'] = False
+                                st.rerun()
+                            else:
+                                st.warning(f"⚠️ Unable to verify subscription status: {renewal_result['message']}")
+                except Exception as e:
+                    st.write(f"Debug: Error checking expiration: {e}")
+        
+        # Mark as checked for this session
+        st.session_state['expiration_checked'] = True
