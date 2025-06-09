@@ -5,6 +5,7 @@ import streamlit_authenticator as stauth
 from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
+from email_handler import EmailHandler
 from navigation import add_navigation  # ← MAKE SURE THIS LINE EXISTS
 import importlib.util
 import sys
@@ -24,9 +25,10 @@ def init_app():
     db = Database()
     auth_handler = AuthHandler(db)
     payment_handler = PaymentHandler()
-    return db, auth_handler, payment_handler
+    email_handler = EmailHandler()
+    return db, auth_handler, payment_handler, email_handler
 
-db, auth_handler, payment_handler = init_app()
+db, auth_handler, payment_handler, email_handler = init_app()
 
 # Add shared navigation to sidebar
 add_navigation()
@@ -89,6 +91,18 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
                 # Update session state for already logged in users
                 st.session_state['is_premium'] = True
                 st.session_state['premium_expires_at'] = expires_at
+                
+                # Send premium subscription email
+                try:
+                    user = db.get_user(username_from_stripe)
+                    if user:
+                        # Determine plan type based on amount
+                        amount = payment_result.get('amount', 0)
+                        plan_type = "Monthly Premium" if amount == 999 else "Annual Premium"
+                        email_handler.send_premium_subscription_email(user['email'], user['name'], plan_type)
+                        st.info("📧 Premium welcome email sent to your inbox!")
+                except Exception as e:
+                    st.write(f"Debug: Could not send premium email: {e}")
                 
                 # Show premium access confirmation
                 st.info("✅ **Your account has been upgraded to Premium!** You now have access to all advanced analytics features.")
