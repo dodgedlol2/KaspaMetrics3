@@ -29,18 +29,30 @@ def _add_custom_header():
             display: flex !important;
         }
         
-        /* SIDEBAR FIX: Proven solution from YouTube comment */
-        /* The whole sidebar */
-        .css-1lcbmhc.e1fqkh3o0 {
-            margin-top: 3.8rem !important;
+        /* EXACT SIDEBAR FIX FOR YOUR STREAMLIT VERSION */
+        /* Main sidebar container */
+        section.stSidebar.st-emotion-cache-1a7b3xh {
+            margin-top: 80px !important;
         }
         
-        /* The display arrow (collapse/expand button) */
-        .css-sg054d.e1fqkh3o3 {
-            margin-top: 5rem !important;
+        /* Sidebar content area */
+        div[data-testid="stSidebarContent"].st-emotion-cache-jx6q2s {
+            margin-top: 0px !important;
         }
         
-        /* Additional modern Streamlit fallbacks */
+        /* Collapse button container */
+        div[data-testid="stSidebarCollapseButton"].st-emotion-cache-lmskyu {
+            position: relative !important;
+            top: 0px !important;
+        }
+        
+        /* Actual collapse button */
+        button[data-testid="stBaseButton-headerNoPadding"].st-emotion-cache-bzr000 {
+            position: relative !important;
+            top: 0px !important;
+        }
+        
+        /* Generic fallbacks */
         [data-testid="stSidebar"] { margin-top: 80px !important; }
         [data-testid="collapsedControl"] { top: 90px !important; z-index: 1000000 !important; }
     </style>
@@ -218,14 +230,39 @@ def _add_custom_header():
             display: none !important;
         }
         
-        /* ENHANCED: Better sidebar positioning with proven solution */
-        /* The whole sidebar - PROVEN YOUTUBE SOLUTION */
+        /* ENHANCED: Exact sidebar positioning for your Streamlit version */
+        /* Main sidebar container - YOUR EXACT CLASS */
+        section.stSidebar.st-emotion-cache-1a7b3xh {
+            margin-top: 80px !important;
+            transition: none !important;
+        }
+        
+        /* Sidebar content area - YOUR EXACT CLASS */
+        div[data-testid="stSidebarContent"].st-emotion-cache-jx6q2s {
+            margin-top: 0px !important;
+            transition: none !important;
+        }
+        
+        /* Collapse button container - YOUR EXACT CLASS */
+        div[data-testid="stSidebarCollapseButton"].st-emotion-cache-lmskyu {
+            position: relative !important;
+            top: 0px !important;
+            transition: none !important;
+        }
+        
+        /* Actual collapse button - YOUR EXACT CLASS */
+        button[data-testid="stBaseButton-headerNoPadding"].st-emotion-cache-bzr000 {
+            position: relative !important;
+            top: 0px !important;
+            transition: none !important;
+        }
+        
+        /* Legacy fallbacks for older versions */
         .css-1lcbmhc.e1fqkh3o0 {
             margin-top: 3.8rem !important;
             transition: none !important;
         }
         
-        /* The display arrow (collapse/expand button) - PROVEN YOUTUBE SOLUTION */
         .css-sg054d.e1fqkh3o3 {
             margin-top: 5rem !important;
             transition: none !important;
