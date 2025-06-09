@@ -111,14 +111,14 @@ class PaymentHandler:
                         from datetime import datetime, timedelta
                         plan = st.session_state.get('selected_plan', {'interval': 'month'})
                         
-                        # ✅ FIXED: Always calculate from current time for new subscriptions
+                        # ✅ FIXED: Use correct interval for time calculation
                         now = datetime.now()
                         if plan['interval'] == 'year':
                             expires_at = now + timedelta(days=365)
+                            st.write(f"Debug: Fallback calculation (YEARLY) - expires at: {expires_at.isoformat()}")
                         else:
                             expires_at = now + timedelta(days=30)
-                        
-                        st.write(f"Debug: Fallback calculation - expires at: {expires_at.isoformat()}")
+                            st.write(f"Debug: Fallback calculation (MONTHLY) - expires at: {expires_at.isoformat()}")
                         
                         return {
                             'success': True,
@@ -131,14 +131,14 @@ class PaymentHandler:
                     from datetime import datetime, timedelta
                     plan = st.session_state.get('selected_plan', {'interval': 'month'})
                     
-                    # ✅ FIXED: Always calculate from current time
+                    # ✅ FIXED: Use correct interval for time calculation
                     now = datetime.now()
                     if plan['interval'] == 'year':
                         expires_at = now + timedelta(days=365)
+                        st.write(f"Debug: No subscription ID (YEARLY) - expires at: {expires_at.isoformat()}")
                     else:
                         expires_at = now + timedelta(days=30)
-                    
-                    st.write(f"Debug: No subscription ID - expires at: {expires_at.isoformat()}")
+                        st.write(f"Debug: No subscription ID (MONTHLY) - expires at: {expires_at.isoformat()}")
                     
                     return {
                         'success': True,
@@ -155,14 +155,14 @@ class PaymentHandler:
             from datetime import datetime, timedelta
             plan = st.session_state.get('selected_plan', {'interval': 'month'})
             
-            # ✅ FIXED: Always calculate from current time
+            # ✅ FIXED: Use correct interval for time calculation
             now = datetime.now()
             if plan['interval'] == 'year':
                 expires_at = now + timedelta(days=365)
+                st.write(f"Debug: Exception fallback (YEARLY) - expires at: {expires_at.isoformat()}")
             else:
                 expires_at = now + timedelta(days=30)
-            
-            st.write(f"Debug: Exception fallback - expires at: {expires_at.isoformat()}")
+                st.write(f"Debug: Exception fallback (MONTHLY) - expires at: {expires_at.isoformat()}")
             
             return {
                 'success': True,
