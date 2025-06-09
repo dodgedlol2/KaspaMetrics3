@@ -19,11 +19,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initialize database and handlers
+# Initialize database and handlers - NO COOKIE CONTROLLER HERE
 @st.cache_resource
 def init_app():
     db = Database()
-    auth_handler = AuthHandler(db)
+    auth_handler = AuthHandler(db)  # AuthHandler NO LONGER creates CookieController in __init__
     payment_handler = PaymentHandler()
     email_handler = EmailHandler()
     return db, auth_handler, payment_handler, email_handler
@@ -34,8 +34,8 @@ db, auth_handler, payment_handler, email_handler = init_app()
 # This runs once per day when anyone visits the site
 db.auto_check_all_renewals()
 
-# ✅ NEW: CHECK FOR PERSISTENT LOGIN COOKIE
-# This runs on every page load to auto-login users
+# ✅ CHECK FOR PERSISTENT LOGIN COOKIE
+# This runs OUTSIDE the cached function to avoid widget issues
 if not st.session_state.get('authentication_status'):
     if auth_handler.check_persistent_login():
         st.success("🔐 **Welcome back!** Auto-logged in from saved session.")
