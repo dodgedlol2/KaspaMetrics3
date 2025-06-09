@@ -86,17 +86,25 @@ class PaymentHandler:
                         
                         # ✅ FIXED: Calculate expiration date from subscription properly
                         from datetime import datetime
-                        current_period_end = subscription.current_period_end
-                        expires_at = datetime.fromtimestamp(current_period_end)
                         
-                        st.write(f"Debug: Stripe subscription expires at: {expires_at.isoformat()}")
-                        
-                        return {
-                            'success': True,
-                            'expires_at': expires_at.isoformat(),
-                            'subscription_id': subscription_id,
-                            'amount': session.amount_total
-                        }
+                        # Check if current_period_end exists and is valid
+                        if hasattr(subscription, 'current_period_end') and subscription.current_period_end:
+                            current_period_end = subscription.current_period_end
+                            expires_at = datetime.fromtimestamp(current_period_end)
+                            
+                            st.write(f"Debug: Stripe subscription expires at: {expires_at.isoformat()}")
+                            
+                            return {
+                                'success': True,
+                                'expires_at': expires_at.isoformat(),
+                                'subscription_id': subscription_id,
+                                'amount': session.amount_total
+                            }
+                        else:
+                            # No current_period_end, fall back to manual calculation
+                            st.write("Debug: No current_period_end in subscription, using fallback")
+                            raise Exception("No current_period_end available")
+                            
                     except Exception as sub_error:
                         st.write(f"Debug: Error retrieving subscription: {sub_error}")
                         # Fall back to manual calculation based on plan
