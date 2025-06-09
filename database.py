@@ -402,36 +402,26 @@ class Database:
             if current_user and current_user.get('stripe_subscription_id') == 'CANCELLED' and is_premium:
                 st.write("Debug: Handling resubscription after cancellation...")
                 
-                # ✅ Calculate new expiration from current time (not from old expiry)
+                # ✅ FIXED: Use expires_at from payment handler directly (already calculated correctly)
                 if expires_at:
                     try:
-                        # Parse the new expiration time from Stripe
+                        # Parse the expiration time from payment handler
                         if isinstance(expires_at, str):
                             new_expiry = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
                         else:
                             new_expiry = expires_at
                         
-                        # Use the Stripe-provided expiration date directly
+                        # Use the payment handler provided expiration date directly
                         final_expires_at = new_expiry.isoformat()
                         st.write(f"Debug: New subscription expires at: {final_expires_at}")
                     except Exception as parse_error:
                         st.write(f"Debug: Error parsing expires_at: {parse_error}")
-                        # Fallback to manual calculation
-                        from datetime import timedelta
-                        plan = st.session_state.get('selected_plan', {'interval': 'month'})
-                        if plan['interval'] == 'year':
-                            new_expiry = datetime.now() + timedelta(days=365)
-                        else:
-                            new_expiry = datetime.now() + timedelta(days=30)
-                        final_expires_at = new_expiry.isoformat()
+                        # This should rarely happen since payment_handler provides good dates
+                        final_expires_at = expires_at
                 else:
-                    # No expires_at provided, use manual calculation
-                    plan = st.session_state.get('selected_plan', {'interval': 'month'})
-                    if plan['interval'] == 'year':
-                        new_expiry = datetime.now() + timedelta(days=365)
-                    else:
-                        new_expiry = datetime.now() + timedelta(days=30)
-                    final_expires_at = new_expiry.isoformat()
+                    # This should not happen since payment_handler always provides expires_at
+                    st.write("Debug: No expires_at provided - this should not happen")
+                    final_expires_at = None
             
             # ✅ Handle new subscription (not a resubscription)
             elif is_premium and expires_at:
