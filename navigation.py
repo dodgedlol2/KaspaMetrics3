@@ -1,125 +1,13 @@
 import streamlit as st
 
 def add_navigation():
-    """Add organized navigation to sidebar AND minimal header (shared across all pages)"""
+    """Add organized navigation to sidebar ONLY - NO HEADER FOR NOW"""
     
-    # ULTRA-MINIMAL header CSS - absolutely no sidebar interference
-    st.markdown("""
-    <style>
-        /* ONLY header styles - NO global changes */
-        .kaspa-header-only {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            width: 100vw;
-            height: 70px;
-            z-index: 999999;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .kaspa-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: 700;
-            color: #00d4ff;
-        }
-        
-        .kaspa-logo-icon {
-            font-size: 28px;
-            background: linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .kaspa-user-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 2px;
-        }
-        
-        .kaspa-user-name {
-            color: #f1f5f9;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .kaspa-user-status {
-            color: #00d4ff;
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .kaspa-user-status.premium {
-            color: #fbbf24;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    # NO HEADER CSS AT ALL - Just sidebar
+    # Let's see if this brings back the sidebar
     
-    # Render header HTML
-    if st.session_state.get('authentication_status'):
-        # Logged in user
-        user_name = st.session_state.get('name', 'User')
-        is_premium = st.session_state.get('is_premium', False)
-        premium_expires = st.session_state.get('premium_expires_at')
-        
-        # Calculate days left for premium users
-        days_left_text = ""
-        if is_premium and premium_expires:
-            from datetime import datetime
-            try:
-                expires = datetime.fromisoformat(premium_expires.replace('Z', '+00:00'))
-                days_left = (expires - datetime.now()).days
-                if days_left > 0:
-                    days_left_text = f" ({days_left} days left)"
-            except:
-                pass
-        
-        status_text = f"👑 PREMIUM{days_left_text}" if is_premium else "FREE TIER"
-        status_class = "premium" if is_premium else ""
-        
-        header_html = f"""
-        <div class="kaspa-header-only">
-            <div class="kaspa-logo">
-                <span class="kaspa-logo-icon">⚡</span>
-                <span>Kaspa Analytics</span>
-            </div>
-            <div class="kaspa-user-info">
-                <div class="kaspa-user-name">Welcome, {user_name}</div>
-                <div class="kaspa-user-status {status_class}">{status_text}</div>
-            </div>
-        </div>
-        """
-        
-    else:
-        # Not logged in
-        header_html = """
-        <div class="kaspa-header-only">
-            <div class="kaspa-logo">
-                <span class="kaspa-logo-icon">⚡</span>
-                <span>Kaspa Analytics</span>
-            </div>
-            <div class="kaspa-user-info">
-                <div class="kaspa-user-name">Please log in</div>
-                <div class="kaspa-user-status">GUEST</div>
-            </div>
-        </div>
-        """
-    
-    st.markdown(header_html, unsafe_allow_html=True)
+    # NO HEADER HTML AT ALL FOR NOW
+    # st.markdown(header_html, unsafe_allow_html=True)
 
     # YOUR ORIGINAL SIDEBAR CODE - EXACTLY AS IT WAS
     # More precise CSS to hide only native page navigation
