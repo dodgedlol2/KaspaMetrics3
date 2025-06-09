@@ -393,8 +393,52 @@ class Database:
             return False, f"Database error: {str(e)}"
     
     def update_premium_status(self, username, is_premium, expires_at=None, subscription_id=None):
-        """Update user's premium status with expiration date"""
+        """✅ FIXED: Update user's premium status with proper time calculation for resubscriptions"""
         try:
+            # ✅ Get current user data to check for resubscription scenario
+            current_user = self.get_user(username)
+            
+            # ✅ Handle resubscription after cancellation
+            if current_user and current_user.get('stripe_subscription_id') == 'CANCELLED' and is_premium:
+                st.write("Debug: Handling resubscription after cancellation...")
+                
+                # ✅ Calculate new expiration from current time (not from old expiry)
+                if expires_at:
+                    try:
+                        # Parse the new expiration time from Stripe
+                        if isinstance(expires_at, str):
+                            new_expiry = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                        else:
+                            new_expiry = expires_at
+                        
+                        # Use the Stripe-provided expiration date directly
+                        final_expires_at = new_expiry.isoformat()
+                        st.write(f"Debug: New subscription expires at: {final_expires_at}")
+                    except Exception as parse_error:
+                        st.write(f"Debug: Error parsing expires_at: {parse_error}")
+                        # Fallback to manual calculation
+                        from datetime import datetime, timedelta
+                        plan = st.session_state.get('selected_plan', {'interval': 'month'})
+                        if plan['interval'] == 'year':
+                            new_expiry = datetime.now() + timedelta(days=365)
+                        else:
+                            new_expiry = datetime.now() + timedelta(days=30)
+                        final_expires_at = new_expiry.isoformat()
+                else:
+                    # No expires_at provided, use manual calculation
+                    plan = st.session_state.get('selected_plan', {'interval': 'month'})
+                    if plan['interval'] == 'year':
+                        new_expiry = datetime.now() + timedelta(days=365)
+                    else:
+                        new_expiry = datetime.now() + timedelta(days=30)
+                    final_expires_at = new_expiry.isoformat()
+            
+            # ✅ Handle new subscription (not a resubscription)
+            elif is_premium and expires_at:
+                final_expires_at = expires_at
+            else:
+                final_expires_at = expires_at
+            
             conn = self.get_connection()
             cursor = conn.cursor()
             
@@ -403,13 +447,13 @@ class Database:
                     UPDATE users 
                     SET is_premium = %s, premium_expires_at = %s, stripe_subscription_id = %s 
                     WHERE username = %s
-                ''', (is_premium, expires_at, subscription_id, username))
+                ''', (is_premium, final_expires_at, subscription_id, username))
             else:
                 cursor.execute('''
                     UPDATE users 
                     SET is_premium = ?, premium_expires_at = ?, stripe_subscription_id = ? 
                     WHERE username = ?
-                ''', (is_premium, expires_at, subscription_id, username))
+                ''', (is_premium, final_expires_at, subscription_id, username))
             
             rows_affected = cursor.rowcount
             conn.commit()
@@ -417,6 +461,7 @@ class Database:
             return rows_affected > 0
                 
         except Exception as e:
+            st.write(f"Debug: Error updating premium status: {e}")
             return False
     
     def check_premium_expiration(self, username):
