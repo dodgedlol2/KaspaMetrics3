@@ -31,8 +31,29 @@ db, auth_handler, payment_handler = init_app()
 # Add shared navigation to sidebar
 add_navigation()
 
-# Check for payment success in URL parameters
+# Check for password reset token in URL and redirect to login page
 query_params = st.query_params
+reset_token = query_params.get("reset_token", [None])[0] if isinstance(query_params.get("reset_token"), list) else query_params.get("reset_token")
+
+if reset_token:
+    st.info("🔄 **Password Reset Detected** - Redirecting you to the login page...")
+    st.write("You clicked a password reset link. Redirecting you to complete the password reset...")
+    
+    # Show the reset link for manual navigation if auto-redirect doesn't work
+    reset_login_url = f"https://kaspametrics3test1.streamlit.app/Login?reset_token={reset_token}"
+    st.markdown(f"If you're not automatically redirected, [click here to reset your password]({reset_login_url})")
+    
+    # Auto-redirect using JavaScript
+    st.markdown(f"""
+    <script>
+    window.location.href = "/Login?reset_token={reset_token}";
+    </script>
+    """, unsafe_allow_html=True)
+    
+    # Streamlit native redirect (backup)
+    st.switch_page(f"pages/0_🔑_Login.py")
+
+# Check for payment success in URL parameters
 if query_params.get("upgrade") == "success" and query_params.get("session_id"):
     session_id = query_params.get("session_id")
     
