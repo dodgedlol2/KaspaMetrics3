@@ -30,6 +30,13 @@ def init_handlers():
 
 db, auth_handler, payment_handler, email_handler = init_handlers()
 
+# ✅ NEW: Check for persistent login cookie before showing login form
+if not st.session_state.get('authentication_status'):
+    if auth_handler.check_persistent_login():
+        st.success("🔐 **Welcome back!** Auto-logged in from saved session.")
+        st.info("Redirecting to home page...")
+        st.switch_page("Home.py")
+
 # Check for password reset token in URL - Multiple ways to get it
 query_params = st.query_params
 reset_token = None
@@ -128,7 +135,9 @@ if st.session_state.get('authentication_status'):
             st.switch_page("pages/A_👤_Account.py")
     with col3:
         if st.button("🚪 Logout", use_container_width=True):
-            st.session_state.clear()
+            # ✅ MODIFIED: Use enhanced logout that clears cookies too
+            auth_handler.logout()
+            st.success("✅ **Logged out successfully!**")
             st.rerun()
     st.stop()
 
@@ -145,6 +154,9 @@ with col1:
         username = st.text_input("Username", placeholder="Enter your username")
         password = st.text_input("Password", type="password", placeholder="Enter your password")
         
+        # ✅ NEW: Add remember me checkbox
+        remember_me = st.checkbox("🔐 **Remember me** (stay logged in for 30 days)", value=True)
+        
         col_login, col_demo = st.columns(2)
         with col_login:
             login_button = st.form_submit_button("🔑 Sign In", use_container_width=True)
@@ -153,17 +165,14 @@ with col1:
         
         if login_button:
             if username and password:
-                if auth_handler.authenticate(username, password):
+                # ✅ MODIFIED: Use enhanced login with remember me
+                if auth_handler.login_user(username, password, remember_me):
                     user = db.get_user(username)
-                    is_premium, expiry_info = db.check_premium_expiration(username)
-                    
-                    st.session_state['authentication_status'] = True
-                    st.session_state['username'] = username
-                    st.session_state['name'] = user['name']
-                    st.session_state['is_premium'] = is_premium
-                    st.session_state['premium_expires_at'] = user.get('premium_expires_at')
-                    
                     st.success(f"✅ Welcome back, {user['name']}!")
+                    
+                    if remember_me:
+                        st.info("🔐 **Remember me enabled** - You'll stay logged in for 30 days")
+                    
                     st.balloons()
                     st.switch_page("Home.py")
                 else:
@@ -172,17 +181,13 @@ with col1:
                 st.error("⚠️ Please enter both username and password")
         
         if demo_button:
-            if auth_handler.authenticate("demo_user", "demo123"):
-                user = db.get_user("demo_user")
-                is_premium, expiry_info = db.check_premium_expiration("demo_user")
-                
-                st.session_state['authentication_status'] = True
-                st.session_state['username'] = "demo_user"
-                st.session_state['name'] = user['name']
-                st.session_state['is_premium'] = is_premium
-                st.session_state['premium_expires_at'] = user.get('premium_expires_at')
-                
+            # ✅ MODIFIED: Use enhanced login for demo with remember me
+            if auth_handler.login_user("demo_user", "demo123", remember_me):
                 st.success("🎮 Logged in as Demo User!")
+                
+                if remember_me:
+                    st.info("🔐 **Remember me enabled** - You'll stay logged in for 30 days")
+                
                 st.switch_page("Home.py")
     
     # Forgot Password Section
@@ -241,6 +246,11 @@ with col2:
                         except Exception as e:
                             st.warning("⚠️ Account created but welcome email could not be sent.")
                             st.write(f"Debug: Email error - {e}")
+                        
+                        # ✅ NEW: Auto-login new user with remember me enabled
+                        if auth_handler.login_user(new_username, new_password, True):
+                            st.success("🔐 **Auto-logged in with persistent session!**")
+                            st.switch_page("Home.py")
                         
                     else:
                         st.error("❌ Username or email already exists")
