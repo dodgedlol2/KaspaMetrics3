@@ -107,62 +107,63 @@ class PaymentHandler:
                             
                     except Exception as sub_error:
                         st.write(f"Debug: Error retrieving subscription: {sub_error}")
-                        # Fall back to manual calculation based on plan
+                        # ✅ FIXED: Determine plan from Stripe amount instead of session state
                         from datetime import datetime, timedelta
-                        plan = st.session_state.get('selected_plan', {'interval': 'month'})
                         
-                        # ✅ FIXED: Use correct interval for time calculation
+                        # Use Stripe amount to determine plan type (more reliable)
+                        amount = session.amount_total if hasattr(session, 'amount_total') else 0
                         now = datetime.now()
-                        if plan['interval'] == 'year':
+                        
+                        if amount >= 9900:  # $99 or more = Annual
                             expires_at = now + timedelta(days=365)
-                            st.write(f"Debug: Fallback calculation (YEARLY) - expires at: {expires_at.isoformat()}")
-                        else:
+                            st.write(f"Debug: Fallback calculation (YEARLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
+                        else:  # Less than $99 = Monthly
                             expires_at = now + timedelta(days=30)
-                            st.write(f"Debug: Fallback calculation (MONTHLY) - expires at: {expires_at.isoformat()}")
+                            st.write(f"Debug: Fallback calculation (MONTHLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
                         
                         return {
                             'success': True,
                             'expires_at': expires_at.isoformat(),
                             'subscription_id': subscription_id,
-                            'amount': session.amount_total if hasattr(session, 'amount_total') else 0
+                            'amount': amount
                         }
                 else:
-                    # No subscription ID, use manual calculation
+                    # ✅ FIXED: Determine plan from Stripe amount instead of session state
                     from datetime import datetime, timedelta
-                    plan = st.session_state.get('selected_plan', {'interval': 'month'})
                     
-                    # ✅ FIXED: Use correct interval for time calculation
+                    # Use Stripe amount to determine plan type (more reliable)
+                    amount = session.amount_total if hasattr(session, 'amount_total') else 0
                     now = datetime.now()
-                    if plan['interval'] == 'year':
+                    
+                    if amount >= 9900:  # $99 or more = Annual
                         expires_at = now + timedelta(days=365)
-                        st.write(f"Debug: No subscription ID (YEARLY) - expires at: {expires_at.isoformat()}")
-                    else:
+                        st.write(f"Debug: No subscription ID (YEARLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
+                    else:  # Less than $99 = Monthly
                         expires_at = now + timedelta(days=30)
-                        st.write(f"Debug: No subscription ID (MONTHLY) - expires at: {expires_at.isoformat()}")
+                        st.write(f"Debug: No subscription ID (MONTHLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
                     
                     return {
                         'success': True,
                         'expires_at': expires_at.isoformat(),
                         'subscription_id': None,
-                        'amount': session.amount_total if hasattr(session, 'amount_total') else 0
+                        'amount': amount
                     }
             else:
                 st.write(f"Debug: Payment not completed. Status: {session.payment_status}")
                 return {'success': False}
         except Exception as e:
             st.write(f"Debug: Error in handle_successful_payment: {e}")
-            # Fallback: still upgrade the user since payment was successful
+            # ✅ FIXED: Use session state as fallback when Stripe data unavailable
             from datetime import datetime, timedelta
             plan = st.session_state.get('selected_plan', {'interval': 'month'})
             
-            # ✅ FIXED: Use correct interval for time calculation
             now = datetime.now()
             if plan['interval'] == 'year':
                 expires_at = now + timedelta(days=365)
-                st.write(f"Debug: Exception fallback (YEARLY) - expires at: {expires_at.isoformat()}")
+                st.write(f"Debug: Exception fallback (YEARLY from session) - expires at: {expires_at.isoformat()}")
             else:
                 expires_at = now + timedelta(days=30)
-                st.write(f"Debug: Exception fallback (MONTHLY) - expires at: {expires_at.isoformat()}")
+                st.write(f"Debug: Exception fallback (MONTHLY from session) - expires at: {expires_at.isoformat()}")
             
             return {
                 'success': True,
