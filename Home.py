@@ -30,6 +30,10 @@ def init_app():
 
 db, auth_handler, payment_handler, email_handler = init_app()
 
+# ✅ AUTOMATIC DAILY RENEWAL CHECK
+# This runs once per day when anyone visits the site
+db.auto_check_all_renewals()
+
 # Add shared navigation to sidebar
 add_navigation()
 
