@@ -176,8 +176,8 @@ class EmailHandler:
         """Simulate email sending for testing"""
         st.write("Debug: Simulating email send...")
         
-        # Create reset URL - point to dedicated reset page
-        reset_url = f"{self.domain}/Reset_Password?reset_token={reset_token}"
+        # Create reset URL
+        reset_url = f"{self.domain}/?reset_token={reset_token}"
         
         st.info(f"""
         📧 **Password Reset Email Simulated**
