@@ -12,73 +12,86 @@ def add_navigation():
 def _add_custom_header():
     """Add the custom website header with Kaspa Analytics branding"""
     
-    # CSS for header and sidebar positioning
+    # CSS for header and sidebar positioning (with anti-flicker improvements)
     st.markdown("""
     <style>
-        /* Hide Streamlit default elements */
-        .stApp > header {
-            background-color: transparent;
-        }
-        
+        /* ANTI-FLICKER: Preload header positioning */
         .stApp {
-            margin-top: -80px;
+            margin-top: -80px !important;
         }
         
-        /* Better sidebar positioning solution from YouTube comment */
-        /* The whole sidebar */
-        .css-1lcbmhc.e1fqkh3o0 {
-            margin-top: 3.8rem;
-        }
-        
-        /* The display arrow */
-        .css-sg054d.e1fqkh3o3 {
-            margin-top: 5rem;
-        }
-        
-        /* Updated selectors for newer Streamlit versions */
-        [data-testid="stSidebar"] {
-            margin-top: 80px !important;
-        }
-        
-        [data-testid="collapsedControl"] {
-            top: 90px !important;
-            z-index: 1000000 !important;
-        }
-        
-        /* Additional modern Streamlit sidebar selectors */
-        .st-emotion-cache-1cypcdb {
-            margin-top: 80px !important;
-        }
-        
-        .st-emotion-cache-16txtl3 {
-            top: 90px !important;
-            z-index: 1000000 !important;
-        }
-        
-        /* Force sidebar collapse button visibility */
-        button[data-testid="collapsedControl"] {
-            top: 90px !important;
-            z-index: 1000000 !important;
-            position: fixed !important;
-        }
-        
-        /* Custom Real Website Header */
         .real-website-header {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
             width: 100vw !important;
-            height: 70px;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            height: 70px !important;
             z-index: 999999 !important;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
+        }
+        /* Hide Streamlit default elements */
+        .stApp > header {
+            background-color: transparent !important;
+            display: none !important;
+        }
+        
+        /* ENHANCED: Better sidebar positioning with no flicker */
+        [data-testid="stSidebar"] {
+            margin-top: 80px !important;
+            transition: none !important;
+        }
+        
+        [data-testid="collapsedControl"] {
+            top: 90px !important;
+            z-index: 1000000 !important;
+            transition: none !important;
+        }
+        
+        /* Force immediate positioning without animation */
+        .css-1lcbmhc.e1fqkh3o0 {
+            margin-top: 3.8rem !important;
+            transition: none !important;
+        }
+        
+        .css-sg054d.e1fqkh3o3 {
+            margin-top: 5rem !important;
+            transition: none !important;
+        }
+        
+        /* Additional modern Streamlit sidebar selectors */
+        .st-emotion-cache-1cypcdb {
+            margin-top: 80px !important;
+            transition: none !important;
+        }
+        
+        .st-emotion-cache-16txtl3 {
+            top: 90px !important;
+            z-index: 1000000 !important;
+            transition: none !important;
+        }
+        
+        /* Force sidebar collapse button visibility with no animation */
+        button[data-testid="collapsedControl"] {
+            top: 90px !important;
+            z-index: 1000000 !important;
+            position: fixed !important;
+            transition: none !important;
+        }
+        
+        /* Custom Real Website Header - ANTI-FLICKER VERSION */
+        .real-website-header {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0 2rem !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            /* Remove any transitions to prevent flicker */
+            transition: none !important;
+            animation: none !important;
         }
         
         /* Logo Section */
