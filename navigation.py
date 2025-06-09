@@ -14,7 +14,7 @@ def add_navigation():
             right: 0;
             width: 100vw;
             height: 70px;
-            z-index: 999999;
+            z-index: 999998;  /* LOWERED z-index so expand button can appear above */
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
             display: flex;
             align-items: center;
@@ -35,18 +35,20 @@ def add_navigation():
             z-index: 1000000 !important;
         }
         
-        /* FIX EXPAND BUTTON WHEN SIDEBAR IS COLLAPSED */
-        [data-testid="collapsedControl"] {
+        /* FIX EXPAND BUTTON WHEN SIDEBAR IS COLLAPSED - try all possible selectors */
+        [data-testid="collapsedControl"],
+        button[kind="headerNoPadding"],
+        .st-emotion-cache-bzr000,
+        [data-testid="stBaseButton-headerNoPadding"] {
             top: 90px !important;
-            z-index: 1000000 !important;
+            z-index: 999999 !important;
             position: fixed !important;
         }
         
-        /* Alternative selector for collapsed button */
-        button[data-testid="collapsedControl"] {
+        /* Target any button element that might be positioned on far left */
+        button[style*="position: fixed"][style*="left"] {
             top: 90px !important;
-            z-index: 1000000 !important;
-            position: fixed !important;
+            z-index: 999999 !important;
         }
         
         /* Make sure all buttons work */
