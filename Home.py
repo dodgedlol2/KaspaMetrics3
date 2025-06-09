@@ -39,7 +39,8 @@ db.auto_check_all_renewals()
 if not st.session_state.get('authentication_status'):
     if auth_handler.check_persistent_login():
         st.success("🔐 **Welcome back!** Auto-logged in from saved session.")
-        st.rerun()  # Refresh to show logged-in state
+        # Force a rerun to show the logged-in state immediately
+        st.rerun()
 
 # Add shared navigation to sidebar
 add_navigation()
