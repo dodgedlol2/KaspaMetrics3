@@ -5,6 +5,7 @@ from database import Database
 from datetime import datetime, timedelta
 import json
 import base64
+import hashlib
 
 class AuthHandler:
     def __init__(self, database):
@@ -80,94 +81,73 @@ class AuthHandler:
             st.write(f"Debug: Error verifying auth token: {e}")
             return None
     
+    def get_remember_me_key(self):
+        """Generate a unique key for remember me based on browser session"""
+        # Use a combination of browser info to create a semi-persistent key
+        # This won't survive browser restart but will work for the session
+        try:
+            import streamlit.runtime.scriptrunner as sr
+            script_run_ctx = sr.get_script_run_ctx()
+            if script_run_ctx and script_run_ctx.session_id:
+                session_id = script_run_ctx.session_id
+                # Create a hash of session ID for consistency
+                return f"remember_me_{hashlib.md5(session_id.encode()).hexdigest()[:16]}"
+        except:
+            pass
+        return "remember_me_default"
+    
     def set_persistent_login(self, username):
-        """Set persistent login cookie using HTML/JavaScript"""
+        """Set persistent login using Streamlit's session state with a semi-permanent key"""
         try:
             token = self.create_auth_token(username)
             if token:
-                # Use HTML/JavaScript to set cookie since streamlit-cookies-controller has issues
-                cookie_script = f"""
-                <script>
-                document.cookie = "{self.cookie_name}={token}; path=/; max-age={self.cookie_expiry_days * 24 * 60 * 60}; SameSite=Strict; Secure";
-                </script>
-                """
-                st.markdown(cookie_script, unsafe_allow_html=True)
-                st.write(f"Debug: Cookie set for {username}")
+                remember_key = self.get_remember_me_key()
+                
+                # Store in session state with remember me key
+                st.session_state[remember_key] = {
+                    'token': token,
+                    'username': username,
+                    'created_at': datetime.now().isoformat()
+                }
+                
+                # Also set a simpler fallback
+                st.session_state['remember_me_token'] = token
+                st.session_state['remember_me_username'] = username
+                
+                st.write(f"Debug: Remember me set for {username} with key {remember_key}")
                 return True
         except Exception as e:
             st.write(f"Debug: Error setting persistent login: {e}")
         return False
     
-    def get_cookie_value(self, cookie_name):
-        """Get cookie value using JavaScript"""
-        try:
-            # Create a unique key for this cookie check
-            import time
-            key = f"cookie_check_{int(time.time())}"
-            
-            cookie_script = f"""
-            <script>
-            function getCookie(name) {{
-                let nameEQ = name + "=";
-                let ca = document.cookie.split(';');
-                for(let i=0;i < ca.length;i++) {{
-                    let c = ca[i];
-                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-                }}
-                return null;
-            }}
-            
-            const cookieValue = getCookie('{cookie_name}');
-            if (cookieValue) {{
-                window.parent.postMessage({{
-                    type: 'cookie_value',
-                    cookie: cookieValue
-                }}, '*');
-            }}
-            </script>
-            """
-            
-            # Use components.html to execute JavaScript
-            import streamlit.components.v1 as components
-            components.html(cookie_script, height=0)
-            
-            # Check if cookie value was stored in session state by the JavaScript
-            return st.session_state.get(f'cookie_{cookie_name}')
-            
-        except Exception as e:
-            st.write(f"Debug: Error getting cookie: {e}")
-            return None
-    
     def check_persistent_login(self):
-        """Check if user has valid persistent login cookie"""
+        """Check if user has valid persistent login"""
         try:
-            # Don't check multiple times in same session
-            if st.session_state.get('cookie_login_checked'):
+            # Skip if already checked or logged in
+            if st.session_state.get('authentication_status') or st.session_state.get('cookie_login_checked'):
                 return False
             
-            # Try to get cookie using URL query params as fallback method
-            # This is a simpler approach that works better with Streamlit
+            # Method 1: Check with session-based key
+            remember_key = self.get_remember_me_key()
+            remember_data = st.session_state.get(remember_key)
             
-            # Check if there's a stored auth token in session state from previous cookie
-            stored_token = st.session_state.get('stored_auth_token')
+            if remember_data:
+                token = remember_data.get('token')
+                username = remember_data.get('username')
+                
+                if token and username:
+                    if self.verify_auth_token(token):
+                        return self._auto_login_user(username, "session key")
             
-            if stored_token:
-                username = self.verify_auth_token(stored_token)
-                if username:
-                    user = self.db.get_user(username)
-                    if user:
-                        # Set session state
-                        st.session_state['authentication_status'] = True
-                        st.session_state['username'] = username
-                        st.session_state['name'] = user['name']
-                        st.session_state['is_premium'] = user['is_premium']
-                        st.session_state['premium_expires_at'] = user['premium_expires_at']
-                        st.session_state['cookie_login_checked'] = True
-                        
-                        st.write(f"Debug: Auto-logged in user {username} from stored token")
-                        return True
+            # Method 2: Check fallback remember me token
+            fallback_token = st.session_state.get('remember_me_token')
+            fallback_username = st.session_state.get('remember_me_username')
             
+            if fallback_token and fallback_username:
+                if self.verify_auth_token(fallback_token):
+                    return self._auto_login_user(fallback_username, "fallback token")
+            
+            # Mark as checked
             st.session_state['cookie_login_checked'] = True
             return False
             
@@ -176,23 +156,43 @@ class AuthHandler:
             st.session_state['cookie_login_checked'] = True
             return False
     
+    def _auto_login_user(self, username, method):
+        """Helper method to auto-login user"""
+        try:
+            user = self.db.get_user(username)
+            if user:
+                # Set session state
+                st.session_state['authentication_status'] = True
+                st.session_state['username'] = username
+                st.session_state['name'] = user['name']
+                st.session_state['is_premium'] = user['is_premium']
+                st.session_state['premium_expires_at'] = user['premium_expires_at']
+                st.session_state['cookie_login_checked'] = True
+                
+                st.write(f"Debug: Auto-logged in user {username} via {method}")
+                return True
+        except Exception as e:
+            st.write(f"Debug: Error auto-logging in user: {e}")
+        return False
+    
     def logout(self):
         """Logout user and clear persistent login"""
         try:
-            # Clear cookie using JavaScript
-            cookie_script = f"""
-            <script>
-            document.cookie = "{self.cookie_name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict";
-            </script>
-            """
-            st.markdown(cookie_script, unsafe_allow_html=True)
+            # Clear remember me data
+            remember_key = self.get_remember_me_key()
             
-            # Clear session state
-            for key in ['authentication_status', 'username', 'name', 'is_premium', 'premium_expires_at', 'cookie_login_checked', 'stored_auth_token']:
+            # Clear all auth-related session state
+            keys_to_clear = [
+                'authentication_status', 'username', 'name', 'is_premium', 
+                'premium_expires_at', 'cookie_login_checked', 'remember_me_token',
+                'remember_me_username', remember_key
+            ]
+            
+            for key in keys_to_clear:
                 if key in st.session_state:
                     del st.session_state[key]
             
-            st.write("Debug: Logged out and cleared cookies")
+            st.write("Debug: Logged out and cleared remember me data")
             return True
         except Exception as e:
             st.write(f"Debug: Error during logout: {e}")
@@ -212,13 +212,8 @@ class AuthHandler:
                 
                 # Set persistent login if requested
                 if remember_me:
-                    token = self.create_auth_token(username)
-                    if token:
-                        # Store token in session state as backup method
-                        st.session_state['stored_auth_token'] = token
-                        # Also try to set browser cookie
-                        self.set_persistent_login(username)
-                        st.write(f"Debug: Remember me enabled for {username}")
+                    self.set_persistent_login(username)
+                    st.write(f"Debug: Remember me enabled for {username}")
                 
                 return True
         return False
