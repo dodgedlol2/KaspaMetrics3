@@ -1,32 +1,46 @@
 import streamlit as st
 
+# CRITICAL: CSS MUST BE FIRST - Hide native navigation immediately
+st.markdown("""
+    <style>
+    /* Hide native Streamlit page navigation immediately */
+    .css-1q1n0ol[data-testid="stSidebarNav"] {
+        display: none !important;
+    }
+    
+    div[data-testid="stSidebarNav"] {
+        display: none !important;
+    }
+    
+    section[data-testid="stSidebar"] nav {
+        display: none !important;
+    }
+    
+    /* Alternative selectors for different Streamlit versions */
+    .css-1d391kg {
+        display: none !important;
+    }
+    
+    .stSidebarNav {
+        display: none !important;
+    }
+    
+    /* Ensure our content remains visible */
+    section[data-testid="stSidebar"] > div {
+        display: block !important;
+    }
+    
+    /* Prevent any flashing by hiding sidebar nav container */
+    .css-1d391kg, .css-1q1n0ol, [data-testid="stSidebarNav"] {
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 def add_navigation():
     """Add organized navigation to sidebar (shared across all pages)"""
-    
-    # More precise CSS to hide only native page navigation
-    st.markdown("""
-        <style>
-        /* Hide only the native Streamlit page list */
-        .css-1q1n0ol[data-testid="stSidebarNav"] {
-            display: none;
-        }
-        
-        /* Alternative selectors for native page navigation */
-        div[data-testid="stSidebarNav"] {
-            display: none;
-        }
-        
-        /* Keep sidebar visible but hide page selector */
-        section[data-testid="stSidebar"] nav {
-            display: none;
-        }
-        
-        /* Ensure our content remains visible */
-        section[data-testid="stSidebar"] > div {
-            display: block !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
     
     # Add home button at top
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
