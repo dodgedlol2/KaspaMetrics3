@@ -50,23 +50,19 @@ st.markdown("""
         margin-top: -80px;
     }
     
-    /* Aggressively hide trigger buttons */
-    button[title="Hidden"],
-    button:contains("TRIGGER_"),
-    [data-testid="stButton"]:has(button:contains("TRIGGER_")) {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        height: 0 !important;
-        width: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        pointer-events: none !important;
-        z-index: -9999 !important;
+    /* Fix sidebar positioning - move it down below the header */
+    [data-testid="collapsedControl"] {
+        top: 80px !important;
+    }
+    
+    /* Move the entire sidebar down to avoid header overlap */
+    [data-testid="stSidebar"] {
+        margin-top: 70px !important;
+    }
+    
+    /* Ensure sidebar content starts below header */
+    [data-testid="stSidebar"] > div {
+        padding-top: 1rem !important;
     }
     
     /* Custom Real Website Header */
@@ -499,7 +495,16 @@ stats_html = """
 st.markdown(stats_html, unsafe_allow_html=True)
 
 # Test Section
-st.markdown("## 🧪 Header Features Test")
+st.markdown("## 🧪 Header Design Test")
+
+st.info("""
+**✅ Fixed Issues:**
+- Removed Account and Logout buttons from header
+- Fixed header flickering on page load
+- Moved sidebar down below header (collapse button now visible)
+- Removed all debugging messages and hidden buttons
+- Clean, simple header with just logo and user status
+""")
 
 col1, col2, col3 = st.columns(3)
 
@@ -507,31 +512,31 @@ with col1:
     st.markdown("### ✅ Working Features")
     st.write("• Fixed position header")
     st.write("• Logo with gradient effect")
-    st.write("• User account info display")
+    st.write("• User status display")
     st.write("• Premium status indicator")
-    st.write("• Responsive design")
-    st.write("• Glassmorphism effects")
+    st.write("• Sidebar positioned correctly")
+    st.write("• No button functionality issues")
 
 with col2:
     st.markdown("### 🎨 Design Elements")
     st.write("• Gradient backgrounds")
     st.write("• Backdrop blur effects")
-    st.write("• Hover animations")
     st.write("• Professional typography")
     st.write("• Kaspa brand colors")
-    st.write("• Mobile responsive")
+    st.write("• Clean, minimal design")
+    st.write("• Proper z-index layering")
 
 with col3:
-    st.markdown("### 🔧 Technical Implementation")
-    st.write("• Fixed CSS positioning")
-    st.write("• Z-index layering")
-    st.write("• JavaScript integration")
-    st.write("• Streamlit state management")
-    st.write("• Cross-page compatibility")
-    st.write("• Session persistence")
+    st.markdown("### 🔧 Technical Fixes")
+    st.write("• Fixed sidebar positioning")
+    st.write("• Removed button complexity")
+    st.write("• Eliminated debug messages")
+    st.write("• Clean HTML structure")
+    st.write("• No JavaScript conflicts")
+    st.write("• Stable header rendering")
 
 # Action Buttons
-st.markdown("### 🚀 Test Header Functionality")
+st.markdown("### 🚀 Navigation Test")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -544,34 +549,27 @@ with col2:
         st.switch_page("pages/0_🔑_Login.py")
 
 with col3:
-    if st.button("👤 Account Page", use_container_width=True):
-        st.switch_page("pages/A_👤_Account.py")
+    if st.button("🎯 Realistic Header", use_container_width=True):
+        st.switch_page("pages/Y_🎯_Realistic_Header.py")
 
 with col4:
     if st.session_state.get('authentication_status'):
-        if st.button("🚪 Test Logout", use_container_width=True):
-            auth_handler.logout()
-            st.success("✅ Logged out successfully!")
-            st.rerun()
+        if st.button("👤 Account Page", use_container_width=True):
+            st.switch_page("pages/A_👤_Account.py")
     else:
         if st.button("🎮 Demo Login", use_container_width=True):
             if auth_handler.login_user("demo_user", "demo123", True):
-                st.success("✅ Demo login successful!")
                 st.rerun()
 
 # Info Section
 st.markdown("---")
-st.info("""
-**🎨 Header Design Notes:**
-- Fixed position header that stays at top during scroll
-- Left side: Kaspa Analytics logo with gradient effects
-- Right side: User account info (name, premium status, action buttons)
-- Glassmorphism design with backdrop blur
-- Responsive for mobile devices
-- Integrates with existing authentication system
+st.success("""
+**🎯 Current Status:**
+- Clean header with logo and user info only
+- Sidebar properly positioned below header
+- No flickering or debug messages
+- Ready for further customization
 """)
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
 footer_html = f"""
@@ -579,7 +577,7 @@ footer_html = f"""
      background: rgba(15, 20, 25, 0.3); backdrop-filter: blur(20px);
      border-top: 1px solid rgba(255, 255, 255, 0.08);">
     <p style="color: #64748b; font-size: 13px;">
-        Header Design Experiment • Real Website Header Implementation
+        Header Design Experiment • Clean Fixed Header Implementation
     </p>
     <div style="color: #475569; font-size: 11px;">
         URL: https://kaspametrics3test1.streamlit.app/X_🎨_Header_Experiment
