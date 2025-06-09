@@ -37,10 +37,12 @@ db.auto_check_all_renewals()
 # ✅ CHECK FOR PERSISTENT LOGIN COOKIE
 # This runs OUTSIDE the cached function to avoid widget issues
 if not st.session_state.get('authentication_status'):
-    if auth_handler.check_persistent_login():
-        st.success("🔐 **Welcome back!** Auto-logged in from saved session.")
-        # Force a rerun to show the logged-in state immediately
-        st.rerun()
+    auto_login_success = auth_handler.check_persistent_login()
+    if auto_login_success:
+        # Show success message and a button to continue instead of auto-rerun
+        st.balloons()
+        if st.button("🏠 Continue to Dashboard", use_container_width=True):
+            st.rerun()
 
 # Add shared navigation to sidebar
 add_navigation()
