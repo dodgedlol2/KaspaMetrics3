@@ -1,7 +1,165 @@
 import streamlit as st
 
 def add_navigation():
-    """Add organized navigation to sidebar (shared across all pages)"""
+    """Add organized navigation to sidebar AND custom header (shared across all pages)"""
+    
+    # First add the header
+    _add_custom_header()
+    
+    # Then add the sidebar navigation (your original code)
+    _add_sidebar_navigation()
+
+def _add_custom_header():
+    """Add the custom website header"""
+    
+    # CSS for header and the WORKING sidebar fix
+    st.markdown("""
+    <style>
+        /* Header positioning */
+        .stApp { margin-top: -80px !important; }
+        
+        /* WORKING SIDEBAR FIX - exactly what worked in console */
+        [data-testid="stSidebar"] {
+            margin-top: 80px !important;
+        }
+        
+        /* Custom header */
+        .real-website-header {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            height: 70px !important;
+            z-index: 999999 !important;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0 2rem !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* Logo styles */
+        .header-logo {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            color: #00d4ff !important;
+        }
+        
+        .logo-icon {
+            font-size: 28px !important;
+            background: linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+        
+        /* User info styles */
+        .header-user-section {
+            display: flex !important;
+            align-items: center !important;
+            gap: 1rem !important;
+        }
+        
+        .user-info {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            gap: 2px !important;
+        }
+        
+        .user-name {
+            color: #f1f5f9 !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+        }
+        
+        .user-status {
+            color: #00d4ff !important;
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }
+        
+        .user-status.premium {
+            color: #fbbf24 !important;
+        }
+        
+        /* Main content positioning */
+        .main-content {
+            margin-top: 90px !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Render header HTML
+    if st.session_state.get('authentication_status'):
+        # Logged in user
+        user_name = st.session_state.get('name', 'User')
+        is_premium = st.session_state.get('is_premium', False)
+        premium_expires = st.session_state.get('premium_expires_at')
+        
+        # Calculate days left for premium users
+        days_left_text = ""
+        if is_premium and premium_expires:
+            from datetime import datetime
+            try:
+                expires = datetime.fromisoformat(premium_expires.replace('Z', '+00:00'))
+                days_left = (expires - datetime.now()).days
+                if days_left > 0:
+                    days_left_text = f" ({days_left} days left)"
+            except:
+                pass
+        
+        status_text = f"👑 PREMIUM{days_left_text}" if is_premium else "FREE TIER"
+        status_class = "premium" if is_premium else ""
+        
+        header_html = f"""
+        <div class="real-website-header">
+            <div class="header-logo">
+                <span class="logo-icon">⚡</span>
+                <span>Kaspa Analytics</span>
+            </div>
+            <div class="header-user-section">
+                <div class="user-info">
+                    <div class="user-name">Welcome, {user_name}</div>
+                    <div class="user-status {status_class}">{status_text}</div>
+                </div>
+            </div>
+        </div>
+        """
+        
+    else:
+        # Not logged in
+        header_html = """
+        <div class="real-website-header">
+            <div class="header-logo">
+                <span class="logo-icon">⚡</span>
+                <span>Kaspa Analytics</span>
+            </div>
+            <div class="header-user-section">
+                <div class="user-info">
+                    <div class="user-name">Please log in</div>
+                    <div class="user-status">GUEST</div>
+                </div>
+            </div>
+        </div>
+        """
+    
+    st.markdown(header_html, unsafe_allow_html=True)
+    
+    # Add margin to main content
+    st.markdown('<div class="main-content">', unsafe_allow_html=True)
+
+def _add_sidebar_navigation():
+    """Add the sidebar navigation (your original code)"""
     
     # More precise CSS to hide only native page navigation
     st.markdown("""
