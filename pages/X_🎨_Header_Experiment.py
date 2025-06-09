@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Header Experiment - Kaspa Analytics", 
     page_icon="🎨", 
     layout="wide",
-    initial_sidebar_state="collapsed"  # Hide sidebar for clean header experiment
+    initial_sidebar_state="expanded"  # Show sidebar
 )
 
 # Add parent directory to path for imports
@@ -18,6 +18,7 @@ from database import Database
 from auth_handler import AuthHandler
 from payment_handler import PaymentHandler
 from email_handler import EmailHandler
+from navigation import add_navigation  # Add navigation import
 
 # Initialize handlers
 @st.cache_resource
@@ -34,6 +35,9 @@ db, auth_handler, payment_handler, email_handler = init_handlers()
 if not st.session_state.get('authentication_status'):
     auth_handler.check_persistent_login()
 
+# Add navigation sidebar
+add_navigation()
+
 # Custom CSS for real website header
 st.markdown("""
 <style>
@@ -46,17 +50,29 @@ st.markdown("""
         margin-top: -80px;
     }
     
+    /* Hide the hidden buttons completely */
+    .hidden-header-buttons {
+        display: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        top: -9999px !important;
+        left: -9999px !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    
     /* Custom Real Website Header */
     .real-website-header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100vw !important;
         height: 70px;
         background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
         backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-        z-index: 999999;
+        z-index: 999999 !important;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -310,6 +326,8 @@ def render_real_header():
         st.markdown(header_html, unsafe_allow_html=True)
         
         # Create invisible Streamlit buttons that we'll trigger with JavaScript
+        st.markdown('<div class="hidden-header-buttons">', unsafe_allow_html=True)
+        
         col1, col2, col3 = st.columns([1, 1, 1])
         
         with col1:
@@ -322,40 +340,42 @@ def render_real_header():
                 st.success("✅ Logged out successfully!")
                 st.rerun()
         
+        st.markdown('</div>', unsafe_allow_html=True)
+        
         # JavaScript to connect header buttons to Streamlit buttons
         button_script = """
         <script>
         setTimeout(function() {
-            // Hide the invisible Streamlit buttons
-            const hiddenButtons = document.querySelectorAll('[data-testid="stButton"]');
-            hiddenButtons.forEach(button => {
-                if (button.textContent.includes('Hidden Account') || button.textContent.includes('Hidden Logout')) {
-                    button.style.display = 'none';
-                }
-            });
+            // Find and click the appropriate hidden button
+            function clickHiddenButton(buttonType) {
+                const buttons = document.querySelectorAll('[data-testid="stButton"] button');
+                buttons.forEach(button => {
+                    if (buttonType === 'account' && button.textContent.includes('Hidden Account')) {
+                        button.click();
+                    } else if (buttonType === 'logout' && button.textContent.includes('Hidden Logout')) {
+                        button.click();
+                    }
+                });
+            }
             
-            // Connect header buttons to Streamlit buttons
+            // Connect header buttons
             const headerAccountBtn = document.getElementById('header-account-btn');
             const headerLogoutBtn = document.getElementById('header-logout-btn');
             
             if (headerAccountBtn) {
+                headerAccountBtn.style.cursor = 'pointer';
                 headerAccountBtn.addEventListener('click', function() {
-                    const accountBtn = document.querySelector('[data-testid="stButton"] button[kind="primary"]');
-                    if (accountBtn && accountBtn.textContent.includes('Hidden Account')) {
-                        accountBtn.click();
-                    }
+                    clickHiddenButton('account');
                 });
             }
             
             if (headerLogoutBtn) {
+                headerLogoutBtn.style.cursor = 'pointer';
                 headerLogoutBtn.addEventListener('click', function() {
-                    const logoutBtn = document.querySelector('[data-testid="stButton"] button[kind="secondary"]');
-                    if (logoutBtn && logoutBtn.textContent.includes('Hidden Logout')) {
-                        logoutBtn.click();
-                    }
+                    clickHiddenButton('logout');
                 });
             }
-        }, 500);
+        }, 1000);
         </script>
         """
         st.markdown(button_script, unsafe_allow_html=True)
