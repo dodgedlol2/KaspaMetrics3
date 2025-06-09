@@ -9,7 +9,6 @@ import base64
 class AuthHandler:
     def __init__(self, database):
         self.db = database
-        # DON'T initialize cookie controller here - that causes caching issues
         self.cookie_name = "kaspa_auth_token"
         self.cookie_expiry_days = 30
     
@@ -47,6 +46,7 @@ class AuthHandler:
             token_json = json.dumps(token_data)
             token_encoded = base64.b64encode(token_json.encode()).decode()
             
+            st.write(f"Debug: Created token for {username}: {token_encoded[:50]}...")
             return token_encoded
         except Exception as e:
             st.write(f"Debug: Error creating auth token: {e}")
@@ -55,6 +55,12 @@ class AuthHandler:
     def verify_auth_token(self, token):
         """Verify authentication token and return username if valid"""
         try:
+            if not token:
+                st.write("Debug: No token provided")
+                return None
+                
+            st.write(f"Debug: Verifying token: {token[:50]}...")
+            
             # Decode token
             token_json = base64.b64decode(token.encode()).decode()
             token_data = json.loads(token_json)
@@ -62,19 +68,28 @@ class AuthHandler:
             username = token_data.get('username')
             created_at = token_data.get('created_at')
             
+            st.write(f"Debug: Token data - username: {username}, created: {created_at}")
+            
             if not username or not created_at:
+                st.write("Debug: Missing username or created_at in token")
                 return None
             
             # Check if token is expired (30 days)
             token_date = datetime.fromisoformat(created_at)
-            if datetime.now() - token_date > timedelta(days=self.cookie_expiry_days):
+            age_days = (datetime.now() - token_date).days
+            st.write(f"Debug: Token age: {age_days} days (expires after {self.cookie_expiry_days})")
+            
+            if age_days > self.cookie_expiry_days:
+                st.write("Debug: Token expired")
                 return None
             
             # Verify user still exists in database
             user = self.db.get_user(username)
             if not user:
+                st.write(f"Debug: User {username} not found in database")
                 return None
             
+            st.write(f"Debug: Token verified successfully for {username}")
             return username
             
         except Exception as e:
@@ -84,6 +99,8 @@ class AuthHandler:
     def set_persistent_login(self, username):
         """Set persistent login cookie"""
         try:
+            st.write(f"Debug: Setting persistent login for {username}")
+            
             # Import here to avoid caching issues
             from streamlit_cookies_controller import CookieController
             cookie_controller = CookieController()
@@ -91,32 +108,63 @@ class AuthHandler:
             token = self.create_auth_token(username)
             if token:
                 # Set cookie to expire in 30 days
+                max_age_seconds = self.cookie_expiry_days * 24 * 60 * 60
+                st.write(f"Debug: Setting cookie with max_age: {max_age_seconds} seconds ({self.cookie_expiry_days} days)")
+                
                 cookie_controller.set(
                     self.cookie_name, 
                     token,
-                    max_age=self.cookie_expiry_days * 24 * 60 * 60  # 30 days in seconds
+                    max_age=max_age_seconds
                 )
-                st.write(f"Debug: Cookie set for {username}")
+                
+                # Verify the cookie was set
+                st.write("Debug: Attempting to read cookie back immediately...")
+                read_back = cookie_controller.get(self.cookie_name)
+                if read_back:
+                    st.write(f"Debug: ✅ Cookie set and verified! First 50 chars: {read_back[:50]}...")
+                else:
+                    st.write("Debug: ❌ Cookie was not set or cannot be read back")
+                
                 return True
         except Exception as e:
             st.write(f"Debug: Error setting persistent login: {e}")
+            import traceback
+            st.write(f"Debug: Full traceback: {traceback.format_exc()}")
         return False
     
     def check_persistent_login(self):
         """Check if user has valid persistent login cookie"""
         try:
+            st.write("Debug: Checking for persistent login cookie...")
+            
+            # Skip if already checked or logged in
+            if st.session_state.get('authentication_status'):
+                st.write("Debug: User already authenticated, skipping cookie check")
+                return False
+                
+            if st.session_state.get('cookie_login_checked'):
+                st.write("Debug: Cookie already checked this session")
+                return False
+            
             # Import here to avoid caching issues
             from streamlit_cookies_controller import CookieController
             cookie_controller = CookieController()
             
-            # Skip if already checked or logged in
-            if st.session_state.get('authentication_status') or st.session_state.get('cookie_login_checked'):
-                return False
+            # Get all cookies for debugging
+            try:
+                all_cookies = cookie_controller.getAll()
+                st.write(f"Debug: All cookies: {list(all_cookies.keys()) if all_cookies else 'None'}")
+            except:
+                st.write("Debug: Could not get all cookies")
             
             token = cookie_controller.get(self.cookie_name)
+            st.write(f"Debug: Retrieved cookie '{self.cookie_name}': {token[:50] + '...' if token else 'None'}")
+            
             if token:
                 username = self.verify_auth_token(token)
                 if username:
+                    st.write(f"Debug: Valid token found for {username}, attempting auto-login...")
+                    
                     # Valid token found, auto-login user
                     user = self.db.get_user(username)
                     if user:
@@ -129,46 +177,74 @@ class AuthHandler:
                         st.session_state['cookie_login_checked'] = True
                         
                         # Refresh cookie expiry
+                        st.write("Debug: Refreshing cookie expiry...")
                         self.set_persistent_login(username)
                         
-                        st.write(f"Debug: Auto-logged in user {username} from cookie")
+                        st.write(f"Debug: ✅ Auto-logged in user {username} from cookie!")
                         return True
+                    else:
+                        st.write(f"Debug: User {username} not found in database")
+                else:
+                    st.write("Debug: Token verification failed")
+            else:
+                st.write("Debug: No cookie found")
             
             # Mark as checked
             st.session_state['cookie_login_checked'] = True
+            st.write("Debug: Cookie check completed, no valid login found")
             return False
             
         except Exception as e:
             st.write(f"Debug: Error checking persistent login: {e}")
+            import traceback
+            st.write(f"Debug: Full traceback: {traceback.format_exc()}")
             st.session_state['cookie_login_checked'] = True
             return False
     
     def logout(self):
         """Logout user and clear persistent login"""
         try:
+            st.write("Debug: Logging out user...")
+            
             # Import here to avoid caching issues
             from streamlit_cookies_controller import CookieController
             cookie_controller = CookieController()
             
             # Clear cookie
+            st.write(f"Debug: Removing cookie '{self.cookie_name}'")
             cookie_controller.remove(self.cookie_name)
             
+            # Verify cookie was removed
+            remaining_cookie = cookie_controller.get(self.cookie_name)
+            if remaining_cookie:
+                st.write(f"Debug: ❌ Cookie still exists after removal: {remaining_cookie[:50]}...")
+            else:
+                st.write("Debug: ✅ Cookie successfully removed")
+            
             # Clear session state
-            for key in ['authentication_status', 'username', 'name', 'is_premium', 'premium_expires_at', 'cookie_login_checked']:
+            keys_to_clear = ['authentication_status', 'username', 'name', 'is_premium', 'premium_expires_at', 'cookie_login_checked']
+            for key in keys_to_clear:
                 if key in st.session_state:
                     del st.session_state[key]
+                    st.write(f"Debug: Cleared session state key: {key}")
             
-            st.write("Debug: Logged out and cleared cookies")
+            st.write("Debug: ✅ Logout completed")
             return True
         except Exception as e:
             st.write(f"Debug: Error during logout: {e}")
+            import traceback
+            st.write(f"Debug: Full traceback: {traceback.format_exc()}")
             return False
     
     def login_user(self, username, password, remember_me=True):
         """Complete login process with optional persistent login"""
+        st.write(f"Debug: Attempting login for {username}, remember_me: {remember_me}")
+        
         if self.authenticate(username, password):
             user = self.db.get_user(username)
             if user:
+                st.write(f"Debug: Authentication successful for {username}")
+                
                 # Set session state
                 st.session_state['authentication_status'] = True
                 st.session_state['username'] = username
@@ -178,8 +254,16 @@ class AuthHandler:
                 
                 # Set persistent login if requested
                 if remember_me:
-                    self.set_persistent_login(username)
-                    st.write(f"Debug: Remember me enabled for {username}")
+                    st.write(f"Debug: Setting persistent login for {username}")
+                    success = self.set_persistent_login(username)
+                    if success:
+                        st.write("Debug: ✅ Persistent login set successfully")
+                    else:
+                        st.write("Debug: ❌ Failed to set persistent login")
                 
                 return True
+            else:
+                st.write(f"Debug: User {username} not found after authentication")
+        else:
+            st.write(f"Debug: Authentication failed for {username}")
         return False
