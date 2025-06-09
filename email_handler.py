@@ -219,26 +219,26 @@ class EmailHandler:
             """
             
             # Prepare email data for Mailjet
-            data = {{
+            data = {
                 'Messages': [
-                    {{
-                        "From": {{
+                    {
+                        "From": {
                             "Email": self.from_email,
                             "Name": self.from_name
-                        }},
+                        },
                         "To": [
-                            {{
+                            {
                                 "Email": to_email,
                                 "Name": username
-                            }}
+                            }
                         ],
                         "Subject": "🔑 Reset Your Kaspa Analytics Password",
                         "TextPart": text_content,
                         "HTMLPart": html_content,
                         "CustomID": f"password_reset_{reset_token[:8]}"
-                    }}
+                    }
                 ]
-            }}
+            }
             
             # Send email via Mailjet
             result = self.mailjet.send.create(data=data)
