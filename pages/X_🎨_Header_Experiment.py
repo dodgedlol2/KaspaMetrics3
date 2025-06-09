@@ -146,40 +146,6 @@ st.markdown("""
         color: #fbbf24;
     }
     
-    /* Header Buttons */
-    .header-btn {
-        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 212, 255, 0.2) 100%);
-        border: 1px solid rgba(0, 212, 255, 0.3);
-        border-radius: 8px;
-        padding: 8px 16px;
-        color: #00d4ff;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 13px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .header-btn:hover {
-        background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 212, 255, 0.3) 100%);
-        border-color: #00d4ff;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
-    }
-    
-    .header-btn.logout {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.2) 100%);
-        border-color: rgba(239, 68, 68, 0.3);
-        color: #ef4444;
-    }
-    
-    .header-btn.logout:hover {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.3) 100%);
-        border-color: #ef4444;
-        color: #ffffff;
-    }
-    
     /* Main Content Area */
     .main-content {
         margin-top: 90px;
@@ -290,7 +256,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Real Website Header
+# Real Website Header - Simplified without buttons
 def render_real_header():
     if st.session_state.get('authentication_status'):
         # Logged in user
@@ -313,7 +279,7 @@ def render_real_header():
         status_text = f"👑 PREMIUM{days_left_text}" if is_premium else "FREE TIER"
         status_class = "premium" if is_premium else ""
         
-        # Create header HTML without onclick buttons
+        # Simple header HTML without buttons
         header_html = f"""
         <div class="real-website-header">
             <div class="header-logo">
@@ -325,72 +291,14 @@ def render_real_header():
                     <div class="user-name">Welcome, {user_name}</div>
                     <div class="user-status {status_class}">{status_text}</div>
                 </div>
-                <div id="header-account-btn" class="header-btn">👤 Account</div>
-                <div id="header-logout-btn" class="header-btn logout">🚪 Logout</div>
             </div>
         </div>
         """
         
-        # Add the header
         st.markdown(header_html, unsafe_allow_html=True)
         
-        # Create invisible Streamlit buttons that we'll trigger with JavaScript
-        st.markdown('<div class="hidden-header-buttons">', unsafe_allow_html=True)
-        
-        col1, col2, col3 = st.columns([1, 1, 1])
-        
-        with col1:
-            if st.button("Hidden Account", key="hidden_account_btn", type="primary"):
-                st.switch_page("pages/A_👤_Account.py")
-        
-        with col2:
-            if st.button("Hidden Logout", key="hidden_logout_btn", type="secondary"):
-                auth_handler.logout()
-                st.success("✅ Logged out successfully!")
-                st.rerun()
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        # JavaScript to connect header buttons to Streamlit buttons
-        button_script = """
-        <script>
-        setTimeout(function() {
-            // Find and click the appropriate hidden button
-            function clickHiddenButton(buttonType) {
-                const buttons = document.querySelectorAll('[data-testid="stButton"] button');
-                buttons.forEach(button => {
-                    if (buttonType === 'account' && button.textContent.includes('Hidden Account')) {
-                        button.click();
-                    } else if (buttonType === 'logout' && button.textContent.includes('Hidden Logout')) {
-                        button.click();
-                    }
-                });
-            }
-            
-            // Connect header buttons
-            const headerAccountBtn = document.getElementById('header-account-btn');
-            const headerLogoutBtn = document.getElementById('header-logout-btn');
-            
-            if (headerAccountBtn) {
-                headerAccountBtn.style.cursor = 'pointer';
-                headerAccountBtn.addEventListener('click', function() {
-                    clickHiddenButton('account');
-                });
-            }
-            
-            if (headerLogoutBtn) {
-                headerLogoutBtn.style.cursor = 'pointer';
-                headerLogoutBtn.addEventListener('click', function() {
-                    clickHiddenButton('logout');
-                });
-            }
-        }, 1000);
-        </script>
-        """
-        st.markdown(button_script, unsafe_allow_html=True)
-        
     else:
-        # Not logged in - create header with login buttons
+        # Not logged in - simple header with just logo
         header_html = """
         <div class="real-website-header">
             <div class="header-logo">
@@ -398,67 +306,18 @@ def render_real_header():
                 <span>Kaspa Analytics</span>
             </div>
             <div class="header-user-section">
-                <div id="header-login-btn" class="header-btn">🔑 Login</div>
-                <div id="header-signup-btn" class="header-btn">📝 Sign Up</div>
+                <div class="user-info">
+                    <div class="user-name">Please log in</div>
+                    <div class="user-status">GUEST</div>
+                </div>
             </div>
         </div>
         """
         
         st.markdown(header_html, unsafe_allow_html=True)
-        
-        # Create invisible Streamlit buttons for login
-        col1, col2 = st.columns([1, 1])
-        
-        with col1:
-            if st.button("Hidden Login", key="hidden_login_btn", type="primary"):
-                st.switch_page("pages/0_🔑_Login.py")
-        
-        with col2:
-            if st.button("Hidden Signup", key="hidden_signup_btn", type="secondary"):
-                st.switch_page("pages/0_🔑_Login.py")
-        
-        # JavaScript for login buttons
-        login_script = """
-        <script>
-        setTimeout(function() {
-            // Hide the invisible Streamlit buttons
-            const hiddenButtons = document.querySelectorAll('[data-testid="stButton"]');
-            hiddenButtons.forEach(button => {
-                if (button.textContent.includes('Hidden Login') || button.textContent.includes('Hidden Signup')) {
-                    button.style.display = 'none';
-                }
-            });
-            
-            // Connect header buttons to Streamlit buttons
-            const headerLoginBtn = document.getElementById('header-login-btn');
-            const headerSignupBtn = document.getElementById('header-signup-btn');
-            
-            if (headerLoginBtn) {
-                headerLoginBtn.addEventListener('click', function() {
-                    const loginBtn = document.querySelector('[data-testid="stButton"] button[kind="primary"]');
-                    if (loginBtn && loginBtn.textContent.includes('Hidden Login')) {
-                        loginBtn.click();
-                    }
-                });
-            }
-            
-            if (headerSignupBtn) {
-                headerSignupBtn.addEventListener('click', function() {
-                    const signupBtn = document.querySelector('[data-testid="stButton"] button[kind="secondary"]');
-                    if (signupBtn && signupBtn.textContent.includes('Hidden Signup')) {
-                        signupBtn.click();
-                    }
-                });
-            }
-        }, 500);
-        </script>
-        """
-        st.markdown(login_script, unsafe_allow_html=True)
 
 # Render the header
 render_real_header()
-
-# Remove the old logout handling script since we now handle it differently
 
 # Main Content
 st.markdown('<div class="main-content">', unsafe_allow_html=True)
@@ -590,3 +449,5 @@ footer_html = f"""
 </div>
 """
 st.markdown(footer_html, unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
