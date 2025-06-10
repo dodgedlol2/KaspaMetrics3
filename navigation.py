@@ -37,20 +37,25 @@ def add_navigation():
             height: calc(100vh - 70px);
         }
         
-        /* SIDEBAR CONTROLS - Proper z-index hierarchy */
+        /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
         
-        /* Collapse button when sidebar is OPEN - highest priority */
+        /* Collapse button when sidebar is OPEN - FIXED to viewport */
         div[data-testid="stSidebarCollapseButton"] {
-            position: relative !important;
-            top: 0px !important;
+            position: fixed !important;
+            top: 85px !important;  /* Just below header */
+            left: 21rem !important;  /* Standard sidebar width */
             z-index: 999999 !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 0 8px 8px 0 !important;
+            backdrop-filter: blur(5px) !important;
         }
         
-        /* Expand button when sidebar is COLLAPSED - also high priority */
+        /* Expand button when sidebar is COLLAPSED - also fixed */
         div[data-testid="stSidebarCollapsedControl"] {
-            top: 85px !important;  /* Just below header */
-            z-index: 999998 !important;
             position: fixed !important;
+            top: 85px !important;  /* Just below header */
+            left: 0px !important;
+            z-index: 999998 !important;
         }
         
         /* Ensure all sidebar buttons remain clickable */
