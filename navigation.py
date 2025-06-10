@@ -50,30 +50,56 @@ def add_navigation():
             width: 280px !important;
         }
         
-        /* MAIN CONTENT RESPONSIVE TO SIDEBAR STATE - Different approach */
+        /* MAIN CONTENT RESPONSIVE - Override Streamlit's default behavior */
         
-        /* Default state - sidebar open */
+        /* Default: sidebar open with our custom width */
         .main .block-container {
             padding-top: 90px !important;
             margin-left: 280px !important;
             transition: margin-left 0.3s ease !important;
+            max-width: none !important;
         }
         
-        /* When sidebar is collapsed - target Streamlit's native classes */
-        .css-1rs6os .main .block-container,
-        .css-k1vhr4 .main .block-container {
+        /* Override when sidebar is not visible - multiple approaches */
+        
+        /* Method 1: When sidebar has display:none or is hidden */
+        [data-testid="stSidebar"]:not(:visible) ~ .main .block-container,
+        [data-testid="stSidebar"][style*="display: none"] ~ .main .block-container,
+        [data-testid="stSidebar"][style*="width: 0"] ~ .main .block-container {
+            margin-left: 0px !important;
+            padding-left: 1rem !important;
+        }
+        
+        /* Method 2: When main content shifts (Streamlit's default behavior) */
+        .main[style*="margin-left: 0"] .block-container {
             margin-left: 0px !important;
         }
         
-        /* Alternative selectors for collapsed sidebar */
-        [data-testid="stAppViewContainer"].css-1rs6os .main .block-container,
-        [data-testid="stAppViewContainer"]:has([data-testid="stSidebarCollapsedControl"]) .main .block-container {
+        /* Method 3: Force override using !important on all possible states */
+        .css-1rs6os.edgvbvh3 .main .block-container,
+        .css-k1vhr4.edgvbvh3 .main .block-container,
+        .css-uf99v8.edgvbvh3 .main .block-container {
+            margin-left: 0px !important;
+            width: calc(100vw - 2rem) !important;
+        }
+        
+        /* Method 4: Target the app container when sidebar is collapsed */
+        .stApp:has([data-testid="stSidebarCollapsedControl"]) .main .block-container {
             margin-left: 0px !important;
         }
         
-        /* Force full width when expand button is visible */
-        body:has([data-testid="stSidebarCollapsedControl"]) .main .block-container {
-            margin-left: 0px !important;
+        /* Method 5: Use CSS custom property to force override */
+        :root {
+            --sidebar-width: 280px;
+        }
+        
+        .main .block-container {
+            margin-left: var(--sidebar-width) !important;
+        }
+        
+        /* Reset custom property when collapsed */
+        body:has([data-testid="stSidebarCollapsedControl"]) {
+            --sidebar-width: 0px;
         }
         
         /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
