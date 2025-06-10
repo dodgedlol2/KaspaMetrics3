@@ -3,10 +3,10 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
     
-    # Add header CSS back - but test in Chrome first
+    # IMPROVED HEADER CSS - Fixed positioning and sidebar interactions
     st.markdown("""
     <style>
-        /* Simple header that should work in Chrome */
+        /* FIXED HEADER - Improved positioning and z-index management */
         .kaspa-header {
             position: fixed;
             top: 0;
@@ -14,54 +14,56 @@ def add_navigation():
             right: 0;
             width: 100vw;
             height: 70px;
-            z-index: 999998;  /* LOWERED z-index so expand button can appear above */
+            z-index: 999997;  /* Lower than sidebar controls but higher than content */
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        /* WORKING SIDEBAR FIX */
+        /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
+        .main .block-container {
+            padding-top: 90px !important;
+        }
+        
+        /* SIDEBAR POSITIONING - Move down to avoid header overlap */
         [data-testid="stSidebar"] {
             margin-top: 70px;
+            height: calc(100vh - 70px);
         }
         
-        /* FIX COLLAPSE BUTTON WHEN SIDEBAR IS OPEN */
-        div[data-testid="stSidebarCollapseButton"].st-emotion-cache-lmskyu {
+        /* SIDEBAR CONTROLS - Proper z-index hierarchy */
+        
+        /* Collapse button when sidebar is OPEN - highest priority */
+        div[data-testid="stSidebarCollapseButton"] {
             position: relative !important;
             top: 0px !important;
-            z-index: 1000000 !important;
+            z-index: 999999 !important;
         }
         
-        /* FIX EXPAND BUTTON WHEN SIDEBAR IS COLLAPSED - CORRECT SELECTOR! */
+        /* Expand button when sidebar is COLLAPSED - also high priority */
         div[data-testid="stSidebarCollapsedControl"] {
-            top: 90px !important;
-            z-index: 999999 !important;
+            top: 85px !important;  /* Just below header */
+            z-index: 999998 !important;
             position: fixed !important;
         }
         
-        /* Also target the button inside */
-        div[data-testid="stSidebarCollapsedControl"] button[data-testid="stBaseButton-headerNoPadding"] {
-            position: relative !important;
-            top: 0px !important;
-        }
-        
-        /* Make sure it's clickable */
-        div[data-testid="stSidebarCollapsedControl"],
-        div[data-testid="stSidebarCollapsedControl"] button {
-            pointer-events: auto !important;
-            cursor: pointer !important;
-        }
-        
-        /* Make sure all buttons work */
+        /* Ensure all sidebar buttons remain clickable */
         div[data-testid="stSidebarCollapseButton"] button,
+        div[data-testid="stSidebarCollapsedControl"] button,
         button[data-testid="collapsedControl"] {
             pointer-events: auto !important;
             cursor: pointer !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
         }
         
+        /* HEADER STYLING */
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -69,30 +71,99 @@ def add_navigation():
             font-size: 24px;
             font-weight: 700;
             color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
         }
         
         .kaspa-user-info {
             color: #f1f5f9;
             font-size: 14px;
+            text-align: right;
         }
         
         .kaspa-user-status {
             color: #00d4ff;
             font-size: 11px;
             text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 2px;
         }
         
         .kaspa-user-status.premium {
             color: #fbbf24;
+            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+        
+        .kaspa-user-status.free {
+            color: #94a3b8;
+        }
+        
+        .kaspa-user-status.guest {
+            color: #64748b;
+        }
+        
+        /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
+        .css-1q1n0ol[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        
+        div[data-testid="stSidebarNav"] {
+            display: none;
+        }
+        
+        section[data-testid="stSidebar"] nav {
+            display: none;
+        }
+        
+        /* Ensure sidebar content remains visible */
+        section[data-testid="stSidebar"] > div {
+            display: block !important;
+        }
+        
+        /* RESPONSIVE ADJUSTMENTS */
+        @media (max-width: 768px) {
+            .kaspa-header {
+                padding: 0 1rem;
+            }
+            
+            .kaspa-logo {
+                font-size: 20px;
+            }
+            
+            .kaspa-user-info {
+                font-size: 12px;
+            }
         }
     </style>
     """, unsafe_allow_html=True)
-    # Add header HTML back
+    
+    # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
         user_name = st.session_state.get('name', 'User')
         is_premium = st.session_state.get('is_premium', False)
-        status_text = "👑 PREMIUM" if is_premium else "FREE TIER"
-        status_class = "premium" if is_premium else ""
+        
+        # Better status display with expiration info
+        if is_premium:
+            status_text = "👑 PREMIUM"
+            status_class = "premium"
+            
+            # Add expiration info if available
+            if st.session_state.get('premium_expires_at'):
+                try:
+                    from datetime import datetime
+                    expires = datetime.fromisoformat(str(st.session_state['premium_expires_at']).replace('Z', '+00:00'))
+                    days_left = (expires - datetime.now()).days
+                    if days_left > 0:
+                        status_text += f" ({days_left}d left)"
+                    elif days_left == 0:
+                        status_text += " (Expires today)"
+                    else:
+                        status_text = "🔒 EXPIRED"
+                        status_class = "free"
+                except:
+                    pass
+        else:
+            status_text = "🔒 FREE TIER"
+            status_class = "free"
         
         header_html = f"""
         <div class="kaspa-header">
@@ -113,39 +184,14 @@ def add_navigation():
             </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
-                <div class="kaspa-user-status">GUEST</div>
+                <div class="kaspa-user-status guest">👤 GUEST</div>
             </div>
         </div>
         """
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # YOUR ORIGINAL SIDEBAR CODE - EXACTLY AS IT WAS
-    # More precise CSS to hide only native page navigation
-    st.markdown("""
-        <style>
-        /* Hide only the native Streamlit page list */
-        .css-1q1n0ol[data-testid="stSidebarNav"] {
-            display: none;
-        }
-        
-        /* Alternative selectors for native page navigation */
-        div[data-testid="stSidebarNav"] {
-            display: none;
-        }
-        
-        /* Keep sidebar visible but hide page selector */
-        section[data-testid="stSidebar"] nav {
-            display: none;
-        }
-        
-        /* Ensure our content remains visible */
-        section[data-testid="stSidebar"] > div {
-            display: block !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
+    # YOUR ORIGINAL SIDEBAR NAVIGATION - PRESERVED EXACTLY
     # Add home button at top
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
         st.switch_page("Home.py")
@@ -168,7 +214,7 @@ def add_navigation():
     
     st.sidebar.markdown("---")
     
-    # Mining Section (REMOVED "📊 Analytics" header text/icon)
+    # Mining Section
     with st.sidebar.expander("⛏️ Mining", expanded=True):
         if st.button("📈 Hashrate", key="sidebar_hashrate", use_container_width=True):
             st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
@@ -191,7 +237,7 @@ def add_navigation():
         if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section (MOVED Premium Features here + access control)
+    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
             if st.button("👑 Premium Features", key="sidebar_premium_features", use_container_width=True):
@@ -220,7 +266,7 @@ def add_navigation():
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
-    # Footer info
+    # Footer info - PRESERVED EXACTLY
     st.sidebar.markdown("---")
     st.sidebar.markdown("### ℹ️ Status")
     
