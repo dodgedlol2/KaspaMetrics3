@@ -31,10 +31,29 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* SIDEBAR POSITIONING - Move down to avoid header overlap */
+        /* SIDEBAR POSITIONING AND WIDTH CONTROL */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
+            width: 280px !important;  /* Set custom sidebar width */
+            min-width: 280px !important;
+            max-width: 280px !important;
+        }
+        
+        /* Force sidebar to be open and set width */
+        [data-testid="stSidebar"][aria-expanded="true"] {
+            width: 280px !important;
+        }
+        
+        /* Ensure sidebar content fits the custom width */
+        [data-testid="stSidebar"] .css-1d391kg {
+            width: 280px !important;
+        }
+        
+        /* Adjust main content margin when sidebar is open */
+        .main .block-container {
+            padding-top: 90px !important;
+            margin-left: 280px !important;  /* Account for custom sidebar width */
         }
         
         /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
@@ -43,7 +62,7 @@ def add_navigation():
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: calc(85px - 2cm) !important;  /* Moved 2cm up */
-            left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
+            left: calc(280px - 2cm) !important;  /* Adjusted for custom sidebar width */
             z-index: 999999 !important;
             background: transparent !important;  /* Made transparent */
             border: none !important;  /* Remove border */
@@ -146,6 +165,29 @@ def add_navigation():
             }
         }
     </style>
+    """, unsafe_allow_html=True)
+    
+    # FORCE SIDEBAR TO BE OPEN ON PAGE LOAD
+    st.markdown("""
+    <script>
+    // Force sidebar to be open when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.setAttribute('aria-expanded', 'true');
+            sidebar.style.width = '280px';
+        }
+    });
+    
+    // Also run after Streamlit loads
+    setTimeout(function() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.setAttribute('aria-expanded', 'true');
+            sidebar.style.width = '280px';
+        }
+    }, 100);
+    </script>
     """, unsafe_allow_html=True)
     
     # GENERATE HEADER HTML - Improved with better user status handling
