@@ -213,21 +213,74 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # FORCE SIDEBAR TO BE OPEN ON PAGE LOAD - Simplified
+    # FORCE SIDEBAR OPEN + AGGRESSIVE MAIN CONTENT ADJUSTMENT
     st.markdown("""
     <script>
-    function forceSidebarOpen() {
+    function setupSidebarAndContent() {
+        // Force sidebar open
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         if (sidebar) {
             sidebar.setAttribute('aria-expanded', 'true');
             sidebar.style.width = '280px';
         }
+        
+        // Aggressive main content adjustment
+        function forceMainContentWidth() {
+            const mainElement = document.querySelector('.main');
+            const blockContainer = document.querySelector('.main .block-container');
+            const expandButton = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
+            
+            if (mainElement && blockContainer) {
+                if (expandButton && expandButton.style.display !== 'none') {
+                    // Sidebar is collapsed - force full width
+                    mainElement.style.marginLeft = '0px';
+                    blockContainer.style.marginLeft = '0px';
+                    blockContainer.style.paddingLeft = '1rem';
+                    blockContainer.style.width = 'calc(100vw - 2rem)';
+                } else {
+                    // Sidebar is open - use custom width
+                    mainElement.style.marginLeft = '280px';
+                    blockContainer.style.marginLeft = '280px';
+                    blockContainer.style.paddingLeft = '1rem';
+                    blockContainer.style.width = 'calc(100vw - 280px - 2rem)';
+                }
+            }
+        }
+        
+        // Run immediately
+        forceMainContentWidth();
+        
+        // Set up observer for changes
+        const observer = new MutationObserver(function(mutations) {
+            forceMainContentWidth();
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true
+        });
+        
+        // Also run on clicks (when user clicks collapse/expand)
+        document.addEventListener('click', function() {
+            setTimeout(forceMainContentWidth, 50);
+            setTimeout(forceMainContentWidth, 200);
+        });
+        
+        // Periodic check as backup
+        setInterval(forceMainContentWidth, 1000);
     }
     
     // Run multiple times to ensure it works
-    document.addEventListener('DOMContentLoaded', forceSidebarOpen);
-    setTimeout(forceSidebarOpen, 100);
-    setTimeout(forceSidebarOpen, 500);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupSidebarAndContent);
+    } else {
+        setupSidebarAndContent();
+    }
+    
+    setTimeout(setupSidebarAndContent, 100);
+    setTimeout(setupSidebarAndContent, 500);
+    setTimeout(setupSidebarAndContent, 1000);
     </script>
     """, unsafe_allow_html=True)
     
