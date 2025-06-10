@@ -43,7 +43,7 @@ def add_navigation():
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: 85px !important;  /* Just below header */
-            left: 21rem !important;  /* Standard sidebar width */
+            left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
             z-index: 999999 !important;
             background: rgba(255, 255, 255, 0.1) !important;
             border-radius: 0 8px 8px 0 !important;
