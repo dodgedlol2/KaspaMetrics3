@@ -50,16 +50,30 @@ def add_navigation():
             width: 280px !important;
         }
         
-        /* Adjust main content margin based on sidebar state */
+        /* MAIN CONTENT RESPONSIVE TO SIDEBAR STATE - Different approach */
+        
+        /* Default state - sidebar open */
         .main .block-container {
             padding-top: 90px !important;
-            margin-left: 280px !important;  /* When sidebar is open */
-            transition: margin-left 0.3s ease !important;  /* Smooth transition */
+            margin-left: 280px !important;
+            transition: margin-left 0.3s ease !important;
         }
         
-        /* Dynamic class for collapsed state */
-        .sidebar-collapsed .main .block-container {
-            margin-left: 0px !important;  /* Full width when collapsed */
+        /* When sidebar is collapsed - target Streamlit's native classes */
+        .css-1rs6os .main .block-container,
+        .css-k1vhr4 .main .block-container {
+            margin-left: 0px !important;
+        }
+        
+        /* Alternative selectors for collapsed sidebar */
+        [data-testid="stAppViewContainer"].css-1rs6os .main .block-container,
+        [data-testid="stAppViewContainer"]:has([data-testid="stSidebarCollapsedControl"]) .main .block-container {
+            margin-left: 0px !important;
+        }
+        
+        /* Force full width when expand button is visible */
+        body:has([data-testid="stSidebarCollapsedControl"]) .main .block-container {
+            margin-left: 0px !important;
         }
         
         /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
@@ -173,66 +187,21 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # FORCE SIDEBAR TO BE OPEN ON PAGE LOAD + DYNAMIC WIDTH ADJUSTMENT
+    # FORCE SIDEBAR TO BE OPEN ON PAGE LOAD - Simplified
     st.markdown("""
     <script>
-    function setupSidebarWatcher() {
-        // Force sidebar to be open when page loads
+    function forceSidebarOpen() {
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         if (sidebar) {
             sidebar.setAttribute('aria-expanded', 'true');
             sidebar.style.width = '280px';
         }
-        
-        // Function to check sidebar state and adjust main content
-        function adjustMainContent() {
-            const sidebar = document.querySelector('[data-testid="stSidebar"]');
-            const body = document.body;
-            
-            if (sidebar) {
-                // Check if sidebar is collapsed by looking at its width
-                const sidebarRect = sidebar.getBoundingClientRect();
-                const isCollapsed = sidebarRect.width < 100; // Collapsed sidebars are very narrow
-                
-                if (isCollapsed) {
-                    body.classList.add('sidebar-collapsed');
-                } else {
-                    body.classList.remove('sidebar-collapsed');
-                }
-            }
-        }
-        
-        // Run adjustment initially
-        adjustMainContent();
-        
-        // Watch for sidebar changes using MutationObserver
-        const observer = new MutationObserver(function(mutations) {
-            adjustMainContent();
-        });
-        
-        // Observe changes to the entire document
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['style', 'class', 'aria-expanded']
-        });
-        
-        // Also check periodically as backup
-        setInterval(adjustMainContent, 500);
     }
     
-    // Run when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupSidebarWatcher);
-    } else {
-        setupSidebarWatcher();
-    }
-    
-    // Also run after Streamlit loads
-    setTimeout(setupSidebarWatcher, 100);
-    setTimeout(setupSidebarWatcher, 500);
-    setTimeout(setupSidebarWatcher, 1000);
+    // Run multiple times to ensure it works
+    document.addEventListener('DOMContentLoaded', forceSidebarOpen);
+    setTimeout(forceSidebarOpen, 100);
+    setTimeout(forceSidebarOpen, 500);
     </script>
     """, unsafe_allow_html=True)
     
