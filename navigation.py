@@ -183,6 +183,25 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
+    # AUTO-COLLAPSE SIDEBAR ON PAGE NAVIGATION
+    st.markdown("""
+    <script>
+    function autoCollapseSidebar() {
+        // Find the collapse button
+        const collapseButton = document.querySelector('[data-testid="stSidebarCollapseButton"] button');
+        
+        if (collapseButton) {
+            // Click the collapse button to close sidebar
+            collapseButton.click();
+        }
+    }
+    
+    // Run after page loads
+    setTimeout(autoCollapseSidebar, 500);
+    setTimeout(autoCollapseSidebar, 1000);
+    </script>
+    """, unsafe_allow_html=True)
+
     # YOUR ORIGINAL SIDEBAR NAVIGATION - UNCHANGED
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
         st.switch_page("Home.py")
