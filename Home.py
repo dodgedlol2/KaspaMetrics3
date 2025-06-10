@@ -19,11 +19,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initialize database and handlers - NO COOKIE CONTROLLER HERE
+# Initialize database and handlers
 @st.cache_resource
 def init_app():
     db = Database()
-    auth_handler = AuthHandler(db)  # AuthHandler NO LONGER creates CookieController in __init__
+    auth_handler = AuthHandler(db)
     payment_handler = PaymentHandler()
     email_handler = EmailHandler()
     return db, auth_handler, payment_handler, email_handler
@@ -33,16 +33,6 @@ db, auth_handler, payment_handler, email_handler = init_app()
 # ✅ AUTOMATIC DAILY RENEWAL CHECK
 # This runs once per day when anyone visits the site
 db.auto_check_all_renewals()
-
-# ✅ CHECK FOR PERSISTENT LOGIN COOKIE
-# This runs OUTSIDE the cached function to avoid widget issues
-if not st.session_state.get('authentication_status'):
-    auto_login_success = auth_handler.check_persistent_login()
-    if auto_login_success:
-        # Show success message and a button to continue instead of auto-rerun
-        st.balloons()
-        if st.button("🏠 Continue to Dashboard", use_container_width=True):
-            st.rerun()
 
 # Add shared navigation to sidebar
 add_navigation()
@@ -117,9 +107,6 @@ if query_params.get("upgrade") == "success" and query_params.get("session_id"):
                             st.session_state['authentication_status'] = True
                             st.session_state['username'] = username_from_stripe
                             st.session_state['name'] = updated_user['name']
-                            
-                            # ✅ NEW: Set persistent login cookie for auto-login
-                            auth_handler.set_persistent_login(username_from_stripe)
                         
                         # ✅ Update session state with FRESH database values
                         st.session_state['is_premium'] = updated_user['is_premium']
@@ -254,15 +241,8 @@ with col2:
                     pass
         st.write(welcome_msg)
         
-        col2a, col2b = st.columns(2)
-        with col2a:
-            if st.button("👤 Account", key="header_account"):
-                st.switch_page("pages/A_👤_Account.py")
-        with col2b:
-            if st.button("🚪 Logout", key="header_logout"):
-                auth_handler.logout()
-                st.success("✅ **Logged out successfully!**")
-                st.rerun()
+        if st.button("👤 Account", key="header_account"):
+            st.switch_page("pages/A_👤_Account.py")
     else:
         if st.button("🔑 Login", key="header_login", use_container_width=True):
             st.switch_page("pages/0_🔑_Login.py")
