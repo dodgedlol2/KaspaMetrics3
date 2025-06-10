@@ -50,10 +50,22 @@ def add_navigation():
             width: 280px !important;
         }
         
-        /* Adjust main content margin when sidebar is open */
+        /* Adjust main content margin based on sidebar state */
         .main .block-container {
             padding-top: 90px !important;
-            margin-left: 280px !important;  /* Account for custom sidebar width */
+            margin-left: 280px !important;  /* When sidebar is open */
+            transition: margin-left 0.3s ease !important;  /* Smooth transition */
+        }
+        
+        /* When sidebar is collapsed, remove the margin */
+        [data-testid="stSidebar"][aria-expanded="false"] ~ .main .block-container,
+        [data-testid="stSidebar"]:not([aria-expanded="true"]) ~ .main .block-container {
+            margin-left: 0px !important;  /* Full width when collapsed */
+        }
+        
+        /* Alternative selector for collapsed state */
+        .css-1rs6os.edgvbvh3 .main .block-container {
+            margin-left: 0px !important;
         }
         
         /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
