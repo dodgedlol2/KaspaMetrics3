@@ -57,15 +57,9 @@ def add_navigation():
             transition: margin-left 0.3s ease !important;  /* Smooth transition */
         }
         
-        /* When sidebar is collapsed, remove the margin */
-        [data-testid="stSidebar"][aria-expanded="false"] ~ .main .block-container,
-        [data-testid="stSidebar"]:not([aria-expanded="true"]) ~ .main .block-container {
+        /* Dynamic class for collapsed state */
+        .sidebar-collapsed .main .block-container {
             margin-left: 0px !important;  /* Full width when collapsed */
-        }
-        
-        /* Alternative selector for collapsed state */
-        .css-1rs6os.edgvbvh3 .main .block-container {
-            margin-left: 0px !important;
         }
         
         /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
@@ -179,26 +173,66 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # FORCE SIDEBAR TO BE OPEN ON PAGE LOAD
+    # FORCE SIDEBAR TO BE OPEN ON PAGE LOAD + DYNAMIC WIDTH ADJUSTMENT
     st.markdown("""
     <script>
-    // Force sidebar to be open when page loads
-    document.addEventListener('DOMContentLoaded', function() {
+    function setupSidebarWatcher() {
+        // Force sidebar to be open when page loads
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         if (sidebar) {
             sidebar.setAttribute('aria-expanded', 'true');
             sidebar.style.width = '280px';
         }
-    });
+        
+        // Function to check sidebar state and adjust main content
+        function adjustMainContent() {
+            const sidebar = document.querySelector('[data-testid="stSidebar"]');
+            const body = document.body;
+            
+            if (sidebar) {
+                // Check if sidebar is collapsed by looking at its width
+                const sidebarRect = sidebar.getBoundingClientRect();
+                const isCollapsed = sidebarRect.width < 100; // Collapsed sidebars are very narrow
+                
+                if (isCollapsed) {
+                    body.classList.add('sidebar-collapsed');
+                } else {
+                    body.classList.remove('sidebar-collapsed');
+                }
+            }
+        }
+        
+        // Run adjustment initially
+        adjustMainContent();
+        
+        // Watch for sidebar changes using MutationObserver
+        const observer = new MutationObserver(function(mutations) {
+            adjustMainContent();
+        });
+        
+        // Observe changes to the entire document
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style', 'class', 'aria-expanded']
+        });
+        
+        // Also check periodically as backup
+        setInterval(adjustMainContent, 500);
+    }
+    
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupSidebarWatcher);
+    } else {
+        setupSidebarWatcher();
+    }
     
     // Also run after Streamlit loads
-    setTimeout(function() {
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebar.setAttribute('aria-expanded', 'true');
-            sidebar.style.width = '280px';
-        }
-    }, 100);
+    setTimeout(setupSidebarWatcher, 100);
+    setTimeout(setupSidebarWatcher, 500);
+    setTimeout(setupSidebarWatcher, 1000);
     </script>
     """, unsafe_allow_html=True)
     
