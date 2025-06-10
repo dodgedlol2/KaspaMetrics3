@@ -3,10 +3,10 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
     
-    # IMPROVED HEADER CSS - Fixed positioning and sidebar interactions
+    # SIMPLIFIED HEADER - Let Streamlit handle sidebar behavior naturally
     st.markdown("""
     <style>
-        /* FIXED HEADER - Improved positioning and z-index management */
+        /* FIXED HEADER - Simple and clean */
         .kaspa-header {
             position: fixed;
             top: 0;
@@ -14,7 +14,7 @@ def add_navigation():
             right: 0;
             width: 100vw;
             height: 70px;
-            z-index: 999997;  /* Lower than sidebar controls but higher than content */
+            z-index: 999997;
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -26,118 +26,36 @@ def add_navigation():
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
+        /* PUSH MAIN CONTENT DOWN */
         .main .block-container {
             padding-top: 90px !important;
         }
         
-        /* SIDEBAR POSITIONING AND WIDTH CONTROL */
+        /* MOVE SIDEBAR DOWN */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            width: 280px !important;  /* Set custom sidebar width */
-            min-width: 280px !important;
-            max-width: 280px !important;
         }
         
-        /* Force sidebar to be open and set width */
-        [data-testid="stSidebar"][aria-expanded="true"] {
-            width: 280px !important;
-        }
-        
-        /* Ensure sidebar content fits the custom width */
-        [data-testid="stSidebar"] .css-1d391kg {
-            width: 280px !important;
-        }
-        
-        /* MAIN CONTENT RESPONSIVE - Override Streamlit's default behavior */
-        
-        /* Default: sidebar open with our custom width */
-        .main .block-container {
-            padding-top: 90px !important;
-            margin-left: 280px !important;
-            transition: margin-left 0.3s ease !important;
-            max-width: none !important;
-        }
-        
-        /* Override when sidebar is not visible - multiple approaches */
-        
-        /* Method 1: When sidebar has display:none or is hidden */
-        [data-testid="stSidebar"]:not(:visible) ~ .main .block-container,
-        [data-testid="stSidebar"][style*="display: none"] ~ .main .block-container,
-        [data-testid="stSidebar"][style*="width: 0"] ~ .main .block-container {
-            margin-left: 0px !important;
-            padding-left: 1rem !important;
-        }
-        
-        /* Method 2: When main content shifts (Streamlit's default behavior) */
-        .main[style*="margin-left: 0"] .block-container {
-            margin-left: 0px !important;
-        }
-        
-        /* Method 3: Force override using !important on all possible states */
-        .css-1rs6os.edgvbvh3 .main .block-container,
-        .css-k1vhr4.edgvbvh3 .main .block-container,
-        .css-uf99v8.edgvbvh3 .main .block-container {
-            margin-left: 0px !important;
-            width: calc(100vw - 2rem) !important;
-        }
-        
-        /* Method 4: Target the app container when sidebar is collapsed */
-        .stApp:has([data-testid="stSidebarCollapsedControl"]) .main .block-container {
-            margin-left: 0px !important;
-        }
-        
-        /* Method 5: Use CSS custom property to force override */
-        :root {
-            --sidebar-width: 280px;
-        }
-        
-        .main .block-container {
-            margin-left: var(--sidebar-width) !important;
-        }
-        
-        /* Reset custom property when collapsed */
-        body:has([data-testid="stSidebarCollapsedControl"]) {
-            --sidebar-width: 0px;
-        }
-        
-        /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
-        
-        /* Collapse button when sidebar is OPEN - FIXED to viewport */
+        /* SIDEBAR CONTROLS - Keep them functional but invisible */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
-            top: calc(85px - 2cm) !important;  /* Moved 2cm up */
-            left: calc(280px - 2cm) !important;  /* Adjusted for custom sidebar width */
+            top: calc(85px - 2cm) !important;
             z-index: 999999 !important;
-            background: transparent !important;  /* Made transparent */
-            border: none !important;  /* Remove border */
-            backdrop-filter: none !important;  /* Remove backdrop filter */
+            background: transparent !important;
+            border: none !important;
         }
         
-        /* Make the button inside transparent too */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
-            opacity: 0 !important;  /* Completely invisible */
+            opacity: 0 !important;
         }
         
-        /* Expand button when sidebar is COLLAPSED - also fixed */
         div[data-testid="stSidebarCollapsedControl"] {
-            position: fixed !important;
-            top: 85px !important;  /* Just below header */
-            left: 0px !important;
+            top: 85px !important;
             z-index: 999998 !important;
-        }
-        
-        /* Ensure all sidebar buttons remain clickable */
-        div[data-testid="stSidebarCollapseButton"] button,
-        div[data-testid="stSidebarCollapsedControl"] button,
-        button[data-testid="collapsedControl"] {
-            pointer-events: auto !important;
-            cursor: pointer !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            position: fixed !important;
         }
         
         /* HEADER STYLING */
@@ -178,7 +96,7 @@ def add_navigation():
             color: #64748b;
         }
         
-        /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
+        /* HIDE NATIVE PAGE NAVIGATION */
         .css-1q1n0ol[data-testid="stSidebarNav"] {
             display: none;
         }
@@ -191,12 +109,11 @@ def add_navigation():
             display: none;
         }
         
-        /* Ensure sidebar content remains visible */
         section[data-testid="stSidebar"] > div {
             display: block !important;
         }
         
-        /* RESPONSIVE ADJUSTMENTS */
+        /* RESPONSIVE DESIGN */
         @media (max-width: 768px) {
             .kaspa-header {
                 padding: 0 1rem;
@@ -213,88 +130,15 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # FORCE SIDEBAR OPEN + AGGRESSIVE MAIN CONTENT ADJUSTMENT
-    st.markdown("""
-    <script>
-    function setupSidebarAndContent() {
-        // Force sidebar open
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebar.setAttribute('aria-expanded', 'true');
-            sidebar.style.width = '280px';
-        }
-        
-        // Aggressive main content adjustment
-        function forceMainContentWidth() {
-            const mainElement = document.querySelector('.main');
-            const blockContainer = document.querySelector('.main .block-container');
-            const expandButton = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
-            
-            if (mainElement && blockContainer) {
-                if (expandButton && expandButton.style.display !== 'none') {
-                    // Sidebar is collapsed - force full width
-                    mainElement.style.marginLeft = '0px';
-                    blockContainer.style.marginLeft = '0px';
-                    blockContainer.style.paddingLeft = '1rem';
-                    blockContainer.style.width = 'calc(100vw - 2rem)';
-                } else {
-                    // Sidebar is open - use custom width
-                    mainElement.style.marginLeft = '280px';
-                    blockContainer.style.marginLeft = '280px';
-                    blockContainer.style.paddingLeft = '1rem';
-                    blockContainer.style.width = 'calc(100vw - 280px - 2rem)';
-                }
-            }
-        }
-        
-        // Run immediately
-        forceMainContentWidth();
-        
-        // Set up observer for changes
-        const observer = new MutationObserver(function(mutations) {
-            forceMainContentWidth();
-        });
-        
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-            attributes: true
-        });
-        
-        // Also run on clicks (when user clicks collapse/expand)
-        document.addEventListener('click', function() {
-            setTimeout(forceMainContentWidth, 50);
-            setTimeout(forceMainContentWidth, 200);
-        });
-        
-        // Periodic check as backup
-        setInterval(forceMainContentWidth, 1000);
-    }
-    
-    // Run multiple times to ensure it works
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupSidebarAndContent);
-    } else {
-        setupSidebarAndContent();
-    }
-    
-    setTimeout(setupSidebarAndContent, 100);
-    setTimeout(setupSidebarAndContent, 500);
-    setTimeout(setupSidebarAndContent, 1000);
-    </script>
-    """, unsafe_allow_html=True)
-    
-    # GENERATE HEADER HTML - Improved with better user status handling
+    # GENERATE HEADER HTML
     if st.session_state.get('authentication_status'):
         user_name = st.session_state.get('name', 'User')
         is_premium = st.session_state.get('is_premium', False)
         
-        # Better status display with expiration info
         if is_premium:
             status_text = "👑 PREMIUM"
             status_class = "premium"
             
-            # Add expiration info if available
             if st.session_state.get('premium_expires_at'):
                 try:
                     from datetime import datetime
@@ -339,14 +183,11 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # YOUR ORIGINAL SIDEBAR NAVIGATION - PRESERVED EXACTLY
-    # Add home button at top
+    # YOUR ORIGINAL SIDEBAR NAVIGATION - UNCHANGED
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
         st.switch_page("Home.py")
     
-    # Account buttons right under Home
     if st.session_state.get('authentication_status'):
-        # User is logged in - show Account and Logout side by side
         col1, col2 = st.sidebar.columns(2)
         with col1:
             if st.button("👤 Account", key="nav_account", use_container_width=True):
@@ -356,7 +197,6 @@ def add_navigation():
                 st.session_state.clear()
                 st.switch_page("Home.py")
     else:
-        # User not logged in
         if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
             st.switch_page("pages/0_🔑_Login.py")
     
@@ -385,7 +225,7 @@ def add_navigation():
         if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
+    # Premium Analytics Section
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
             if st.button("👑 Premium Features", key="sidebar_premium_features", use_container_width=True):
@@ -396,7 +236,6 @@ def add_navigation():
                 st.switch_page("pages/9_👑_Advanced_Metrics.py")
     elif st.session_state.get('authentication_status'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
-            # Premium Features accessible to logged-in users (but not paying)
             if st.button("👑 Premium Features", key="sidebar_premium_features_free", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.warning("Upgrade Required")
@@ -406,7 +245,6 @@ def add_navigation():
                 st.switch_page("pages/B_👑_Premium_Features.py")
     else:
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
-            # Premium Features accessible to everyone (including non-logged users)
             if st.button("👑 Premium Features", key="sidebar_premium_features_guest", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.info("Login Required")
@@ -414,7 +252,7 @@ def add_navigation():
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
-    # Footer info - PRESERVED EXACTLY
+    # Footer info
     st.sidebar.markdown("---")
     st.sidebar.markdown("### ℹ️ Status")
     
