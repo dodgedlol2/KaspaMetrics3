@@ -186,19 +186,50 @@ def add_navigation():
     # AUTO-COLLAPSE SIDEBAR ON PAGE NAVIGATION
     st.markdown("""
     <script>
-    function autoCollapseSidebar() {
-        // Find the collapse button
-        const collapseButton = document.querySelector('[data-testid="stSidebarCollapseButton"] button');
+    function forceCollapseSidebar() {
+        // Method 1: Direct manipulation of sidebar
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.style.width = '0px';
+            sidebar.style.minWidth = '0px';
+            sidebar.style.maxWidth = '0px';
+            sidebar.setAttribute('aria-expanded', 'false');
+        }
         
+        // Method 2: Try to trigger Streamlit's collapse mechanism
+        const collapseButton = document.querySelector('[data-testid="stSidebarCollapseButton"]');
         if (collapseButton) {
-            // Click the collapse button to close sidebar
-            collapseButton.click();
+            // Simulate click event
+            collapseButton.dispatchEvent(new Event('click', { bubbles: true }));
+        }
+        
+        // Method 3: Find and click the actual button element
+        const button = document.querySelector('[data-testid="stSidebarCollapseButton"] button');
+        if (button) {
+            button.click();
+        }
+        
+        // Method 4: Use Streamlit's internal functions if available
+        if (window.parent && window.parent.streamlit) {
+            try {
+                window.parent.streamlit.setComponentValue('sidebar_collapsed', true);
+            } catch (e) {
+                console.log('Streamlit API not available');
+            }
         }
     }
     
-    // Run after page loads
-    setTimeout(autoCollapseSidebar, 500);
-    setTimeout(autoCollapseSidebar, 1000);
+    // Run multiple times with different delays
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(forceCollapseSidebar, 100);
+        setTimeout(forceCollapseSidebar, 300);
+        setTimeout(forceCollapseSidebar, 500);
+        setTimeout(forceCollapseSidebar, 1000);
+        setTimeout(forceCollapseSidebar, 2000);
+    });
+    
+    // Also run immediately
+    forceCollapseSidebar();
     </script>
     """, unsafe_allow_html=True)
 
