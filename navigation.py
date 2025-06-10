@@ -42,12 +42,19 @@ def add_navigation():
         /* Collapse button when sidebar is OPEN - FIXED to viewport */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
-            top: 85px !important;  /* Just below header */
+            top: calc(85px - 2cm) !important;  /* Moved 2cm up */
             left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
             z-index: 999999 !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            border-radius: 0 8px 8px 0 !important;
-            backdrop-filter: blur(5px) !important;
+            background: transparent !important;  /* Made transparent */
+            border: none !important;  /* Remove border */
+            backdrop-filter: none !important;  /* Remove backdrop filter */
+        }
+        
+        /* Make the button inside transparent too */
+        div[data-testid="stSidebarCollapseButton"] button {
+            background: transparent !important;
+            border: none !important;
+            opacity: 0 !important;  /* Completely invisible */
         }
         
         /* Expand button when sidebar is COLLAPSED - also fixed */
