@@ -58,56 +58,83 @@ def add_navigation():
             position: fixed !important;
         }
         
-        /* HEADER STYLING WITH ANIMATED SVG LOGO */
+        /* HEADER STYLING WITH CUSTOM ANIMATED SVG LOGO */
         .kaspa-logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 24px;
-            font-weight: 700;
-            color: #00d4ff;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
         }
         
-        /* Animated SVG Logo Styles */
+        /* Custom SVG Logo Styles */
         .kaspa-logo-svg {
-            width: 40px;
-            height: 40px;
-            margin-right: 8px;
+            width: 200px;
+            height: 60px;
         }
         
-        /* Logo text styling */
-        .kaspa-logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            color: #00d4ff;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-        }
-        
-        /* SVG animations */
-        .logo-lightning {
-            animation: lightning-pulse 2s ease-in-out infinite;
+        /* SVG animations for your custom logo */
+        .logo-circle {
+            animation: circle-glow 3s ease-in-out infinite;
             transform-origin: center;
         }
         
-        .logo-spark {
-            animation: spark-twinkle 1.5s ease-in-out infinite alternate;
+        .logo-bar-1 {
+            animation: bar-bounce 2s ease-in-out infinite;
+            animation-delay: 0.1s;
+            transform-origin: bottom;
         }
         
-        @keyframes lightning-pulse {
+        .logo-bar-2 {
+            animation: bar-bounce 2s ease-in-out infinite;
+            animation-delay: 0.3s;
+            transform-origin: bottom;
+        }
+        
+        .logo-bar-3 {
+            animation: bar-bounce 2s ease-in-out infinite;
+            animation-delay: 0.5s;
+            transform-origin: bottom;
+        }
+        
+        .logo-bar-4 {
+            animation: bar-bounce 2s ease-in-out infinite;
+            animation-delay: 0.7s;
+            transform-origin: bottom;
+        }
+        
+        .logo-text-kaspa {
+            animation: text-pulse 2.5s ease-in-out infinite;
+        }
+        
+        .logo-text-metrics {
+            animation: text-pulse 2.5s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+        
+        @keyframes circle-glow {
             0%, 100% { 
-                transform: scale(1);
                 filter: drop-shadow(0 0 5px #00d4ff);
             }
             50% { 
-                transform: scale(1.1);
                 filter: drop-shadow(0 0 15px #00d4ff);
             }
         }
         
-        @keyframes spark-twinkle {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
+        @keyframes bar-bounce {
+            0%, 100% { 
+                transform: scaleY(1);
+            }
+            50% { 
+                transform: scaleY(1.2);
+            }
+        }
+        
+        @keyframes text-pulse {
+            0%, 100% { 
+                opacity: 1;
+            }
+            50% { 
+                opacity: 0.8;
+            }
         }
         
         .kaspa-user-info {
@@ -201,15 +228,21 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <div class="kaspa-logo-svg">
-                    <svg width="40" height="40" viewBox="0 0 100 100">
-                        <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
-                              fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
-                        <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
-                        <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24"/>
-                    </svg>
-                </div>
-                <span class="kaspa-logo-text">Kaspa Analytics</span>
+                <svg class="kaspa-logo-svg" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="logo-circle" cx="60" cy="60" r="35" fill="url(#circleGrad)"/>
+                    <rect class="logo-bar-1" x="45" y="70" width="6" height="12" rx="1" fill="white"/>
+                    <rect class="logo-bar-2" x="54" y="65" width="6" height="17" rx="1" fill="white"/>
+                    <rect class="logo-bar-3" x="63" y="55" width="6" height="27" rx="1" fill="white"/>
+                    <rect class="logo-bar-4" x="72" y="62" width="6" height="20" rx="1" fill="white"/>
+                    <text class="logo-text-kaspa" x="110" y="50" font-family="Arial, sans-serif" font-size="26" font-weight="600" fill="#00d4ff">Kaspa</text>
+                    <text class="logo-text-metrics" x="200" y="50" font-family="Arial, sans-serif" font-size="26" font-weight="300" fill="#7c3aed">Metrics</text>
+                </svg>
             </div>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
@@ -221,15 +254,21 @@ def add_navigation():
         header_html = """
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <div class="kaspa-logo-svg">
-                    <svg width="40" height="40" viewBox="0 0 100 100">
-                        <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
-                              fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
-                        <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
-                        <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24"/>
-                    </svg>
-                </div>
-                <span class="kaspa-logo-text">Kaspa Analytics</span>
+                <svg class="kaspa-logo-svg" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="logo-circle" cx="60" cy="60" r="35" fill="url(#circleGrad)"/>
+                    <rect class="logo-bar-1" x="45" y="70" width="6" height="12" rx="1" fill="white"/>
+                    <rect class="logo-bar-2" x="54" y="65" width="6" height="17" rx="1" fill="white"/>
+                    <rect class="logo-bar-3" x="63" y="55" width="6" height="27" rx="1" fill="white"/>
+                    <rect class="logo-bar-4" x="72" y="62" width="6" height="20" rx="1" fill="white"/>
+                    <text class="logo-text-kaspa" x="110" y="50" font-family="Arial, sans-serif" font-size="26" font-weight="600" fill="#00d4ff">Kaspa</text>
+                    <text class="logo-text-metrics" x="200" y="50" font-family="Arial, sans-serif" font-size="26" font-weight="300" fill="#7c3aed">Metrics</text>
+                </svg>
             </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
