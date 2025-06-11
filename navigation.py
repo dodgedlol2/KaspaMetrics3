@@ -130,12 +130,12 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders */
+        /* Style expanders - REMOVE BORDER */
         .streamlit-expanderHeader {
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.6) 0%, 
                 rgba(15, 23, 42, 0.8) 100%) !important;
-            border: 1px solid rgba(100, 116, 139, 0.2) !important;
+            border: none !important;  /* Remove border completely */
             border-radius: 10px !important;
             color: #e2e8f0 !important;
             backdrop-filter: blur(10px) !important;
@@ -143,7 +143,7 @@ def add_navigation():
         }
         
         .streamlit-expanderHeader:hover {
-            border-color: rgba(0, 212, 255, 0.4) !important;
+            border: none !important;  /* Keep border removed on hover */
             box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
         }
         
@@ -549,4 +549,4 @@ def add_navigation():
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
- 
+    # Removed the status section - no more "ℹ️ Status" display
