@@ -26,21 +26,11 @@ def add_navigation():
         }
         
         /* REMOVE THE RUNNING MAN AND LOADING ANIMATIONS */
-        .stApp > .main > div > .block-container > div > div > div > div:first-child {
-            display: none !important;
-        }
-        
-        /* HIDE LOADING PROGRESS BAR */
         [data-testid="stStatusWidget"] {
             display: none !important;
         }
         
-        /* HIDE STREAMLIT LOADING ANIMATION AND PROGRESS */
-        .stProgress > div {
-            display: none !important;
-        }
-        
-        /* AGGRESSIVE LOADING ELEMENT HIDING */
+        /* HIDE ALL STATUS AND LOADING ELEMENTS */
         div[data-testid*="stStatus"] {
             display: none !important;
         }
@@ -58,25 +48,14 @@ def add_navigation():
             display: none !important;
         }
         
-        /* HIDE ANY STREAMLIT HEADER ELEMENTS WITH MULTIPLE CSS CLASSES */
-        .css-18e3th9, .css-1d391kg, .css-k1vhr4 {
-            display: none !important;
-        }
-        
-        /* FORCE IMMEDIATE HIDING OF ANY ELEMENT WITH 'stHeader' */
-        *[data-testid*="stHeader"] {
-            display: none !important;
-            opacity: 0 !important;
-        }
-        
         /* HIDE FOOTER TOO */
         footer {
             display: none !important;
         }
         
-        /* ENSURE NO FLASH DURING LOAD */
-        .stApp {
-            background-color: #0f172a !important;
+        /* REMOVE ANY MARGIN/PADDING FROM TOP */
+        .main .block-container {
+            padding-top: 90px !important;
         }
         
         /* FIXED HEADER - Improved positioning and z-index management */
