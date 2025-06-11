@@ -79,9 +79,9 @@ def add_navigation():
         .kaspa-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-family: 'SF Pro Display', -apple-system, sans-serif;
-            font-size: 18px;
+            font-size: 22px;
             font-weight: 600;
             color: #ffffff;
         }
@@ -90,17 +90,17 @@ def add_navigation():
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2px;
-            width: 24px;
-            height: 24px;
+            width: 29px;
+            height: 29px;
         }
         
         .cell {
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             background: linear-gradient(45deg, #e5e7eb, #9ca3af, #6b7280);
             border-radius: 1px;
             box-shadow: 
-                0 0 6px rgba(156, 163, 175, 0.6),
+                0 0 7px rgba(156, 163, 175, 0.6),
                 inset 0 1px 1px rgba(255, 255, 255, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -108,31 +108,31 @@ def add_navigation():
         .cell:nth-child(1) { 
             opacity: 1; 
             background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 8px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
         }
         .cell:nth-child(2) { opacity: 0.9; }
         .cell:nth-child(3) { 
             opacity: 0.7; 
             background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 8px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
         }
         .cell:nth-child(4) { opacity: 0.8; }
         .cell:nth-child(5) { 
             opacity: 1; 
             background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 8px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
         }
         .cell:nth-child(6) { opacity: 0.8; }
         .cell:nth-child(7) { 
             opacity: 0.6; 
             background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 8px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
         }
         .cell:nth-child(8) { opacity: 0.9; }
         .cell:nth-child(9) { 
             opacity: 0.5; 
             background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 8px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
         }
         
         .logo-text { 
@@ -197,18 +197,18 @@ def add_navigation():
             }
             
             .kaspa-logo {
-                font-size: 14px;
-                gap: 8px;
+                font-size: 17px;
+                gap: 10px;
             }
             
             .matrix {
-                width: 18px;
-                height: 18px;
+                width: 22px;
+                height: 22px;
             }
             
             .cell {
-                width: 4px;
-                height: 4px;
+                width: 5px;
+                height: 5px;
             }
             
             .kaspa-user-info {
