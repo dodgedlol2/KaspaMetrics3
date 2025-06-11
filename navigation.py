@@ -130,12 +130,42 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - TESTING WITH RED BORDER */
+        /* Style expanders - TRYING DIFFERENT SELECTORS */
+        
+        /* Try targeting by data-testid */
+        [data-testid="stExpander"] {
+            border: 3px solid red !important;
+        }
+        
+        /* Try targeting details/summary elements (common for expanders) */
+        details {
+            border: 3px solid orange !important;
+        }
+        
+        summary {
+            border: 3px solid yellow !important;
+        }
+        
+        /* Try targeting by class patterns */
+        div[class*="expander"] {
+            border: 3px solid purple !important;
+        }
+        
+        div[class*="Expander"] {
+            border: 3px solid cyan !important;
+        }
+        
+        /* Nuclear approach - target all elements in sidebar to see structure */
+        [data-testid="stSidebar"] div {
+            border: 1px dotted lime !important;
+        }
+        
+        /* Try the old class names */
         .streamlit-expanderHeader {
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.6) 0%, 
                 rgba(15, 23, 42, 0.8) 100%) !important;
-            border: 3px solid red !important;  /* BRIGHT RED BORDER FOR TESTING */
+            border: 3px solid red !important;
             border-radius: 10px !important;
             color: #e2e8f0 !important;
             backdrop-filter: blur(10px) !important;
@@ -144,7 +174,7 @@ def add_navigation():
         }
         
         .streamlit-expanderHeader:hover {
-            border: 3px solid red !important;  /* RED BORDER ON HOVER TOO */
+            border: 3px solid red !important;
             box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
         }
         
@@ -156,14 +186,14 @@ def add_navigation():
         
         /* Remove borders from expander content area too */
         .streamlit-expanderContent {
-            border: 3px solid green !important;  /* GREEN BORDER FOR CONTENT AREA */
+            border: 3px solid green !important;
             border-top: 3px solid green !important;
             box-shadow: none !important;
         }
         
         /* Target the expander wrapper */
         .streamlit-expander {
-            border: 3px solid blue !important;  /* BLUE BORDER FOR WRAPPER */
+            border: 3px solid blue !important;
         }
         
         /* Style sidebar text */
