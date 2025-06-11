@@ -1,4 +1,5 @@
 import streamlit as st
+from footer import add_footer
 
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
@@ -495,3 +496,6 @@ def add_navigation():
     else:
         st.sidebar.info("🔐 Not Logged In")
         st.sidebar.write("Login for full access")
+    
+    # Add footer to every page
+    add_footer()
