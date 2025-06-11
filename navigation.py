@@ -130,21 +130,40 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - REMOVE BORDER */
+        /* Style expanders - AGGRESSIVE BORDER REMOVAL */
         .streamlit-expanderHeader {
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.6) 0%, 
                 rgba(15, 23, 42, 0.8) 100%) !important;
-            border: none !important;  /* Remove border completely */
+            border: 1px solid transparent !important;  /* Transparent border */
             border-radius: 10px !important;
             color: #e2e8f0 !important;
             backdrop-filter: blur(10px) !important;
             font-weight: 600 !important;
+            box-shadow: none !important;  /* Remove any default shadow */
         }
         
         .streamlit-expanderHeader:hover {
-            border: none !important;  /* Keep border removed on hover */
+            border: 1px solid transparent !important;  /* Keep transparent on hover */
             box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
+        }
+        
+        /* Target all possible expander border elements */
+        [data-testid="stSidebar"] .streamlit-expanderHeader {
+            border: 1px solid transparent !important;
+            outline: none !important;
+        }
+        
+        /* Remove borders from expander content area too */
+        .streamlit-expanderContent {
+            border: none !important;
+            border-top: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Target the expander wrapper */
+        .streamlit-expander {
+            border: none !important;
         }
         
         /* Style sidebar text */
