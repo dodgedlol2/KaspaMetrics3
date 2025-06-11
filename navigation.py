@@ -115,7 +115,7 @@ def add_navigation():
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
             top: 85px !important;  /* Just below header */
-            left: 0px !important;  /* Moved 10px more to the left (was 10px, now 0px) */
+            left: 20px !important;  /* Moved 10px to the right (was 10px, now 20px) */
             z-index: 999998 !important;
             background: transparent !important;  /* Remove dark background */
             border: none !important;  /* Remove border */
