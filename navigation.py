@@ -86,13 +86,6 @@ def add_navigation():
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
         }
         
-        /* SVG Logo specific styling */
-        .kaspa-logo svg {
-            height: 50px;
-            width: 167px; /* Maintains 400:120 aspect ratio */
-            display: block;
-        }
-        
         .kaspa-user-info {
             color: #f1f5f9;
             font-size: 14px;
@@ -148,20 +141,12 @@ def add_navigation():
                 font-size: 20px;
             }
             
-            .kaspa-logo svg {
-                height: 40px;
-                width: 133px; /* Maintains 400:120 aspect ratio */
-            }
-            
             .kaspa-user-info {
                 font-size: 12px;
             }
         }
     </style>
     """, unsafe_allow_html=True)
-    
-    # Use a simple text-based logo instead of SVG to avoid parsing issues
-    logo_html = '<span style="font-size: 24px; font-weight: 700;"><span style="color: #00d4ff;">⬡</span> <span style="color: #00d4ff;">Kaspa</span><span style="color: #7c3aed;">Metrics</span></span>'
     
     # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
@@ -195,7 +180,7 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                {logo_html}
+                <span>⚡ Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
@@ -204,10 +189,10 @@ def add_navigation():
         </div>
         """
     else:
-        header_html = f"""
+        header_html = """
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                {logo_html}
+                <span>⚡ Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
