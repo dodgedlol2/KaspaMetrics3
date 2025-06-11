@@ -222,20 +222,19 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <svg class="dag-logo-header" viewBox="0 0 120 40">
-                    <!-- Simplified DAG for header -->
-                    <rect class="dag-block-header block1-header" x="8" y="18" width="6" height="6"/>
-                    <rect class="dag-block-header block2-header" x="20" y="12" width="6" height="6"/>
-                    <rect class="dag-block-header block3-header" x="20" y="18" width="6" height="6"/>
-                    <rect class="dag-block-header block4-header" x="20" y="24" width="6" height="6"/>
-                    <rect class="dag-block-header block5-header" x="32" y="15" width="6" height="6"/>
-                    <rect class="dag-block-header block6-header" x="32" y="21" width="6" height="6"/>
+                <svg class="dag-logo-header" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="dag-block-header block1-header" x="8" y="18" width="6" height="6"></rect>
+                    <rect class="dag-block-header block2-header" x="20" y="12" width="6" height="6"></rect>
+                    <rect class="dag-block-header block3-header" x="20" y="18" width="6" height="6"></rect>
+                    <rect class="dag-block-header block4-header" x="20" y="24" width="6" height="6"></rect>
+                    <rect class="dag-block-header block5-header" x="32" y="15" width="6" height="6"></rect>
+                    <rect class="dag-block-header block6-header" x="32" y="21" width="6" height="6"></rect>
                     
-                    <line class="dag-connection-header conn1-header" x1="14" y1="21" x2="20" y2="15"/>
-                    <line class="dag-connection-header conn2-header" x1="14" y1="21" x2="20" y2="21"/>
-                    <line class="dag-connection-header conn3-header" x1="14" y1="21" x2="20" y2="27"/>
-                    <line class="dag-connection-header conn4-header" x1="26" y1="15" x2="32" y2="18"/>
-                    <line class="dag-connection-header conn5-header" x1="26" y1="21" x2="32" y2="24"/>
+                    <line class="dag-connection-header conn1-header" x1="14" y1="21" x2="20" y2="15"></line>
+                    <line class="dag-connection-header conn2-header" x1="14" y1="21" x2="20" y2="21"></line>
+                    <line class="dag-connection-header conn3-header" x1="14" y1="21" x2="20" y2="27"></line>
+                    <line class="dag-connection-header conn4-header" x1="26" y1="15" x2="32" y2="18"></line>
+                    <line class="dag-connection-header conn5-header" x1="26" y1="21" x2="32" y2="24"></line>
                 </svg>
                 <span>Kaspa Analytics</span>
             </div>
@@ -249,20 +248,19 @@ def add_navigation():
         header_html = """
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <svg class="dag-logo-header" viewBox="0 0 120 40">
-                    <!-- Simplified DAG for header -->
-                    <rect class="dag-block-header block1-header" x="8" y="18" width="6" height="6"/>
-                    <rect class="dag-block-header block2-header" x="20" y="12" width="6" height="6"/>
-                    <rect class="dag-block-header block3-header" x="20" y="18" width="6" height="6"/>
-                    <rect class="dag-block-header block4-header" x="20" y="24" width="6" height="6"/>
-                    <rect class="dag-block-header block5-header" x="32" y="15" width="6" height="6"/>
-                    <rect class="dag-block-header block6-header" x="32" y="21" width="6" height="6"/>
+                <svg class="dag-logo-header" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="dag-block-header block1-header" x="8" y="18" width="6" height="6"></rect>
+                    <rect class="dag-block-header block2-header" x="20" y="12" width="6" height="6"></rect>
+                    <rect class="dag-block-header block3-header" x="20" y="18" width="6" height="6"></rect>
+                    <rect class="dag-block-header block4-header" x="20" y="24" width="6" height="6"></rect>
+                    <rect class="dag-block-header block5-header" x="32" y="15" width="6" height="6"></rect>
+                    <rect class="dag-block-header block6-header" x="32" y="21" width="6" height="6"></rect>
                     
-                    <line class="dag-connection-header conn1-header" x1="14" y1="21" x2="20" y2="15"/>
-                    <line class="dag-connection-header conn2-header" x1="14" y1="21" x2="20" y2="21"/>
-                    <line class="dag-connection-header conn3-header" x1="14" y1="21" x2="20" y2="27"/>
-                    <line class="dag-connection-header conn4-header" x1="26" y1="15" x2="32" y2="18"/>
-                    <line class="dag-connection-header conn5-header" x1="26" y1="21" x2="32" y2="24"/>
+                    <line class="dag-connection-header conn1-header" x1="14" y1="21" x2="20" y2="15"></line>
+                    <line class="dag-connection-header conn2-header" x1="14" y1="21" x2="20" y2="21"></line>
+                    <line class="dag-connection-header conn3-header" x1="14" y1="21" x2="20" y2="27"></line>
+                    <line class="dag-connection-header conn4-header" x1="26" y1="15" x2="32" y2="18"></line>
+                    <line class="dag-connection-header conn5-header" x1="26" y1="21" x2="32" y2="24"></line>
                 </svg>
                 <span>Kaspa Analytics</span>
             </div>
