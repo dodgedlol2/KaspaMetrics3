@@ -111,22 +111,21 @@ def add_navigation():
             cursor: pointer !important;
         }
 
-        /* Expand button when sidebar is COLLAPSED - Hamburger menu style (functions as both) */
+        /* Expand button when sidebar is COLLAPSED - Clean hamburger only */
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
             top: 85px !important;  /* Just below header */
             left: 10px !important;
             z-index: 999998 !important;
-            background: rgba(15, 23, 42, 0.9) !important;  /* Match header background */
-            border: 1px solid rgba(0, 212, 255, 0.3) !important;
-            border-radius: 8px !important;
-            backdrop-filter: blur(10px) !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+            background: transparent !important;  /* Remove dark background */
+            border: none !important;  /* Remove border */
+            backdrop-filter: none !important;  /* Remove backdrop filter */
+            box-shadow: none !important;  /* Remove shadow */
             width: 40px !important;
             height: 40px !important;
         }
 
-        /* Style the expand button with hamburger design */
+        /* Style the expand button - clean and minimal */
         div[data-testid="stSidebarCollapsedControl"] button,
         button[data-testid="collapsedControl"] {
             background: transparent !important;
@@ -136,12 +135,13 @@ def add_navigation():
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            font-size: 0 !important;  /* Hide original text */
+            font-size: 0 !important;  /* Hide original > text */
             cursor: pointer !important;
             position: relative !important;
+            color: transparent !important;  /* Hide any default text */
         }
 
-        /* Add custom hamburger icon to the expand button (functions as both) */
+        /* Add custom hamburger icon only */
         div[data-testid="stSidebarCollapsedControl"] button::before,
         button[data-testid="collapsedControl"]::before {
             content: "☰" !important;
@@ -153,19 +153,13 @@ def add_navigation():
             line-height: 1 !important;
         }
 
-        /* Hover effect for the functional button */
-        div[data-testid="stSidebarCollapsedControl"]:hover,
-        button[data-testid="collapsedControl"]:hover {
-            background: rgba(0, 212, 255, 0.1) !important;
-            border-color: rgba(0, 212, 255, 0.6) !important;
-            transform: scale(1.05) !important;
-            transition: all 0.2s ease !important;
-        }
-
+        /* Clean hover effect - just color change */
         div[data-testid="stSidebarCollapsedControl"]:hover button::before,
         button[data-testid="collapsedControl"]:hover::before {
             color: #ffffff !important;
             text-shadow: 0 0 8px rgba(0, 212, 255, 0.8) !important;
+            transform: scale(1.1) !important;
+            transition: all 0.2s ease !important;
         }
 
         /* Ensure the functional button remains clickable */
