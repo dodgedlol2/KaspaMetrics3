@@ -130,20 +130,30 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - TRANSPARENT BORDERS AND BACKGROUND */
+        /* Style expanders - COMPLETELY REMOVE ALL BORDERS AND BACKGROUNDS */
         
         /* Target details elements (the actual expanders) */
         [data-testid="stSidebar"] details {
-            border: 1px solid transparent !important;  /* Transparent border - keeps spacing */
+            border: none !important;  /* Completely remove border */
             outline: none !important;
             background: transparent !important;  /* Remove default background */
-            border-radius: 10px !important;
+            border-radius: 0 !important;  /* Remove border radius */
             backdrop-filter: none !important;  /* Remove backdrop filter */
+            box-shadow: none !important;  /* Remove any shadow */
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Also target any wrapper divs around details */
+        [data-testid="stSidebar"] details > div {
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
         }
         
         /* Style the summary (clickable header) - Apply your gradient here */
         [data-testid="stSidebar"] summary {
-            border: 1px solid transparent !important;  /* Transparent border here too */
+            border: none !important;  /* No border on summary either */
             outline: none !important;
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.6) 0%, 
@@ -154,6 +164,7 @@ def add_navigation():
             border-radius: 8px !important;
             padding: 8px 12px !important;
             backdrop-filter: blur(10px) !important;
+            margin: 0 !important;
         }
         
         /* Hover effect for summary */
@@ -162,6 +173,13 @@ def add_navigation():
                 rgba(0, 212, 255, 0.2) 0%, 
                 rgba(30, 41, 59, 0.9) 100%) !important;
             box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
+        }
+        
+        /* Make sure content area is also transparent */
+        [data-testid="stSidebar"] details[open] {
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
         }
         
         /* Style sidebar text */
