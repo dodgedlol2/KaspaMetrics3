@@ -183,39 +183,97 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # AUTO-COLLAPSE SIDEBAR - Simple CSS approach
+    # AUTO-COLLAPSE SIDEBAR WITH LEFT-SIDE HOVER ZONE
     st.markdown("""
     <style>
     /* Start with sidebar collapsed by default */
     [data-testid="stSidebar"] {
         transform: translateX(-100%) !important;
         transition: transform 0.3s ease !important;
+        z-index: 999996 !important;
     }
     
-    /* Show sidebar when hovering over expand area */
-    [data-testid="stSidebarCollapsedControl"]:hover ~ [data-testid="stSidebar"],
+    /* Create invisible hover zone on the left side */
+    .sidebar-hover-zone {
+        position: fixed;
+        top: 70px;  /* Below header */
+        left: 0;
+        width: 2cm;  /* 2cm from left edge */
+        height: calc(100vh - 70px);  /* Full height minus header */
+        z-index: 999999 !important;
+        background: transparent;
+        pointer-events: auto;
+    }
+    
+    /* Show sidebar when hovering over the left zone */
+    .sidebar-hover-zone:hover ~ [data-testid="stSidebar"],
     [data-testid="stSidebar"]:hover {
         transform: translateX(0%) !important;
+    }
+    
+    /* Also show when hovering expand button area */
+    [data-testid="stSidebarCollapsedControl"]:hover ~ [data-testid="stSidebar"] {
+        transform: translateX(0%) !important;
+    }
+    
+    /* Make sure expand button is visible and positioned correctly */
+    [data-testid="stSidebarCollapsedControl"] {
+        display: block !important;
+        position: fixed !important;
+        top: 85px !important;
+        left: 10px !important;
+        z-index: 999997 !important;
+    }
+    
+    /* Hide collapse button when sidebar is "collapsed" */
+    [data-testid="stSidebarCollapseButton"] {
+        opacity: 0.3 !important;
+        transition: opacity 0.3s ease !important;
+    }
+    
+    /* Show collapse button when sidebar is hovered */
+    [data-testid="stSidebar"]:hover [data-testid="stSidebarCollapseButton"] {
+        opacity: 1 !important;
+    }
+    
+    /* Ensure main content uses full width when sidebar is collapsed */
+    .main .block-container {
+        margin-left: 0px !important;
+        transition: margin-left 0.3s ease !important;
     }
     </style>
     
     <script>
-    // Simple approach - just hide the sidebar initially
-    function hideSidebarOnLoad() {
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebar.style.display = 'none';
+    function createHoverZone() {
+        // Remove existing hover zone if it exists
+        const existingZone = document.querySelector('.sidebar-hover-zone');
+        if (existingZone) {
+            existingZone.remove();
         }
         
-        // Show expand button
-        const expandControl = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
-        if (expandControl) {
-            expandControl.style.display = 'block';
+        // Create the hover zone element
+        const hoverZone = document.createElement('div');
+        hoverZone.className = 'sidebar-hover-zone';
+        hoverZone.title = 'Hover here to expand sidebar';
+        
+        // Add to document
+        document.body.appendChild(hoverZone);
+        
+        // Initially hide the sidebar
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.style.transform = 'translateX(-100%)';
         }
+        
+        console.log('Hover zone created successfully');
     }
     
-    // Run when page loads
-    setTimeout(hideSidebarOnLoad, 100);
+    // Create hover zone when page loads
+    setTimeout(createHoverZone, 100);
+    setTimeout(createHoverZone, 500);
+    
+    // Recreate if page changes
+    document.addEventListener('DOMContentLoaded', createHoverZone);
     </script>
     """, unsafe_allow_html=True)
 
