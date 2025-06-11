@@ -89,7 +89,8 @@ def add_navigation():
         /* SVG Logo specific styling */
         .kaspa-logo svg {
             height: 50px;
-            width: auto;
+            width: 167px; /* Maintains 400:120 aspect ratio */
+            display: block;
         }
         
         .kaspa-user-info {
@@ -149,6 +150,7 @@ def add_navigation():
             
             .kaspa-logo svg {
                 height: 40px;
+                width: 133px; /* Maintains 400:120 aspect ratio */
             }
             
             .kaspa-user-info {
