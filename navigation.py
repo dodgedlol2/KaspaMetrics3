@@ -130,11 +130,11 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - FOUND THE CORRECT SELECTOR! */
+        /* Style expanders - TRANSPARENT BORDERS */
         
         /* Target details elements (the actual expanders) */
         [data-testid="stSidebar"] details {
-            border: 1px solid transparent !important;  /* Make border transparent */
+            border: 1px solid transparent !important;  /* Transparent border - keeps spacing */
             outline: none !important;
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.6) 0%, 
@@ -145,14 +145,12 @@ def add_navigation():
         
         /* Style the summary (clickable header) */
         [data-testid="stSidebar"] summary {
-            border: none !important;
+            border: 1px solid transparent !important;  /* Transparent border here too */
             outline: none !important;
             color: #e2e8f0 !important;
             font-weight: 600 !important;
             cursor: pointer !important;
         }
-        
-        /* Remove all other test borders */
         
         /* Style sidebar text */
         [data-testid="stSidebar"] .stMarkdown {
