@@ -210,5 +210,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Add footer to end of page
+# At the end of each page:
+from footer import add_footer
 add_footer()
