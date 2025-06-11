@@ -532,24 +532,24 @@ def add_navigation():
     st.markdown(header_html, unsafe_allow_html=True)
 
     # UPDATED SIDEBAR NAVIGATION - Full width buttons with icons
-    # Add home button at top - full width with emoji
-    if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
+    # Add home button at top - full width with Material Icon
+    if st.sidebar.button("Home", key="nav_home", use_container_width=True, icon=":material/home:"):
         st.switch_page("Home.py")
     
-    # Account buttons right under Home - with emoji icons
+    # Account buttons right under Home - with Material Icons
     if st.session_state.get('authentication_status'):
         # User is logged in - show Account and Logout side by side
         col1, col2 = st.sidebar.columns(2)
         with col1:
-            if st.button("👤 Account", key="nav_account", use_container_width=True):
+            if st.button("Account", key="nav_account", use_container_width=True, icon=":material/account_circle:"):
                 st.switch_page("pages/A_👤_Account.py")
         with col2:
-            if st.button("🚪 Logout", key="nav_logout", use_container_width=True):
+            if st.button("Logout", key="nav_logout", use_container_width=True, icon=":material/logout:"):
                 st.session_state.clear()
                 st.switch_page("Home.py")
     else:
-        # User not logged in - full width with emoji
-        if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
+        # User not logged in - full width with Material Icon
+        if st.sidebar.button("Login / Register", key="nav_login", use_container_width=True, icon=":material/login:"):
             st.switch_page("pages/0_🔑_Login.py")
     
     st.sidebar.markdown("---")
