@@ -160,43 +160,8 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # Simple GhostDAG Logo without animations
-    svg_logo = """<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <linearGradient id="ghostGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#00d4ff" />
-                <stop offset="100%" stop-color="#7c3aed" />
-            </linearGradient>
-        </defs>
-        
-        <!-- Main chain -->
-        <circle cx="30" cy="60" r="8" fill="#00d4ff" />
-        <circle cx="70" cy="60" r="8" fill="#00d4ff" />
-        <circle cx="110" cy="60" r="8" fill="#00d4ff" />
-        <line x1="38" y1="60" x2="62" y2="60" stroke="#00d4ff" stroke-width="3" />
-        <line x1="78" y1="60" x2="102" y2="60" stroke="#00d4ff" stroke-width="3" />
-        
-        <!-- Ghost nodes -->
-        <circle cx="50" cy="30" r="6" fill="url(#ghostGrad)" opacity="0.7" />
-        <circle cx="90" cy="30" r="6" fill="url(#ghostGrad)" opacity="0.7" />
-        <circle cx="50" cy="90" r="6" fill="url(#ghostGrad)" opacity="0.7" />
-        <circle cx="90" cy="90" r="6" fill="url(#ghostGrad)" opacity="0.7" />
-        
-        <!-- Ghost connections -->
-        <line x1="35" y1="54" x2="45" y2="36" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        <line x1="55" y1="36" x2="65" y2="54" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        <line x1="75" y1="54" x2="85" y2="36" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        <line x1="95" y1="36" x2="105" y2="54" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        <line x1="35" y1="66" x2="45" y2="84" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        <line x1="55" y1="84" x2="65" y2="66" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        <line x1="75" y1="66" x2="85" y2="84" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        <line x1="95" y1="84" x2="105" y2="66" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
-        
-        <!-- Logo text -->
-        <text x="140" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#00d4ff">Kaspa</text>
-        <text x="230" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="#7c3aed">Metrics</text>
-        <text x="140" y="75" font-family="Arial, sans-serif" font-size="12" font-weight="400" fill="#94a3b8" letter-spacing="2">GHOSTDAG</text>
-    </svg>"""
+    # Use a simple text-based logo instead of SVG to avoid parsing issues
+    logo_html = '<span style="font-size: 24px; font-weight: 700;"><span style="color: #00d4ff;">⬡</span> <span style="color: #00d4ff;">Kaspa</span><span style="color: #7c3aed;">Metrics</span></span>'
     
     # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
@@ -230,7 +195,7 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                {svg_logo}
+                {logo_html}
             </div>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
@@ -242,7 +207,7 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                {svg_logo}
+                {logo_html}
             </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
