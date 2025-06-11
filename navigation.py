@@ -84,10 +84,83 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* SIDEBAR POSITIONING - Move down to avoid header overlap */
+        /* ENHANCED SIDEBAR WITH BEAUTIFUL GRADIENT */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
+            background: linear-gradient(180deg, 
+                rgba(15, 20, 25, 0.98) 0%, 
+                rgba(30, 41, 59, 0.95) 25%, 
+                rgba(15, 23, 42, 0.98) 50%, 
+                rgba(20, 30, 45, 0.95) 75%, 
+                rgba(15, 20, 25, 0.98) 100%) !important;
+            backdrop-filter: blur(25px) !important;
+            -webkit-backdrop-filter: blur(25px) !important;
+            border-right: 1px solid rgba(0, 212, 255, 0.2) !important;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* Style sidebar content container */
+        [data-testid="stSidebar"] > div {
+            background: transparent !important;
+            padding-top: 20px !important;
+        }
+        
+        /* Style sidebar buttons with glassmorphism */
+        .stButton > button {
+            background: linear-gradient(135deg, 
+                rgba(30, 41, 59, 0.8) 0%, 
+                rgba(15, 23, 42, 0.9) 100%) !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            border-radius: 12px !important;
+            color: #f1f5f9 !important;
+            backdrop-filter: blur(15px) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+            font-weight: 600 !important;
+        }
+        
+        .stButton > button:hover {
+            background: linear-gradient(135deg, 
+                rgba(0, 212, 255, 0.2) 0%, 
+                rgba(30, 41, 59, 0.9) 100%) !important;
+            border-color: #00d4ff !important;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2), 
+                        0 0 0 1px rgba(0, 212, 255, 0.3) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        /* Style expanders */
+        .streamlit-expanderHeader {
+            background: linear-gradient(135deg, 
+                rgba(30, 41, 59, 0.6) 0%, 
+                rgba(15, 23, 42, 0.8) 100%) !important;
+            border: 1px solid rgba(100, 116, 139, 0.2) !important;
+            border-radius: 10px !important;
+            color: #e2e8f0 !important;
+            backdrop-filter: blur(10px) !important;
+            font-weight: 600 !important;
+        }
+        
+        .streamlit-expanderHeader:hover {
+            border-color: rgba(0, 212, 255, 0.4) !important;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
+        }
+        
+        /* Style sidebar text */
+        [data-testid="stSidebar"] .stMarkdown {
+            color: #cbd5e1 !important;
+        }
+        
+        /* Style warning/info/success boxes in sidebar */
+        [data-testid="stSidebar"] .stAlert {
+            background: linear-gradient(135deg, 
+                rgba(30, 41, 59, 0.8) 0%, 
+                rgba(15, 23, 42, 0.9) 100%) !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            border-radius: 8px !important;
+            backdrop-filter: blur(10px) !important;
+            color: #e2e8f0 !important;
         }
         
         /* ENHANCED SIDEBAR CONTROLS - Single functional button */
@@ -476,23 +549,4 @@ def add_navigation():
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
-    # Footer info - PRESERVED EXACTLY
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### ℹ️ Status")
-    
-    if st.session_state.get('is_premium'):
-        st.sidebar.success("👑 Premium Active")
-        if st.session_state.get('premium_expires_at'):
-            try:
-                expires_str = str(st.session_state['premium_expires_at'])[:10]
-                st.sidebar.write(f"Expires: {expires_str}")
-            except:
-                st.sidebar.write("Expires: Active")
-        else:
-            st.sidebar.write("Expires: Active")
-    elif st.session_state.get('authentication_status'):
-        st.sidebar.warning("🔒 Free Account")
-        st.sidebar.write("Upgrade for premium features")
-    else:
-        st.sidebar.info("🔐 Not Logged In")
-        st.sidebar.write("Login for full access")
+ 
