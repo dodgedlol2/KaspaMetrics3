@@ -3,10 +3,10 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
     
-    # IMPROVED HEADER CSS - Fixed positioning and sidebar interactions
+    # SIMPLIFIED HEADER - Let Streamlit handle sidebar behavior naturally
     st.markdown("""
     <style>
-        /* FIXED HEADER - Improved positioning and z-index management */
+        /* FIXED HEADER - Simple and clean */
         .kaspa-header {
             position: fixed;
             top: 0;
@@ -14,7 +14,7 @@ def add_navigation():
             right: 0;
             width: 100vw;
             height: 70px;
-            z-index: 999997;  /* Lower than sidebar controls but higher than content */
+            z-index: 999997;
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -26,56 +26,39 @@ def add_navigation():
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
+        /* PUSH MAIN CONTENT DOWN */
         .main .block-container {
             padding-top: 90px !important;
         }
         
-        /* SIDEBAR POSITIONING - Move down to avoid header overlap */
+        /* MOVE SIDEBAR DOWN */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
         }
         
-        /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
-        
-        /* Collapse button when sidebar is OPEN - FIXED to viewport */
+        /* SIDEBAR CONTROLS - Keep them functional but invisible */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
-            top: calc(85px - 2cm) !important;  /* Moved 2cm up */
-            left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
+            top: calc(85px - 2cm) !important;
             z-index: 999999 !important;
-            background: transparent !important;  /* Made transparent */
-            border: none !important;  /* Remove border */
-            backdrop-filter: none !important;  /* Remove backdrop filter */
+            background: transparent !important;
+            border: none !important;
         }
         
-        /* Make the button inside transparent too */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
-            opacity: 0 !important;  /* Completely invisible */
+            opacity: 0 !important;
         }
         
-        /* Expand button when sidebar is COLLAPSED - also fixed */
         div[data-testid="stSidebarCollapsedControl"] {
-            position: fixed !important;
-            top: 85px !important;  /* Just below header */
-            left: 0px !important;
+            top: 85px !important;
             z-index: 999998 !important;
+            position: fixed !important;
         }
         
-        /* Ensure all sidebar buttons remain clickable */
-        div[data-testid="stSidebarCollapseButton"] button,
-        div[data-testid="stSidebarCollapsedControl"] button,
-        button[data-testid="collapsedControl"] {
-            pointer-events: auto !important;
-            cursor: pointer !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
-        
-        /* HEADER STYLING */
+        /* HEADER STYLING WITH ANIMATED SVG LOGO */
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -84,6 +67,47 @@ def add_navigation():
             font-weight: 700;
             color: #00d4ff;
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        /* Animated SVG Logo Styles */
+        .kaspa-logo-svg {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+        
+        /* Logo text styling */
+        .kaspa-logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        /* SVG animations */
+        .logo-lightning {
+            animation: lightning-pulse 2s ease-in-out infinite;
+            transform-origin: center;
+        }
+        
+        .logo-spark {
+            animation: spark-twinkle 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes lightning-pulse {
+            0%, 100% { 
+                transform: scale(1);
+                filter: drop-shadow(0 0 5px #00d4ff);
+            }
+            50% { 
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 15px #00d4ff);
+            }
+        }
+        
+        @keyframes spark-twinkle {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
         }
         
         .kaspa-user-info {
@@ -113,7 +137,7 @@ def add_navigation():
             color: #64748b;
         }
         
-        /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
+        /* HIDE NATIVE PAGE NAVIGATION */
         .css-1q1n0ol[data-testid="stSidebarNav"] {
             display: none;
         }
@@ -126,12 +150,11 @@ def add_navigation():
             display: none;
         }
         
-        /* Ensure sidebar content remains visible */
         section[data-testid="stSidebar"] > div {
             display: block !important;
         }
         
-        /* RESPONSIVE ADJUSTMENTS */
+        /* RESPONSIVE DESIGN */
         @media (max-width: 768px) {
             .kaspa-header {
                 padding: 0 1rem;
@@ -148,17 +171,15 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # GENERATE HEADER HTML - Improved with better user status handling
+    # GENERATE HEADER HTML
     if st.session_state.get('authentication_status'):
         user_name = st.session_state.get('name', 'User')
         is_premium = st.session_state.get('is_premium', False)
         
-        # Better status display with expiration info
         if is_premium:
             status_text = "👑 PREMIUM"
             status_class = "premium"
             
-            # Add expiration info if available
             if st.session_state.get('premium_expires_at'):
                 try:
                     from datetime import datetime
@@ -180,7 +201,26 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <span>⚡ Kaspa Analytics</span>
+                <svg class="kaspa-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Main lightning bolt -->
+                    <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
+                          fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
+                    
+                    <!-- Sparks around the lightning -->
+                    <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
+                    <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24" style="animation-delay: 0.3s"/>
+                    <circle class="logo-spark" cx="80" cy="70" r="2" fill="#fbbf24" style="animation-delay: 0.6s"/>
+                    <circle class="logo-spark" cx="20" cy="75" r="1.5" fill="#fbbf24" style="animation-delay: 0.9s"/>
+                    
+                    <!-- Energy lines -->
+                    <path class="logo-spark" d="M15 20 L25 15" stroke="#00d4ff" stroke-width="2" 
+                          stroke-linecap="round" style="animation-delay: 0.2s"/>
+                    <path class="logo-spark" d="M85 35 L95 30" stroke="#00d4ff" stroke-width="2" 
+                          stroke-linecap="round" style="animation-delay: 0.5s"/>
+                    <path class="logo-spark" d="M10 80 L20 85" stroke="#00d4ff" stroke-width="2" 
+                          stroke-linecap="round" style="animation-delay: 0.8s"/>
+                </svg>
+                <span class="kaspa-logo-text">Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
@@ -192,7 +232,26 @@ def add_navigation():
         header_html = """
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <span>⚡ Kaspa Analytics</span>
+                <svg class="kaspa-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Main lightning bolt -->
+                    <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
+                          fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
+                    
+                    <!-- Sparks around the lightning -->
+                    <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
+                    <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24" style="animation-delay: 0.3s"/>
+                    <circle class="logo-spark" cx="80" cy="70" r="2" fill="#fbbf24" style="animation-delay: 0.6s"/>
+                    <circle class="logo-spark" cx="20" cy="75" r="1.5" fill="#fbbf24" style="animation-delay: 0.9s"/>
+                    
+                    <!-- Energy lines -->
+                    <path class="logo-spark" d="M15 20 L25 15" stroke="#00d4ff" stroke-width="2" 
+                          stroke-linecap="round" style="animation-delay: 0.2s"/>
+                    <path class="logo-spark" d="M85 35 L95 30" stroke="#00d4ff" stroke-width="2" 
+                          stroke-linecap="round" style="animation-delay: 0.5s"/>
+                    <path class="logo-spark" d="M10 80 L20 85" stroke="#00d4ff" stroke-width="2" 
+                          stroke-linecap="round" style="animation-delay: 0.8s"/>
+                </svg>
+                <span class="kaspa-logo-text">Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
@@ -203,14 +262,91 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # YOUR ORIGINAL SIDEBAR NAVIGATION - PRESERVED EXACTLY
-    # Add home button at top
+    # STREAMLIT NATIVE HOVER ZONE - NO JAVASCRIPT
+    st.markdown("""
+    <style>
+    /* Make sidebar visible and positioned normally */
+    [data-testid="stSidebar"] {
+        margin-top: 70px !important;
+        height: calc(100vh - 70px) !important;
+        position: relative !important;
+        z-index: 999996 !important;
+        transition: margin-left 0.3s ease !important;
+    }
+    
+    /* CSS-ONLY HOVER ZONE with pure CSS interactions */
+    .hover-zone-css {
+        position: fixed !important;
+        top: 70px !important;
+        left: 0 !important;
+        width: 200px !important;
+        height: calc(100vh - 70px) !important;
+        background: rgba(0, 212, 255, 0.2) !important;
+        z-index: 999995 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .hover-zone-css::after {
+        content: "HOVER ZONE\\A200px wide\\AMouse over me!";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        white-space: pre;
+        font-size: 14px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    
+    /* CSS HOVER EFFECTS - Sidebar slides in on hover */
+    .hover-zone-css:hover {
+        background: rgba(0, 212, 255, 0.4) !important;
+    }
+    
+    /* When hovering the zone, show sidebar at full opacity and push content */
+    .hover-zone-css:hover ~ [data-testid="stSidebar"] {
+        margin-left: 0px !important;
+        opacity: 1 !important;
+    }
+    
+    .hover-zone-css:hover ~ .main .block-container {
+        margin-left: 200px !important;
+        width: calc(100vw - 200px - 2rem) !important;
+    }
+    
+    /* When NOT hovering, sidebar stays normal but content adjusts for hover zone */
+    .main .block-container {
+        padding-top: 90px !important;
+        margin-left: 0px !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    /* Hide the expand button since we don't need it */
+    [data-testid="stSidebarCollapsedControl"] {
+        display: none !important;
+    }
+    
+    /* Keep collapse button visible */
+    [data-testid="stSidebarCollapseButton"] {
+        display: block !important;
+        z-index: 999998 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # CSS-ONLY HOVER ZONE ELEMENT
+    st.markdown("""
+    <div class="hover-zone-css"></div>
+    """, unsafe_allow_html=True)
+
+    # YOUR ORIGINAL SIDEBAR NAVIGATION - UNCHANGED
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
         st.switch_page("Home.py")
     
-    # Account buttons right under Home
     if st.session_state.get('authentication_status'):
-        # User is logged in - show Account and Logout side by side
         col1, col2 = st.sidebar.columns(2)
         with col1:
             if st.button("👤 Account", key="nav_account", use_container_width=True):
@@ -220,7 +356,6 @@ def add_navigation():
                 st.session_state.clear()
                 st.switch_page("Home.py")
     else:
-        # User not logged in
         if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
             st.switch_page("pages/0_🔑_Login.py")
     
@@ -249,7 +384,7 @@ def add_navigation():
         if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
+    # Premium Analytics Section
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
             if st.button("👑 Premium Features", key="sidebar_premium_features", use_container_width=True):
@@ -260,7 +395,6 @@ def add_navigation():
                 st.switch_page("pages/9_👑_Advanced_Metrics.py")
     elif st.session_state.get('authentication_status'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
-            # Premium Features accessible to logged-in users (but not paying)
             if st.button("👑 Premium Features", key="sidebar_premium_features_free", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.warning("Upgrade Required")
@@ -270,7 +404,6 @@ def add_navigation():
                 st.switch_page("pages/B_👑_Premium_Features.py")
     else:
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
-            # Premium Features accessible to everyone (including non-logged users)
             if st.button("👑 Premium Features", key="sidebar_premium_features_guest", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.info("Login Required")
@@ -278,7 +411,7 @@ def add_navigation():
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
-    # Footer info - PRESERVED EXACTLY
+    # Footer info
     st.sidebar.markdown("---")
     st.sidebar.markdown("### ℹ️ Status")
     
