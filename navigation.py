@@ -183,53 +183,39 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # AUTO-COLLAPSE SIDEBAR ON PAGE NAVIGATION
+    # AUTO-COLLAPSE SIDEBAR - Simple CSS approach
     st.markdown("""
+    <style>
+    /* Start with sidebar collapsed by default */
+    [data-testid="stSidebar"] {
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+    }
+    
+    /* Show sidebar when hovering over expand area */
+    [data-testid="stSidebarCollapsedControl"]:hover ~ [data-testid="stSidebar"],
+    [data-testid="stSidebar"]:hover {
+        transform: translateX(0%) !important;
+    }
+    </style>
+    
     <script>
-    function forceCollapseSidebar() {
-        // Method 1: Direct manipulation of sidebar
+    // Simple approach - just hide the sidebar initially
+    function hideSidebarOnLoad() {
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         if (sidebar) {
-            sidebar.style.width = '0px';
-            sidebar.style.minWidth = '0px';
-            sidebar.style.maxWidth = '0px';
-            sidebar.setAttribute('aria-expanded', 'false');
+            sidebar.style.display = 'none';
         }
         
-        // Method 2: Try to trigger Streamlit's collapse mechanism
-        const collapseButton = document.querySelector('[data-testid="stSidebarCollapseButton"]');
-        if (collapseButton) {
-            // Simulate click event
-            collapseButton.dispatchEvent(new Event('click', { bubbles: true }));
-        }
-        
-        // Method 3: Find and click the actual button element
-        const button = document.querySelector('[data-testid="stSidebarCollapseButton"] button');
-        if (button) {
-            button.click();
-        }
-        
-        // Method 4: Use Streamlit's internal functions if available
-        if (window.parent && window.parent.streamlit) {
-            try {
-                window.parent.streamlit.setComponentValue('sidebar_collapsed', true);
-            } catch (e) {
-                console.log('Streamlit API not available');
-            }
+        // Show expand button
+        const expandControl = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
+        if (expandControl) {
+            expandControl.style.display = 'block';
         }
     }
     
-    // Run multiple times with different delays
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(forceCollapseSidebar, 100);
-        setTimeout(forceCollapseSidebar, 300);
-        setTimeout(forceCollapseSidebar, 500);
-        setTimeout(forceCollapseSidebar, 1000);
-        setTimeout(forceCollapseSidebar, 2000);
-    });
-    
-    // Also run immediately
-    forceCollapseSidebar();
+    // Run when page loads
+    setTimeout(hideSidebarOnLoad, 100);
     </script>
     """, unsafe_allow_html=True)
 
