@@ -3,9 +3,61 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
     
-    # IMPROVED HEADER CSS - Fixed positioning and sidebar interactions
+    # CRITICAL FIX: Inject CSS IMMEDIATELY to prevent flickering
+    # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
+        /* IMMEDIATE COMPLETE HEADER REMOVAL - Multiple targeting approaches */
+        header[data-testid="stHeader"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            max-height: 0 !important;
+        }
+        
+        /* HIDE ALL STREAMLIT HEADER VARIATIONS */
+        [data-testid="stHeader"] {
+            display: none !important;
+        }
+        
+        .stApp > header[data-testid="stHeader"] {
+            display: none !important;
+        }
+        
+        /* REMOVE THE RUNNING MAN AND LOADING ANIMATIONS */
+        [data-testid="stStatusWidget"] {
+            display: none !important;
+        }
+        
+        /* HIDE ALL STATUS AND LOADING ELEMENTS */
+        div[data-testid*="stStatus"] {
+            display: none !important;
+        }
+        
+        /* HIDE TOOLBAR AND MENU */
+        .stAppToolbar {
+            display: none !important;
+        }
+        
+        div[data-testid="stToolbar"] {
+            display: none !important;
+        }
+        
+        [data-testid="stDecoration"] {
+            display: none !important;
+        }
+        
+        /* HIDE FOOTER TOO */
+        footer {
+            display: none !important;
+        }
+        
+        /* REMOVE ANY MARGIN/PADDING FROM TOP */
+        .main .block-container {
+            padding-top: 90px !important;
+        }
+        
         /* FIXED HEADER - Improved positioning and z-index management */
         .kaspa-header {
             position: fixed;
@@ -188,6 +240,16 @@ def add_navigation():
         /* Ensure sidebar content remains visible */
         section[data-testid="stSidebar"] > div {
             display: block !important;
+        }
+        
+        /* PREVENT BODY OVERFLOW DURING TRANSITIONS */
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* SMOOTH TRANSITIONS FOR ALL ELEMENTS */
+        * {
+            transition: none !important;
         }
         
         /* RESPONSIVE ADJUSTMENTS */
