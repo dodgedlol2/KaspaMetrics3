@@ -183,48 +183,74 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # DEBUG HOVER ZONE - MAKE IT SUPER VISIBLE
+    # STREAMLIT NATIVE HOVER ZONE - NO JAVASCRIPT
     st.markdown("""
     <style>
     /* Make sidebar visible and positioned normally */
     [data-testid="stSidebar"] {
         margin-top: 70px !important;
         height: calc(100vh - 70px) !important;
-        transition: transform 0.3s ease !important;
         position: relative !important;
         z-index: 999996 !important;
+        transition: margin-left 0.3s ease !important;
     }
     
-    /* FORCE CREATE HOVER ZONE WITH CSS */
-    body::before {
-        content: "HOVER ZONE CSS";
+    /* CSS-ONLY HOVER ZONE with pure CSS interactions */
+    .hover-zone-css {
         position: fixed !important;
         top: 70px !important;
         left: 0 !important;
         width: 200px !important;
         height: calc(100vh - 70px) !important;
-        background: red !important;  /* BRIGHT RED so you can't miss it */
-        z-index: 999999 !important;
-        pointer-events: auto !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        color: white !important;
-        font-weight: bold !important;
-        font-size: 16px !important;
-    }
-    
-    /* Main content adjustments */
-    .main .block-container {
-        padding-top: 90px !important;
+        background: rgba(0, 212, 255, 0.2) !important;
+        z-index: 999995 !important;
+        cursor: pointer !important;
         transition: all 0.3s ease !important;
     }
     
-    /* Show native expand/collapse buttons */
-    [data-testid="stSidebarCollapsedControl"] {
-        display: none !important;  /* Hide expand button as you said */
+    .hover-zone-css::after {
+        content: "HOVER ZONE\\A200px wide\\AMouse over me!";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        white-space: pre;
+        font-size: 14px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
     }
     
+    /* CSS HOVER EFFECTS - Sidebar slides in on hover */
+    .hover-zone-css:hover {
+        background: rgba(0, 212, 255, 0.4) !important;
+    }
+    
+    /* When hovering the zone, show sidebar at full opacity and push content */
+    .hover-zone-css:hover ~ [data-testid="stSidebar"] {
+        margin-left: 0px !important;
+        opacity: 1 !important;
+    }
+    
+    .hover-zone-css:hover ~ .main .block-container {
+        margin-left: 200px !important;
+        width: calc(100vw - 200px - 2rem) !important;
+    }
+    
+    /* When NOT hovering, sidebar stays normal but content adjusts for hover zone */
+    .main .block-container {
+        padding-top: 90px !important;
+        margin-left: 0px !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    /* Hide the expand button since we don't need it */
+    [data-testid="stSidebarCollapsedControl"] {
+        display: none !important;
+    }
+    
+    /* Keep collapse button visible */
     [data-testid="stSidebarCollapseButton"] {
         display: block !important;
         z-index: 999998 !important;
@@ -232,76 +258,9 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # ALSO TRY STREAMLIT CONTAINER APPROACH
-    # Create a visible test element to see if JavaScript works
+    # CSS-ONLY HOVER ZONE ELEMENT
     st.markdown("""
-    <div id="test-hover-zone" style="
-        position: fixed;
-        top: 300px;
-        left: 220px;
-        width: 200px;
-        height: 100px;
-        background: blue;
-        color: white;
-        z-index: 999999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        cursor: pointer;
-    ">
-    STREAMLIT HOVER ZONE<br>Click me to test!
-    </div>
-    
-    <script>
-    // Try to create hover zone with JavaScript
-    function createDebugHoverZone() {
-        console.log('Attempting to create hover zone...');
-        
-        // Method 1: Try to create element
-        const hoverZone = document.createElement('div');
-        hoverZone.id = 'js-hover-zone';
-        hoverZone.innerHTML = 'JS HOVER ZONE';
-        hoverZone.style.cssText = `
-            position: fixed !important;
-            top: 150px !important;
-            left: 220px !important;
-            width: 200px !important;
-            height: 100px !important;
-            background: green !important;
-            color: white !important;
-            z-index: 999999 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-weight: bold !important;
-            cursor: pointer !important;
-        `;
-        
-        hoverZone.addEventListener('click', function() {
-            alert('JavaScript hover zone clicked!');
-        });
-        
-        document.body.appendChild(hoverZone);
-        console.log('JavaScript hover zone created');
-        
-        // Method 2: Try to modify existing Streamlit element
-        const testZone = document.getElementById('test-hover-zone');
-        if (testZone) {
-            testZone.addEventListener('click', function() {
-                alert('Streamlit hover zone clicked!');
-            });
-            console.log('Streamlit test zone found and click handler added');
-        }
-    }
-    
-    // Run multiple times
-    setTimeout(createDebugHoverZone, 100);
-    setTimeout(createDebugHoverZone, 500);
-    setTimeout(createDebugHoverZone, 1000);
-    
-    document.addEventListener('DOMContentLoaded', createDebugHoverZone);
-    </script>
+    <div class="hover-zone-css"></div>
     """, unsafe_allow_html=True)
 
     # YOUR ORIGINAL SIDEBAR NAVIGATION - UNCHANGED
