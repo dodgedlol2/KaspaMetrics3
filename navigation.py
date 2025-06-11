@@ -3,10 +3,10 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
     
-    # SIMPLIFIED HEADER - Let Streamlit handle sidebar behavior naturally
+    # IMPROVED HEADER CSS - Fixed positioning and sidebar interactions
     st.markdown("""
     <style>
-        /* FIXED HEADER - Simple and clean */
+        /* FIXED HEADER - Improved positioning and z-index management */
         .kaspa-header {
             position: fixed;
             top: 0;
@@ -14,7 +14,7 @@ def add_navigation():
             right: 0;
             width: 100vw;
             height: 70px;
-            z-index: 999997;
+            z-index: 999997;  /* Lower than sidebar controls but higher than content */
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -26,36 +26,53 @@ def add_navigation():
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        /* PUSH MAIN CONTENT DOWN */
+        /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
         .main .block-container {
             padding-top: 90px !important;
         }
         
-        /* MOVE SIDEBAR DOWN */
+        /* SIDEBAR POSITIONING - Move down to avoid header overlap */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
         }
         
-        /* SIDEBAR CONTROLS - Keep them functional but invisible */
+        /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
+        
+        /* Collapse button when sidebar is OPEN - FIXED to viewport */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
-            top: calc(85px - 2cm) !important;
+            top: calc(85px - 2cm) !important;  /* Moved 2cm up */
+            left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
             z-index: 999999 !important;
-            background: transparent !important;
-            border: none !important;
+            background: transparent !important;  /* Made transparent */
+            border: none !important;  /* Remove border */
+            backdrop-filter: none !important;  /* Remove backdrop filter */
         }
         
+        /* Make the button inside transparent too */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
-            opacity: 0 !important;
+            opacity: 0 !important;  /* Completely invisible */
         }
         
+        /* Expand button when sidebar is COLLAPSED - also fixed */
         div[data-testid="stSidebarCollapsedControl"] {
-            top: 85px !important;
-            z-index: 999998 !important;
             position: fixed !important;
+            top: 85px !important;  /* Just below header */
+            left: 0px !important;
+            z-index: 999998 !important;
+        }
+        
+        /* Ensure all sidebar buttons remain clickable */
+        div[data-testid="stSidebarCollapseButton"] button,
+        div[data-testid="stSidebarCollapsedControl"] button,
+        button[data-testid="collapsedControl"] {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
         }
         
         /* HEADER STYLING */
@@ -96,7 +113,7 @@ def add_navigation():
             color: #64748b;
         }
         
-        /* HIDE NATIVE PAGE NAVIGATION */
+        /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
         .css-1q1n0ol[data-testid="stSidebarNav"] {
             display: none;
         }
@@ -109,11 +126,12 @@ def add_navigation():
             display: none;
         }
         
+        /* Ensure sidebar content remains visible */
         section[data-testid="stSidebar"] > div {
             display: block !important;
         }
         
-        /* RESPONSIVE DESIGN */
+        /* RESPONSIVE ADJUSTMENTS */
         @media (max-width: 768px) {
             .kaspa-header {
                 padding: 0 1rem;
@@ -130,15 +148,17 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # GENERATE HEADER HTML
+    # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
         user_name = st.session_state.get('name', 'User')
         is_premium = st.session_state.get('is_premium', False)
         
+        # Better status display with expiration info
         if is_premium:
             status_text = "👑 PREMIUM"
             status_class = "premium"
             
+            # Add expiration info if available
             if st.session_state.get('premium_expires_at'):
                 try:
                     from datetime import datetime
@@ -183,91 +203,14 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # STREAMLIT NATIVE HOVER ZONE - NO JAVASCRIPT
-    st.markdown("""
-    <style>
-    /* Make sidebar visible and positioned normally */
-    [data-testid="stSidebar"] {
-        margin-top: 70px !important;
-        height: calc(100vh - 70px) !important;
-        position: relative !important;
-        z-index: 999996 !important;
-        transition: margin-left 0.3s ease !important;
-    }
-    
-    /* CSS-ONLY HOVER ZONE with pure CSS interactions */
-    .hover-zone-css {
-        position: fixed !important;
-        top: 70px !important;
-        left: 0 !important;
-        width: 200px !important;
-        height: calc(100vh - 70px) !important;
-        background: rgba(0, 212, 255, 0.2) !important;
-        z-index: 999995 !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    .hover-zone-css::after {
-        content: "HOVER ZONE\\A200px wide\\AMouse over me!";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: white;
-        font-weight: bold;
-        text-align: center;
-        white-space: pre;
-        font-size: 14px;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-    }
-    
-    /* CSS HOVER EFFECTS - Sidebar slides in on hover */
-    .hover-zone-css:hover {
-        background: rgba(0, 212, 255, 0.4) !important;
-    }
-    
-    /* When hovering the zone, show sidebar at full opacity and push content */
-    .hover-zone-css:hover ~ [data-testid="stSidebar"] {
-        margin-left: 0px !important;
-        opacity: 1 !important;
-    }
-    
-    .hover-zone-css:hover ~ .main .block-container {
-        margin-left: 200px !important;
-        width: calc(100vw - 200px - 2rem) !important;
-    }
-    
-    /* When NOT hovering, sidebar stays normal but content adjusts for hover zone */
-    .main .block-container {
-        padding-top: 90px !important;
-        margin-left: 0px !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    /* Hide the expand button since we don't need it */
-    [data-testid="stSidebarCollapsedControl"] {
-        display: none !important;
-    }
-    
-    /* Keep collapse button visible */
-    [data-testid="stSidebarCollapseButton"] {
-        display: block !important;
-        z-index: 999998 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # CSS-ONLY HOVER ZONE ELEMENT
-    st.markdown("""
-    <div class="hover-zone-css"></div>
-    """, unsafe_allow_html=True)
-
-    # YOUR ORIGINAL SIDEBAR NAVIGATION - UNCHANGED
+    # YOUR ORIGINAL SIDEBAR NAVIGATION - PRESERVED EXACTLY
+    # Add home button at top
     if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
         st.switch_page("Home.py")
     
+    # Account buttons right under Home
     if st.session_state.get('authentication_status'):
+        # User is logged in - show Account and Logout side by side
         col1, col2 = st.sidebar.columns(2)
         with col1:
             if st.button("👤 Account", key="nav_account", use_container_width=True):
@@ -277,6 +220,7 @@ def add_navigation():
                 st.session_state.clear()
                 st.switch_page("Home.py")
     else:
+        # User not logged in
         if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
             st.switch_page("pages/0_🔑_Login.py")
     
@@ -305,7 +249,7 @@ def add_navigation():
         if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section
+    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
             if st.button("👑 Premium Features", key="sidebar_premium_features", use_container_width=True):
@@ -316,6 +260,7 @@ def add_navigation():
                 st.switch_page("pages/9_👑_Advanced_Metrics.py")
     elif st.session_state.get('authentication_status'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
+            # Premium Features accessible to logged-in users (but not paying)
             if st.button("👑 Premium Features", key="sidebar_premium_features_free", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.warning("Upgrade Required")
@@ -325,6 +270,7 @@ def add_navigation():
                 st.switch_page("pages/B_👑_Premium_Features.py")
     else:
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
+            # Premium Features accessible to everyone (including non-logged users)
             if st.button("👑 Premium Features", key="sidebar_premium_features_guest", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.info("Login Required")
@@ -332,7 +278,7 @@ def add_navigation():
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
-    # Footer info
+    # Footer info - PRESERVED EXACTLY
     st.sidebar.markdown("---")
     st.sidebar.markdown("### ℹ️ Status")
     
