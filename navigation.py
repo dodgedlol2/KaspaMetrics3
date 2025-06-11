@@ -531,79 +531,79 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # YOUR ORIGINAL SIDEBAR NAVIGATION - UPDATED WITH STREAMLIT NATIVE ICONS
-    # Add home button at top
-    if st.sidebar.button("Home", key="nav_home", use_container_width=True, icon=":material/home:"):
+    # UPDATED SIDEBAR NAVIGATION - Full width buttons with icons
+    # Add home button at top - full width
+    if st.sidebar.button("🏠 Home", key="nav_home", use_container_width=True):
         st.switch_page("Home.py")
     
-    # Account buttons right under Home
+    # Account buttons right under Home - full width
     if st.session_state.get('authentication_status'):
         # User is logged in - show Account and Logout side by side
         col1, col2 = st.sidebar.columns(2)
         with col1:
-            if st.button("Account", key="nav_account", use_container_width=True, icon=":material/account_circle:"):
+            if st.button("👤 Account", key="nav_account", use_container_width=True):
                 st.switch_page("pages/A_👤_Account.py")
         with col2:
-            if st.button("Logout", key="nav_logout", use_container_width=True, icon=":material/logout:"):
+            if st.button("🚪 Logout", key="nav_logout", use_container_width=True):
                 st.session_state.clear()
                 st.switch_page("Home.py")
     else:
-        # User not logged in
-        if st.sidebar.button("Login / Register", key="nav_login", use_container_width=True, icon=":material/login:"):
+        # User not logged in - full width
+        if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
             st.switch_page("pages/0_🔑_Login.py")
     
     st.sidebar.markdown("---")
     
-    # Mining Section
-    with st.sidebar.expander("⛏ Mining", expanded=True):
-        if st.button("Hashrate", key="sidebar_hashrate", use_container_width=True, icon=":material/trending_up:"):
+    # Mining Section - with emoji icons
+    with st.sidebar.expander("⛏️ Mining", expanded=True):
+        if st.button("📈 Hashrate", key="sidebar_hashrate", use_container_width=True):
             st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
-        if st.button("Difficulty", key="sidebar_difficulty", use_container_width=True, icon=":material/settings:"):
+        if st.button("⚙️ Difficulty", key="sidebar_difficulty", use_container_width=True):
             st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
     
-    # Spot Section with Material Icon
+    # Spot Section with emoji icons - FULL WIDTH
     with st.sidebar.expander("💹 Spot Market", expanded=True):
-        if st.button("Price", key="sidebar_price", use_container_width=True, icon=":material/attach_money:"):
+        if st.button("💰 Price", key="sidebar_price", use_container_width=True):
             st.switch_page("pages/3_💰_Spot_Price.py")
-        if st.button("Volume", key="sidebar_volume", use_container_width=True, icon=":material/bar_chart:"):
+        if st.button("📊 Volume", key="sidebar_volume", use_container_width=True):
             st.switch_page("pages/4_💰_Spot_Volume.py")
-        if st.button("Market Cap", key="sidebar_marketcap", use_container_width=True, icon=":material/account_balance:"):
+        if st.button("🏦 Market Cap", key="sidebar_marketcap", use_container_width=True):
             st.switch_page("pages/5_💰_Spot_Market_Cap.py")
     
-    # Social Section with Material Icon
-    with st.sidebar.expander("📊 Social Data", expanded=True):
-        if st.button("Social Metrics", key="sidebar_social1", use_container_width=True, icon=":material/analytics:"):
+    # Social Section with emoji icons - FULL WIDTH
+    with st.sidebar.expander("📱 Social Data", expanded=True):
+        if st.button("📊 Social Metrics", key="sidebar_social1", use_container_width=True):
             st.switch_page("pages/6_📱_Social_Metrics.py")
-        if st.button("Social Trends", key="sidebar_social2", use_container_width=True, icon=":material/show_chart:"):
+        if st.button("📈 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
     # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
-            if st.button("Premium Features", key="sidebar_premium_features", use_container_width=True, icon=":material/star:"):
+            if st.button("⭐ Premium Features", key="sidebar_premium_features", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
-            if st.button("Premium Analytics", key="sidebar_premium1", use_container_width=True, icon=":material/science:"):
+            if st.button("🔬 Premium Analytics", key="sidebar_premium1", use_container_width=True):
                 st.switch_page("pages/8_👑_Premium_Analytics.py")
-            if st.button("Advanced Metrics", key="sidebar_premium2", use_container_width=True, icon=":material/insights:"):
+            if st.button("🎯 Advanced Metrics", key="sidebar_premium2", use_container_width=True):
                 st.switch_page("pages/9_👑_Advanced_Metrics.py")
     elif st.session_state.get('authentication_status'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
             # Premium Features accessible to logged-in users (but not paying)
-            if st.button("Premium Features", key="sidebar_premium_features_free", use_container_width=True, icon=":material/star:"):
+            if st.button("⭐ Premium Features", key="sidebar_premium_features_free", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.warning("Upgrade Required")
             st.write("**Monthly:** $9.99")
             st.write("**Annual:** $99")
-            if st.button("Upgrade Now", key="sidebar_upgrade", use_container_width=True, icon=":material/credit_card:"):
+            if st.button("💳 Upgrade Now", key="sidebar_upgrade", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
     else:
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
             # Premium Features accessible to everyone (including non-logged users)
-            if st.button("Premium Features", key="sidebar_premium_features_guest", use_container_width=True, icon=":material/star:"):
+            if st.button("⭐ Premium Features", key="sidebar_premium_features_guest", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.info("Login Required")
             st.write("Sign in to access premium analytics")
-            if st.button("Login", key="sidebar_login_premium", use_container_width=True, icon=":material/login:"):
+            if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
     # Removed the status section - no more "ℹ️ Status" display
