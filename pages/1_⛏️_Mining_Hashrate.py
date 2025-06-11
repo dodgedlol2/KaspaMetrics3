@@ -209,3 +209,6 @@ st.markdown("""
     <em>Visualizing Kaspa's BlockDAG structure - where blocks form in parallel rather than a single chain</em>
 </div>
 """, unsafe_allow_html=True)
+
+# Add footer to end of page
+add_footer()
