@@ -130,29 +130,41 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - FOUND THE CORRECT SELECTOR! */
-        
-        /* Target details elements (the actual expanders) */
-        [data-testid="stSidebar"] details {
-            border: 1px solid transparent !important;  /* Make border transparent */
-            outline: none !important;
+        /* Style expanders - TESTING WITH RED BORDER */
+        .streamlit-expanderHeader {
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.6) 0%, 
                 rgba(15, 23, 42, 0.8) 100%) !important;
+            border: 3px solid red !important;  /* BRIGHT RED BORDER FOR TESTING */
             border-radius: 10px !important;
-            backdrop-filter: blur(10px) !important;
-        }
-        
-        /* Style the summary (clickable header) */
-        [data-testid="stSidebar"] summary {
-            border: none !important;
-            outline: none !important;
             color: #e2e8f0 !important;
+            backdrop-filter: blur(10px) !important;
             font-weight: 600 !important;
-            cursor: pointer !important;
+            box-shadow: none !important;
         }
         
-        /* Remove all other test borders */
+        .streamlit-expanderHeader:hover {
+            border: 3px solid red !important;  /* RED BORDER ON HOVER TOO */
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
+        }
+        
+        /* Target all possible expander border elements */
+        [data-testid="stSidebar"] .streamlit-expanderHeader {
+            border: 3px solid red !important;
+            outline: none !important;
+        }
+        
+        /* Remove borders from expander content area too */
+        .streamlit-expanderContent {
+            border: 3px solid green !important;  /* GREEN BORDER FOR CONTENT AREA */
+            border-top: 3px solid green !important;
+            box-shadow: none !important;
+        }
+        
+        /* Target the expander wrapper */
+        .streamlit-expander {
+            border: 3px solid blue !important;  /* BLUE BORDER FOR WRAPPER */
+        }
         
         /* Style sidebar text */
         [data-testid="stSidebar"] .stMarkdown {
