@@ -201,25 +201,14 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <svg class="kaspa-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Main lightning bolt -->
-                    <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
-                          fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
-                    
-                    <!-- Sparks around the lightning -->
-                    <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
-                    <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24" style="animation-delay: 0.3s"/>
-                    <circle class="logo-spark" cx="80" cy="70" r="2" fill="#fbbf24" style="animation-delay: 0.6s"/>
-                    <circle class="logo-spark" cx="20" cy="75" r="1.5" fill="#fbbf24" style="animation-delay: 0.9s"/>
-                    
-                    <!-- Energy lines -->
-                    <path class="logo-spark" d="M15 20 L25 15" stroke="#00d4ff" stroke-width="2" 
-                          stroke-linecap="round" style="animation-delay: 0.2s"/>
-                    <path class="logo-spark" d="M85 35 L95 30" stroke="#00d4ff" stroke-width="2" 
-                          stroke-linecap="round" style="animation-delay: 0.5s"/>
-                    <path class="logo-spark" d="M10 80 L20 85" stroke="#00d4ff" stroke-width="2" 
-                          stroke-linecap="round" style="animation-delay: 0.8s"/>
-                </svg>
+                <div class="kaspa-logo-svg">
+                    <svg width="40" height="40" viewBox="0 0 100 100">
+                        <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
+                              fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
+                        <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
+                        <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24"/>
+                    </svg>
+                </div>
                 <span class="kaspa-logo-text">Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
@@ -232,25 +221,14 @@ def add_navigation():
         header_html = """
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <svg class="kaspa-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Main lightning bolt -->
-                    <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
-                          fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
-                    
-                    <!-- Sparks around the lightning -->
-                    <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
-                    <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24" style="animation-delay: 0.3s"/>
-                    <circle class="logo-spark" cx="80" cy="70" r="2" fill="#fbbf24" style="animation-delay: 0.6s"/>
-                    <circle class="logo-spark" cx="20" cy="75" r="1.5" fill="#fbbf24" style="animation-delay: 0.9s"/>
-                    
-                    <!-- Energy lines -->
-                    <path class="logo-spark" d="M15 20 L25 15" stroke="#00d4ff" stroke-width="2" 
-                          stroke-linecap="round" style="animation-delay: 0.2s"/>
-                    <path class="logo-spark" d="M85 35 L95 30" stroke="#00d4ff" stroke-width="2" 
-                          stroke-linecap="round" style="animation-delay: 0.5s"/>
-                    <path class="logo-spark" d="M10 80 L20 85" stroke="#00d4ff" stroke-width="2" 
-                          stroke-linecap="round" style="animation-delay: 0.8s"/>
-                </svg>
+                <div class="kaspa-logo-svg">
+                    <svg width="40" height="40" viewBox="0 0 100 100">
+                        <path class="logo-lightning" d="M50 10 L30 45 L45 45 L40 90 L70 55 L55 55 L60 10 Z" 
+                              fill="#00d4ff" stroke="#ffffff" stroke-width="2"/>
+                        <circle class="logo-spark" cx="25" cy="30" r="2" fill="#fbbf24"/>
+                        <circle class="logo-spark" cx="75" cy="25" r="1.5" fill="#fbbf24"/>
+                    </svg>
+                </div>
                 <span class="kaspa-logo-text">Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
