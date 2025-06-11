@@ -89,62 +89,29 @@ def add_navigation():
             height: calc(100vh - 70px);
         }
         
-        /* ENHANCED SIDEBAR CONTROLS - Modern hamburger/arrow icons */
+        /* ENHANCED SIDEBAR CONTROLS - Single functional button */
         
-        /* Collapse button when sidebar is OPEN - Hamburger menu icon */
+        /* Collapse button when sidebar is OPEN - Make it invisible */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: calc(85px - 2cm) !important;  /* Moved 2cm up */
             left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
             z-index: 999999 !important;
-            background: rgba(15, 23, 42, 0.9) !important;  /* Match header background */
-            border: 1px solid rgba(0, 212, 255, 0.3) !important;
-            border-radius: 8px !important;
-            backdrop-filter: blur(10px) !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
-            width: 40px !important;
-            height: 40px !important;
+            background: transparent !important;  /* Made transparent */
+            border: none !important;  /* Remove border */
+            backdrop-filter: none !important;  /* Remove backdrop filter */
         }
 
-        /* Style the button inside */
+        /* Make the collapse button completely invisible */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
-            width: 100% !important;
-            height: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 0 !important;  /* Hide original text */
+            opacity: 0 !important;  /* Completely invisible */
+            pointer-events: auto !important;
             cursor: pointer !important;
-            position: relative !important;
         }
 
-        /* Add custom hamburger icon when sidebar is open */
-        div[data-testid="stSidebarCollapseButton"] button::before {
-            content: "☰" !important;
-            font-size: 18px !important;
-            color: #00d4ff !important;
-            text-shadow: 0 0 5px rgba(0, 212, 255, 0.5) !important;
-            transition: all 0.3s ease !important;
-            display: block !important;
-            line-height: 1 !important;
-        }
-
-        /* Hover effect for collapse button */
-        div[data-testid="stSidebarCollapseButton"]:hover {
-            background: rgba(0, 212, 255, 0.1) !important;
-            border-color: rgba(0, 212, 255, 0.6) !important;
-            transform: scale(1.05) !important;
-            transition: all 0.2s ease !important;
-        }
-
-        div[data-testid="stSidebarCollapseButton"]:hover button::before {
-            color: #ffffff !important;
-            text-shadow: 0 0 8px rgba(0, 212, 255, 0.8) !important;
-        }
-
-        /* Expand button when sidebar is COLLAPSED - Arrow icon */
+        /* Expand button when sidebar is COLLAPSED - Hamburger menu style (functions as both) */
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
             top: 85px !important;  /* Just below header */
@@ -159,7 +126,7 @@ def add_navigation():
             height: 40px !important;
         }
 
-        /* Style the expand button */
+        /* Style the expand button with hamburger design */
         div[data-testid="stSidebarCollapsedControl"] button,
         button[data-testid="collapsedControl"] {
             background: transparent !important;
@@ -174,20 +141,19 @@ def add_navigation():
             position: relative !important;
         }
 
-        /* Add custom arrow icon when sidebar is collapsed */
+        /* Add custom hamburger icon to the expand button (functions as both) */
         div[data-testid="stSidebarCollapsedControl"] button::before,
         button[data-testid="collapsedControl"]::before {
-            content: "▶" !important;
-            font-size: 16px !important;
+            content: "☰" !important;
+            font-size: 18px !important;
             color: #00d4ff !important;
             text-shadow: 0 0 5px rgba(0, 212, 255, 0.5) !important;
             transition: all 0.3s ease !important;
             display: block !important;
             line-height: 1 !important;
-            margin-left: 2px !important;  /* Slight offset for arrow */
         }
 
-        /* Hover effect for expand button */
+        /* Hover effect for the functional button */
         div[data-testid="stSidebarCollapsedControl"]:hover,
         button[data-testid="collapsedControl"]:hover {
             background: rgba(0, 212, 255, 0.1) !important;
@@ -202,8 +168,7 @@ def add_navigation():
             text-shadow: 0 0 8px rgba(0, 212, 255, 0.8) !important;
         }
 
-        /* Ensure all sidebar buttons remain clickable */
-        div[data-testid="stSidebarCollapseButton"] button,
+        /* Ensure the functional button remains clickable */
         div[data-testid="stSidebarCollapsedControl"] button,
         button[data-testid="collapsedControl"] {
             pointer-events: auto !important;
