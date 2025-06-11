@@ -130,26 +130,38 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - TRANSPARENT BORDERS */
+        /* Style expanders - TRANSPARENT BORDERS AND BACKGROUND */
         
         /* Target details elements (the actual expanders) */
         [data-testid="stSidebar"] details {
             border: 1px solid transparent !important;  /* Transparent border - keeps spacing */
             outline: none !important;
-            background: linear-gradient(135deg, 
-                rgba(30, 41, 59, 0.6) 0%, 
-                rgba(15, 23, 42, 0.8) 100%) !important;
+            background: transparent !important;  /* Remove default background */
             border-radius: 10px !important;
-            backdrop-filter: blur(10px) !important;
+            backdrop-filter: none !important;  /* Remove backdrop filter */
         }
         
-        /* Style the summary (clickable header) */
+        /* Style the summary (clickable header) - Apply your gradient here */
         [data-testid="stSidebar"] summary {
             border: 1px solid transparent !important;  /* Transparent border here too */
             outline: none !important;
+            background: linear-gradient(135deg, 
+                rgba(30, 41, 59, 0.6) 0%, 
+                rgba(15, 23, 42, 0.8) 100%) !important;  /* Your gradient on header only */
             color: #e2e8f0 !important;
             font-weight: 600 !important;
             cursor: pointer !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            backdrop-filter: blur(10px) !important;
+        }
+        
+        /* Hover effect for summary */
+        [data-testid="stSidebar"] summary:hover {
+            background: linear-gradient(135deg, 
+                rgba(0, 212, 255, 0.2) 0%, 
+                rgba(30, 41, 59, 0.9) 100%) !important;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
         }
         
         /* Style sidebar text */
