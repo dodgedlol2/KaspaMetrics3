@@ -562,7 +562,7 @@ def add_navigation():
             st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
     
     # Spot Section with Material Icons (monochrome) - FULL WIDTH
-    with st.sidebar.expander("💹 Spot Market", expanded=True):
+    with st.sidebar.expander("💰 Spot Market", expanded=True):
         if st.button("Price", key="sidebar_price", use_container_width=True, icon=":material/attach_money:"):
             st.switch_page("pages/3_💰_Spot_Price.py")
         if st.button("Volume", key="sidebar_volume", use_container_width=True, icon=":material/bar_chart:"):
@@ -571,7 +571,7 @@ def add_navigation():
             st.switch_page("pages/5_💰_Spot_Market_Cap.py")
     
     # Social Section with Material Icons (monochrome) - FULL WIDTH
-    with st.sidebar.expander("📊 Social Data", expanded=True):
+    with st.sidebar.expander("📱 Social Data", expanded=True):
         if st.button("Social Metrics", key="sidebar_social1", use_container_width=True, icon=":material/analytics:"):
             st.switch_page("pages/6_📱_Social_Metrics.py")
         if st.button("Social Trends", key="sidebar_social2", use_container_width=True, icon=":material/show_chart:"):
