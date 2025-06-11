@@ -1,9 +1,9 @@
 import streamlit as st
 
 def add_navigation():
-    """Add organized navigation to sidebar AND header (shared across all pages)"""
+    """Add organized navigation to sidebar AND header with animated DAG logo"""
     
-    # IMPROVED HEADER CSS - Fixed positioning and sidebar interactions
+    # IMPROVED HEADER CSS with Animated DAG Logo
     st.markdown("""
     <style>
         /* FIXED HEADER - Improved positioning and z-index management */
@@ -14,7 +14,7 @@ def add_navigation():
             right: 0;
             width: 100vw;
             height: 70px;
-            z-index: 999997;  /* Lower than sidebar controls but higher than content */
+            z-index: 999997;
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -26,46 +26,95 @@ def add_navigation():
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
+        /* ANIMATED DAG LOGO STYLES */
+        .kaspa-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        .dag-logo-header {
+            width: 120px;
+            height: 40px;
+        }
+        
+        .dag-block-header {
+            fill: #00d4ff;
+            opacity: 0;
+            rx: 2;
+        }
+        
+        .dag-connection-header {
+            stroke: #00d4ff;
+            stroke-width: 1.5;
+            opacity: 0;
+        }
+        
+        /* Header animation - faster and more subtle */
+        .block1-header { animation: block-appear-header 4s ease-in-out infinite; }
+        .block2-header { animation: block-appear-header 4s ease-in-out infinite 0.2s; }
+        .block3-header { animation: block-appear-header 4s ease-in-out infinite 0.4s; }
+        .block4-header { animation: block-appear-header 4s ease-in-out infinite 0.6s; }
+        .block5-header { animation: block-appear-header 4s ease-in-out infinite 0.8s; }
+        .block6-header { animation: block-appear-header 4s ease-in-out infinite 1.0s; }
+        
+        .conn1-header { animation: connection-appear-header 4s ease-in-out infinite 0.3s; }
+        .conn2-header { animation: connection-appear-header 4s ease-in-out infinite 0.5s; }
+        .conn3-header { animation: connection-appear-header 4s ease-in-out infinite 0.7s; }
+        .conn4-header { animation: connection-appear-header 4s ease-in-out infinite 0.9s; }
+        .conn5-header { animation: connection-appear-header 4s ease-in-out infinite 1.1s; }
+        
+        @keyframes block-appear-header {
+            0%, 20% { opacity: 0; transform: scale(0); }
+            25%, 75% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1); }
+        }
+        
+        @keyframes connection-appear-header {
+            0%, 15% { opacity: 0; }
+            20%, 75% { opacity: 0.5; }
+            100% { opacity: 0.5; }
+        }
+        
+        /* PUSH MAIN CONTENT DOWN */
         .main .block-container {
             padding-top: 90px !important;
         }
         
-        /* SIDEBAR POSITIONING - Move down to avoid header overlap */
+        /* SIDEBAR POSITIONING */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
         }
         
-        /* SIDEBAR CONTROLS - Fixed positioning to prevent scrolling */
-        
-        /* Collapse button when sidebar is OPEN - FIXED to viewport */
+        /* SIDEBAR CONTROLS */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
-            top: calc(85px - 2cm) !important;  /* Moved 2cm up */
-            left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
+            top: calc(85px - 2cm) !important;
+            left: calc(21rem - 2cm) !important;
             z-index: 999999 !important;
-            background: transparent !important;  /* Made transparent */
-            border: none !important;  /* Remove border */
-            backdrop-filter: none !important;  /* Remove backdrop filter */
+            background: transparent !important;
+            border: none !important;
+            backdrop-filter: none !important;
         }
         
-        /* Make the button inside transparent too */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
-            opacity: 0 !important;  /* Completely invisible */
+            opacity: 0 !important;
         }
         
-        /* Expand button when sidebar is COLLAPSED - also fixed */
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
-            top: 85px !important;  /* Just below header */
+            top: 85px !important;
             left: 0px !important;
             z-index: 999998 !important;
         }
         
-        /* Ensure all sidebar buttons remain clickable */
         div[data-testid="stSidebarCollapseButton"] button,
         div[data-testid="stSidebarCollapsedControl"] button,
         button[data-testid="collapsedControl"] {
@@ -75,17 +124,7 @@ def add_navigation():
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
         }
         
-        /* HEADER STYLING */
-        .kaspa-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: 700;
-            color: #00d4ff;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-        }
-        
+        /* USER INFO STYLING */
         .kaspa-user-info {
             color: #f1f5f9;
             font-size: 14px;
@@ -113,7 +152,7 @@ def add_navigation():
             color: #64748b;
         }
         
-        /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
+        /* HIDE NATIVE PAGE NAVIGATION */
         .css-1q1n0ol[data-testid="stSidebarNav"] {
             display: none;
         }
@@ -126,7 +165,6 @@ def add_navigation():
             display: none;
         }
         
-        /* Ensure sidebar content remains visible */
         section[data-testid="stSidebar"] > div {
             display: block !important;
         }
@@ -139,6 +177,12 @@ def add_navigation():
             
             .kaspa-logo {
                 font-size: 20px;
+                gap: 10px;
+            }
+            
+            .dag-logo-header {
+                width: 80px;
+                height: 30px;
             }
             
             .kaspa-user-info {
@@ -148,17 +192,15 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # GENERATE HEADER HTML - Improved with better user status handling
+    # GENERATE HEADER HTML with Animated DAG Logo
     if st.session_state.get('authentication_status'):
         user_name = st.session_state.get('name', 'User')
         is_premium = st.session_state.get('is_premium', False)
         
-        # Better status display with expiration info
         if is_premium:
             status_text = "👑 PREMIUM"
             status_class = "premium"
             
-            # Add expiration info if available
             if st.session_state.get('premium_expires_at'):
                 try:
                     from datetime import datetime
@@ -180,7 +222,22 @@ def add_navigation():
         header_html = f"""
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <span>⚡ Kaspa Analytics</span>
+                <svg class="dag-logo-header" viewBox="0 0 120 40">
+                    <!-- Simplified DAG for header -->
+                    <rect class="dag-block-header block1-header" x="8" y="18" width="6" height="6"/>
+                    <rect class="dag-block-header block2-header" x="20" y="12" width="6" height="6"/>
+                    <rect class="dag-block-header block3-header" x="20" y="18" width="6" height="6"/>
+                    <rect class="dag-block-header block4-header" x="20" y="24" width="6" height="6"/>
+                    <rect class="dag-block-header block5-header" x="32" y="15" width="6" height="6"/>
+                    <rect class="dag-block-header block6-header" x="32" y="21" width="6" height="6"/>
+                    
+                    <line class="dag-connection-header conn1-header" x1="14" y1="21" x2="20" y2="15"/>
+                    <line class="dag-connection-header conn2-header" x1="14" y1="21" x2="20" y2="21"/>
+                    <line class="dag-connection-header conn3-header" x1="14" y1="21" x2="20" y2="27"/>
+                    <line class="dag-connection-header conn4-header" x1="26" y1="15" x2="32" y2="18"/>
+                    <line class="dag-connection-header conn5-header" x1="26" y1="21" x2="32" y2="24"/>
+                </svg>
+                <span>Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
@@ -192,7 +249,22 @@ def add_navigation():
         header_html = """
         <div class="kaspa-header">
             <div class="kaspa-logo">
-                <span>⚡ Kaspa Analytics</span>
+                <svg class="dag-logo-header" viewBox="0 0 120 40">
+                    <!-- Simplified DAG for header -->
+                    <rect class="dag-block-header block1-header" x="8" y="18" width="6" height="6"/>
+                    <rect class="dag-block-header block2-header" x="20" y="12" width="6" height="6"/>
+                    <rect class="dag-block-header block3-header" x="20" y="18" width="6" height="6"/>
+                    <rect class="dag-block-header block4-header" x="20" y="24" width="6" height="6"/>
+                    <rect class="dag-block-header block5-header" x="32" y="15" width="6" height="6"/>
+                    <rect class="dag-block-header block6-header" x="32" y="21" width="6" height="6"/>
+                    
+                    <line class="dag-connection-header conn1-header" x1="14" y1="21" x2="20" y2="15"/>
+                    <line class="dag-connection-header conn2-header" x1="14" y1="21" x2="20" y2="21"/>
+                    <line class="dag-connection-header conn3-header" x1="14" y1="21" x2="20" y2="27"/>
+                    <line class="dag-connection-header conn4-header" x1="26" y1="15" x2="32" y2="18"/>
+                    <line class="dag-connection-header conn5-header" x1="26" y1="21" x2="32" y2="24"/>
+                </svg>
+                <span>Kaspa Analytics</span>
             </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
@@ -210,7 +282,6 @@ def add_navigation():
     
     # Account buttons right under Home
     if st.session_state.get('authentication_status'):
-        # User is logged in - show Account and Logout side by side
         col1, col2 = st.sidebar.columns(2)
         with col1:
             if st.button("👤 Account", key="nav_account", use_container_width=True):
@@ -220,7 +291,6 @@ def add_navigation():
                 st.session_state.clear()
                 st.switch_page("Home.py")
     else:
-        # User not logged in
         if st.sidebar.button("🔑 Login / Register", key="nav_login", use_container_width=True):
             st.switch_page("pages/0_🔑_Login.py")
     
@@ -249,7 +319,7 @@ def add_navigation():
         if st.button("📊 Social Trends", key="sidebar_social2", use_container_width=True):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
+    # Premium Analytics Section
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
             if st.button("👑 Premium Features", key="sidebar_premium_features", use_container_width=True):
@@ -260,7 +330,6 @@ def add_navigation():
                 st.switch_page("pages/9_👑_Advanced_Metrics.py")
     elif st.session_state.get('authentication_status'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
-            # Premium Features accessible to logged-in users (but not paying)
             if st.button("👑 Premium Features", key="sidebar_premium_features_free", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.warning("Upgrade Required")
@@ -270,7 +339,6 @@ def add_navigation():
                 st.switch_page("pages/B_👑_Premium_Features.py")
     else:
         with st.sidebar.expander("👑 Premium Analytics", expanded=False):
-            # Premium Features accessible to everyone (including non-logged users)
             if st.button("👑 Premium Features", key="sidebar_premium_features_guest", use_container_width=True):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.info("Login Required")
@@ -278,7 +346,7 @@ def add_navigation():
             if st.button("🔑 Login", key="sidebar_login_premium", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
     
-    # Footer info - PRESERVED EXACTLY
+    # Footer info
     st.sidebar.markdown("---")
     st.sidebar.markdown("### ℹ️ Status")
     
