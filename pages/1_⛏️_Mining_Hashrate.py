@@ -91,15 +91,13 @@ with col2:
 
 # Add animated DAG logo section
 st.markdown("---")
-st.subheader("🔗 Kaspa BlockDAG Network")
-
 # Import components properly
 import streamlit.components.v1 as components
 
-# Animated BlockDAG Logo
+# Optimized Animated BlockDAG Logo with minimal space
 dag_logo_html = """
-<div style="display: flex; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; margin: 20px 0;">
-    <svg width="400" height="120" viewBox="0 0 400 120">
+<div style="display: flex; justify-content: center; align-items: center; padding: 0; margin: 0;">
+    <svg width="320" height="80" viewBox="0 0 320 80" style="display: block;">
         <defs>
             <marker id="arrowhead" markerWidth="10" markerHeight="7" 
                     refX="9" refY="3.5" orient="auto">
@@ -120,15 +118,15 @@ dag_logo_html = """
                 .logo-text {
                     font-family: 'Arial', sans-serif;
                     font-weight: bold;
-                    font-size: 32px;
+                    font-size: 28px;
                     fill: #2c3e50;
                     letter-spacing: -1px;
                 }
                 .logo-subtext {
-                    font-size: 14px;
+                    font-size: 12px;
                     fill: #7f8c8d;
                     font-weight: normal;
-                    letter-spacing: 2px;
+                    letter-spacing: 1.5px;
                 }
                 .block1 { animation: block-appear 6s ease-in-out infinite; }
                 .block2 { animation: block-appear 6s ease-in-out infinite 0.4s; }
@@ -171,42 +169,43 @@ dag_logo_html = """
         
         <!-- BlockDAG Structure -->
         <!-- Genesis block -->
-        <rect class="dag-block block1" x="15" y="55" width="12" height="12"/>
+        <rect class="dag-block block1" x="15" y="35" width="10" height="10"/>
         
         <!-- Layer 1 -->
-        <rect class="dag-block block2" x="40" y="30" width="12" height="12"/>
-        <rect class="dag-block block3" x="40" y="55" width="12" height="12"/>
-        <rect class="dag-block block4" x="40" y="80" width="12" height="12"/>
+        <rect class="dag-block block2" x="35" y="15" width="10" height="10"/>
+        <rect class="dag-block block3" x="35" y="35" width="10" height="10"/>
+        <rect class="dag-block block4" x="35" y="55" width="10" height="10"/>
         
         <!-- Layer 2 -->
-        <rect class="dag-block block5" x="65" y="40" width="12" height="12"/>
-        <rect class="dag-block block6" x="65" y="70" width="12" height="12"/>
+        <rect class="dag-block block5" x="55" y="25" width="10" height="10"/>
+        <rect class="dag-block block6" x="55" y="45" width="10" height="10"/>
         
         <!-- Layer 3 -->
-        <rect class="dag-block block7" x="90" y="45" width="12" height="12"/>
-        <rect class="dag-block block8" x="90" y="65" width="12" height="12"/>
+        <rect class="dag-block block7" x="75" y="30" width="10" height="10"/>
+        <rect class="dag-block block8" x="75" y="40" width="10" height="10"/>
         
         <!-- Connections -->
-        <line class="dag-connection conn1" x1="27" y1="61" x2="40" y2="36"/>
-        <line class="dag-connection conn2" x1="27" y1="61" x2="40" y2="61"/>
-        <line class="dag-connection conn3" x1="27" y1="61" x2="40" y2="86"/>
-        <line class="dag-connection conn4" x1="52" y1="36" x2="65" y2="46"/>
-        <line class="dag-connection conn5" x1="52" y1="61" x2="65" y2="46"/>
-        <line class="dag-connection conn6" x1="52" y1="61" x2="65" y2="76"/>
-        <line class="dag-connection conn7" x1="77" y1="46" x2="90" y2="51"/>
-        <line class="dag-connection conn8" x1="77" y1="76" x2="90" y2="71"/>
+        <line class="dag-connection conn1" x1="25" y1="40" x2="35" y2="20"/>
+        <line class="dag-connection conn2" x1="25" y1="40" x2="35" y2="40"/>
+        <line class="dag-connection conn3" x1="25" y1="40" x2="35" y2="60"/>
+        <line class="dag-connection conn4" x1="45" y1="20" x2="55" y2="30"/>
+        <line class="dag-connection conn5" x1="45" y1="40" x2="55" y2="30"/>
+        <line class="dag-connection conn6" x1="45" y1="40" x2="55" y2="50"/>
+        <line class="dag-connection conn7" x1="65" y1="30" x2="75" y2="35"/>
+        <line class="dag-connection conn8" x1="65" y1="50" x2="75" y2="45"/>
         
         <!-- Text -->
-        <text x="120" y="50" class="logo-text text-reveal">KASPA</text>
-        <text x="120" y="75" class="logo-subtext text-reveal">METRICS</text>
+        <text x="100" y="35" class="logo-text text-reveal">KASPA</text>
+        <text x="100" y="52" class="logo-subtext text-reveal">METRICS</text>
     </svg>
 </div>
 """
 
-components.html(dag_logo_html, height=160)
+# Use a smaller height to minimize space
+components.html(dag_logo_html, height=90)
 
 st.markdown("""
-<div style="text-align: center; margin-top: 10px; color: #666;">
+<div style="text-align: center; margin-top: 5px; color: #666;">
     <em>Visualizing Kaspa's BlockDAG structure - where blocks form in parallel rather than a single chain</em>
 </div>
 """, unsafe_allow_html=True)
