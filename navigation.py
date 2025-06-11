@@ -115,7 +115,7 @@ def add_navigation():
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
             top: 85px !important;  /* Just below header */
-            left: 10px !important;
+            left: 0px !important;  /* Moved 10px more to the left (was 10px, now 0px) */
             z-index: 999998 !important;
             background: transparent !important;  /* Remove dark background */
             border: none !important;  /* Remove border */
@@ -141,22 +141,23 @@ def add_navigation():
             color: transparent !important;  /* Hide any default text */
         }
 
-        /* Add custom hamburger icon only */
+        /* Add custom hamburger icon - grey by default */
         div[data-testid="stSidebarCollapsedControl"] button::before,
         button[data-testid="collapsedControl"]::before {
             content: "☰" !important;
             font-size: 18px !important;
-            color: #00d4ff !important;
-            text-shadow: 0 0 5px rgba(0, 212, 255, 0.5) !important;
+            color: #9ca3af !important;  /* Grey color */
             transition: all 0.3s ease !important;
             display: block !important;
             line-height: 1 !important;
         }
 
-        /* Clean hover effect - just color change */
+        /* Light blue glow on hover and click */
         div[data-testid="stSidebarCollapsedControl"]:hover button::before,
-        button[data-testid="collapsedControl"]:hover::before {
-            color: #ffffff !important;
+        div[data-testid="stSidebarCollapsedControl"]:active button::before,
+        button[data-testid="collapsedControl"]:hover::before,
+        button[data-testid="collapsedControl"]:active::before {
+            color: #00d4ff !important;
             text-shadow: 0 0 8px rgba(0, 212, 255, 0.8) !important;
             transform: scale(1.1) !important;
             transition: all 0.2s ease !important;
