@@ -130,71 +130,29 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - TRYING DIFFERENT SELECTORS */
+        /* Style expanders - FOUND THE CORRECT SELECTOR! */
         
-        /* Try targeting by data-testid */
-        [data-testid="stExpander"] {
-            border: 3px solid red !important;
-        }
-        
-        /* Try targeting details/summary elements (common for expanders) */
-        details {
-            border: 3px solid orange !important;
-        }
-        
-        summary {
-            border: 3px solid yellow !important;
-        }
-        
-        /* Try targeting by class patterns */
-        div[class*="expander"] {
-            border: 3px solid purple !important;
-        }
-        
-        div[class*="Expander"] {
-            border: 3px solid cyan !important;
-        }
-        
-        /* Nuclear approach - target all elements in sidebar to see structure */
-        [data-testid="stSidebar"] div {
-            border: 1px dotted lime !important;
-        }
-        
-        /* Try the old class names */
-        .streamlit-expanderHeader {
+        /* Target details elements (the actual expanders) */
+        [data-testid="stSidebar"] details {
+            border: 1px solid transparent !important;  /* Make border transparent */
+            outline: none !important;
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.6) 0%, 
                 rgba(15, 23, 42, 0.8) 100%) !important;
-            border: 3px solid red !important;
             border-radius: 10px !important;
-            color: #e2e8f0 !important;
             backdrop-filter: blur(10px) !important;
-            font-weight: 600 !important;
-            box-shadow: none !important;
         }
         
-        .streamlit-expanderHeader:hover {
-            border: 3px solid red !important;
-            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
-        }
-        
-        /* Target all possible expander border elements */
-        [data-testid="stSidebar"] .streamlit-expanderHeader {
-            border: 3px solid red !important;
+        /* Style the summary (clickable header) */
+        [data-testid="stSidebar"] summary {
+            border: none !important;
             outline: none !important;
+            color: #e2e8f0 !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
         }
         
-        /* Remove borders from expander content area too */
-        .streamlit-expanderContent {
-            border: 3px solid green !important;
-            border-top: 3px solid green !important;
-            box-shadow: none !important;
-        }
-        
-        /* Target the expander wrapper */
-        .streamlit-expander {
-            border: 3px solid blue !important;
-        }
+        /* Remove all other test borders */
         
         /* Style sidebar text */
         [data-testid="stSidebar"] .stMarkdown {
