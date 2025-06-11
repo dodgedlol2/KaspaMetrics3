@@ -108,6 +108,9 @@ with col2:
 st.markdown("---")
 st.subheader("🔗 Kaspa BlockDAG Network")
 
+# Import components properly
+import streamlit.components.v1 as components
+
 # Animated BlockDAG Logo
 dag_logo_html = """
 <div style="display: flex; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; margin: 20px 0;">
@@ -215,7 +218,7 @@ dag_logo_html = """
 </div>
 """
 
-st.components.v1.html(dag_logo_html, height=160)
+components.html(dag_logo_html, height=160)
 
 st.markdown("""
 <div style="text-align: center; margin-top: 10px; color: #666;">
