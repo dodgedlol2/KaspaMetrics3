@@ -496,6 +496,3 @@ def add_navigation():
     else:
         st.sidebar.info("🔐 Not Logged In")
         st.sidebar.write("Login for full access")
-    
-    # Add footer to every page
-    add_footer()
