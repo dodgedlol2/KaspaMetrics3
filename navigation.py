@@ -130,7 +130,7 @@ def add_navigation():
             transform: translateY(-2px) !important;
         }
         
-        /* Style expanders - COMPLETELY REMOVE ALL BORDERS AND BACKGROUNDS */
+        /* Style expanders - COMPLETELY CLEAN, NO BACKGROUNDS */
         
         /* Target details elements (the actual expanders) */
         [data-testid="stSidebar"] details {
@@ -151,28 +151,25 @@ def add_navigation():
             box-shadow: none !important;
         }
         
-        /* Style the summary (clickable header) - Apply your gradient here */
+        /* Style the summary (clickable header) - NO BACKGROUND */
         [data-testid="stSidebar"] summary {
             border: none !important;  /* No border on summary either */
             outline: none !important;
-            background: linear-gradient(135deg, 
-                rgba(30, 41, 59, 0.6) 0%, 
-                rgba(15, 23, 42, 0.8) 100%) !important;  /* Your gradient on header only */
+            background: transparent !important;  /* NO BACKGROUND - completely transparent */
             color: #e2e8f0 !important;
             font-weight: 600 !important;
             cursor: pointer !important;
-            border-radius: 8px !important;
+            border-radius: 0 !important;  /* No border radius */
             padding: 8px 12px !important;
-            backdrop-filter: blur(10px) !important;
+            backdrop-filter: none !important;  /* No backdrop filter */
             margin: 0 !important;
         }
         
-        /* Hover effect for summary */
+        /* Hover effect for summary - still no background, just text color change */
         [data-testid="stSidebar"] summary:hover {
-            background: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.2) 0%, 
-                rgba(30, 41, 59, 0.9) 100%) !important;
-            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.1) !important;
+            background: transparent !important;  /* Keep transparent on hover */
+            color: #00d4ff !important;  /* Just change text color on hover */
+            box-shadow: none !important;
         }
         
         /* Make sure content area is also transparent */
