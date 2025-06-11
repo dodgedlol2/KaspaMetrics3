@@ -183,7 +183,7 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # AUTO-COLLAPSE SIDEBAR WITH MUCH WIDER HOVER ZONE + FIXED AUTO-SCALING
+    # FIXED AUTO-COLLAPSE SIDEBAR WITH LARGE HOVER ZONE + WORKING AUTO-SCALING
     st.markdown("""
     <style>
     /* Start with sidebar collapsed by default */
@@ -194,20 +194,21 @@ def add_navigation():
         position: fixed !important;
     }
     
-    /* Create MUCH WIDER hover zone on the left side */
+    /* Create LARGE visible hover zone for debugging */
     .sidebar-hover-zone {
         position: fixed;
-        top: 70px;  /* Below header */
+        top: 70px;
         left: 0;
-        width: 150px;  /* MUCH BIGGER - 150px instead of 4cm */
-        height: calc(100vh - 70px);  /* Full height minus header */
+        width: 200px !important;  /* EVEN BIGGER - 200px */
+        height: calc(100vh - 70px) !important;
         z-index: 999999 !important;
-        background: rgba(0, 212, 255, 0.02);  /* Very subtle blue tint for debugging */
-        pointer-events: auto;
+        background: rgba(0, 212, 255, 0.1) !important;  /* More visible for debugging */
+        pointer-events: auto !important;
         cursor: pointer;
+        border-right: 2px dashed rgba(0, 212, 255, 0.3);  /* Visible border */
     }
     
-    /* DEFAULT: Main content uses full width when sidebar is collapsed */
+    /* Default: Main content full width */
     .main .block-container {
         margin-left: 0px !important;
         width: calc(100vw - 2rem) !important;
@@ -215,116 +216,128 @@ def add_navigation():
         transition: all 0.3s ease !important;
     }
     
-    /* When hover zone is active, show sidebar AND adjust content */
-    body:has(.sidebar-hover-zone:hover) [data-testid="stSidebar"] {
-        transform: translateX(0%) !important;
-    }
-    
-    body:has(.sidebar-hover-zone:hover) .main .block-container {
-        margin-left: 280px !important;
-        width: calc(100vw - 280px - 2rem) !important;
-    }
-    
-    /* When sidebar itself is hovered, keep it open and adjust content */
-    body:has([data-testid="stSidebar"]:hover) [data-testid="stSidebar"] {
-        transform: translateX(0%) !important;
-    }
-    
-    body:has([data-testid="stSidebar"]:hover) .main .block-container {
-        margin-left: 280px !important;
-        width: calc(100vw - 280px - 2rem) !important;
-    }
-    
-    /* Alternative approach using JavaScript classes */
-    .sidebar-expanded .main .block-container {
-        margin-left: 280px !important;
-        width: calc(100vw - 280px - 2rem) !important;
-    }
-    
-    .sidebar-expanded [data-testid="stSidebar"] {
-        transform: translateX(0%) !important;
-    }
-    
-    /* Make sure expand button works too */
+    /* Hide expand button when we're using hover */
     [data-testid="stSidebarCollapsedControl"] {
-        display: block !important;
-        position: fixed !important;
-        top: 85px !important;
-        left: 10px !important;
-        z-index: 999997 !important;
+        display: none !important;
     }
     
-    /* Style the collapse button */
+    /* Style collapse button */
     [data-testid="stSidebarCollapseButton"] {
-        opacity: 0.7 !important;
-        transition: opacity 0.3s ease !important;
-    }
-    
-    [data-testid="stSidebar"]:hover [data-testid="stSidebarCollapseButton"] {
         opacity: 1 !important;
     }
     </style>
     
     <script>
-    function createWideHoverZoneWithScaling() {
+    let sidebarExpanded = false;
+    let hoverZoneActive = false;
+    
+    function adjustMainContent(expand) {
+        const mainContainer = document.querySelector('.main .block-container');
+        if (mainContainer) {
+            if (expand) {
+                mainContainer.style.marginLeft = '280px';
+                mainContainer.style.width = 'calc(100vw - 280px - 2rem)';
+                console.log('Main content adjusted for expanded sidebar');
+            } else {
+                mainContainer.style.marginLeft = '0px';
+                mainContainer.style.width = 'calc(100vw - 2rem)';
+                console.log('Main content adjusted for collapsed sidebar');
+            }
+        }
+    }
+    
+    function showSidebar() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.style.transform = 'translateX(0%)';
+            sidebarExpanded = true;
+            adjustMainContent(true);
+            console.log('Sidebar expanded');
+        }
+    }
+    
+    function hideSidebar() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.style.transform = 'translateX(-100%)';
+            sidebarExpanded = false;
+            adjustMainContent(false);
+            console.log('Sidebar collapsed');
+        }
+    }
+    
+    function createLargeHoverZone() {
         // Remove existing hover zone
         const existingZone = document.querySelector('.sidebar-hover-zone');
         if (existingZone) {
             existingZone.remove();
         }
         
-        // Create the WIDE hover zone
+        // Create large hover zone
         const hoverZone = document.createElement('div');
         hoverZone.className = 'sidebar-hover-zone';
-        hoverZone.title = 'Hover here to expand sidebar';
+        hoverZone.title = 'Large hover zone - move mouse here to expand sidebar';
         
-        // Add event listeners for better control
+        // Hover zone events
         hoverZone.addEventListener('mouseenter', function() {
-            document.body.classList.add('sidebar-expanded');
-            console.log('Sidebar expanded via hover zone');
+            hoverZoneActive = true;
+            showSidebar();
+            console.log('Mouse entered 200px hover zone');
         });
         
         hoverZone.addEventListener('mouseleave', function() {
-            // Only collapse if not hovering sidebar itself
+            hoverZoneActive = false;
+            // Delay to check if mouse moved to sidebar
             setTimeout(function() {
                 const sidebar = document.querySelector('[data-testid="stSidebar"]');
-                if (sidebar && !sidebar.matches(':hover')) {
-                    document.body.classList.remove('sidebar-expanded');
-                    console.log('Sidebar collapsed - left hover zone');
+                if (sidebar && !sidebar.matches(':hover') && !hoverZoneActive) {
+                    hideSidebar();
                 }
-            }, 100);
+            }, 150);
         });
         
-        // Add sidebar hover listeners
+        // Add to document
+        document.body.insertBefore(hoverZone, document.body.firstChild);
+        
+        // Sidebar events
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         if (sidebar) {
             sidebar.addEventListener('mouseenter', function() {
-                document.body.classList.add('sidebar-expanded');
+                showSidebar();
             });
             
             sidebar.addEventListener('mouseleave', function() {
-                document.body.classList.remove('sidebar-expanded');
-                console.log('Sidebar collapsed - left sidebar');
+                if (!hoverZoneActive) {
+                    hideSidebar();
+                }
             });
+            
+            // Initially hide sidebar
+            hideSidebar();
         }
         
-        // Insert at beginning of body
-        document.body.insertBefore(hoverZone, document.body.firstChild);
-        
-        // Initially hide sidebar
-        if (sidebar) {
-            sidebar.style.transform = 'translateX(-100%)';
-        }
-        
-        console.log('Wide hover zone (150px) with JavaScript scaling created');
+        console.log('Large 200px hover zone created with direct content scaling');
     }
     
-    // Create hover zone when page loads
-    setTimeout(createWideHoverZoneWithScaling, 100);
-    setTimeout(createWideHoverZoneWithScaling, 500);
-    setTimeout(createWideHoverZoneWithScaling, 1000);
+    // Override Streamlit's expand button behavior
+    function overrideExpandButton() {
+        const expandControl = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
+        if (expandControl) {
+            expandControl.style.display = 'none';  // Hide it completely
+        }
+    }
     
-    document.addEventListener('DOMContentLoaded', createWideHoverZoneWithScaling);
+    // Run setup
+    setTimeout(createLargeHoverZone, 100);
+    setTimeout(createLargeHoverZone, 500);
+    setTimeout(createLargeHoverZone, 1000);
+    setTimeout(overrideExpandButton, 100);
+    setTimeout(overrideExpandButton, 500);
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        createLargeHoverZone();
+        overrideExpandButton();
+    });
     </script>
     """, unsafe_allow_html=True)
 
