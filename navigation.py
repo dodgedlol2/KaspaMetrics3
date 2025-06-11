@@ -160,8 +160,99 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # SVG Logo as a string
-    svg_logo = '''<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg"> <defs> <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" /> <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" /> </linearGradient> </defs> <circle cx="60" cy="60" r="35" fill="url(#circleGrad)"/> <rect x="45" y="70" width="6" height="12" rx="1" fill="white"/> <rect x="54" y="65" width="6" height="17" rx="1" fill="white"/> <rect x="63" y="55" width="6" height="27" rx="1" fill="white"/> <rect x="72" y="62" width="6" height="20" rx="1" fill="white"/> <text x="110" y="50" font-family="Arial, sans-serif" font-size="26" font-weight="600" fill="#00d4ff">Kaspa</text> <text x="200" y="50" font-family="Arial, sans-serif" font-size="26" font-weight="300" fill="#7c3aed">Metrics</text> </svg>'''
+    # Animated GhostDAG Logo
+    svg_logo = '''<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="ghostGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        
+        <style>
+            @keyframes ghostPulse {
+                0%, 100% { opacity: 0.3; transform: scale(0.9); }
+                50% { opacity: 0.8; transform: scale(1.1); }
+            }
+            @keyframes linkFlow {
+                0% { stroke-dashoffset: 24; opacity: 0; }
+                50% { opacity: 0.6; }
+                100% { stroke-dashoffset: 0; opacity: 0; }
+            }
+            @keyframes nodeAppear {
+                0% { opacity: 0; transform: scale(0); }
+                50% { opacity: 1; transform: scale(1.2); }
+                100% { opacity: 0.8; transform: scale(1); }
+            }
+            
+            .ghost-node {
+                fill: url(#ghostGrad);
+                filter: url(#glow);
+                animation: ghostPulse 3s ease-in-out infinite;
+            }
+            .main-node {
+                fill: #00d4ff;
+                filter: url(#glow);
+            }
+            .ghost-link {
+                stroke: #7c3aed;
+                stroke-width: 2;
+                stroke-dasharray: 8 4;
+                opacity: 0.4;
+                animation: linkFlow 2s linear infinite;
+            }
+            .main-link {
+                stroke: #00d4ff;
+                stroke-width: 3;
+                opacity: 0.8;
+            }
+            
+            .node1 { animation-delay: 0s; }
+            .node2 { animation-delay: 0.3s; }
+            .node3 { animation-delay: 0.6s; }
+            .node4 { animation-delay: 0.9s; }
+            .link1 { animation-delay: 0.2s; }
+            .link2 { animation-delay: 0.5s; }
+            .link3 { animation-delay: 0.8s; }
+            .link4 { animation-delay: 1.1s; }
+        </style>
+        
+        <!-- GhostDAG Network -->
+        <!-- Main chain -->
+        <circle cx="30" cy="60" r="8" class="main-node" />
+        <circle cx="70" cy="60" r="8" class="main-node" />
+        <circle cx="110" cy="60" r="8" class="main-node" />
+        <line x1="38" y1="60" x2="62" y2="60" class="main-link" />
+        <line x1="78" y1="60" x2="102" y2="60" class="main-link" />
+        
+        <!-- Ghost nodes (parallel blocks) -->
+        <circle cx="50" cy="30" r="6" class="ghost-node node1" />
+        <circle cx="90" cy="30" r="6" class="ghost-node node2" />
+        <circle cx="50" cy="90" r="6" class="ghost-node node3" />
+        <circle cx="90" cy="90" r="6" class="ghost-node node4" />
+        
+        <!-- Ghost connections -->
+        <line x1="35" y1="54" x2="45" y2="36" class="ghost-link link1" />
+        <line x1="55" y1="36" x2="65" y2="54" class="ghost-link link1" />
+        <line x1="75" y1="54" x2="85" y2="36" class="ghost-link link2" />
+        <line x1="95" y1="36" x2="105" y2="54" class="ghost-link link2" />
+        <line x1="35" y1="66" x2="45" y2="84" class="ghost-link link3" />
+        <line x1="55" y1="84" x2="65" y2="66" class="ghost-link link3" />
+        <line x1="75" y1="66" x2="85" y2="84" class="ghost-link link4" />
+        <line x1="95" y1="84" x2="105" y2="66" class="ghost-link link4" />
+        
+        <!-- Logo text -->
+        <text x="140" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#00d4ff">Kaspa</text>
+        <text x="230" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="#7c3aed">Metrics</text>
+        <text x="140" y="75" font-family="Arial, sans-serif" font-size="12" font-weight="400" fill="#94a3b8" letter-spacing="2">GHOSTDAG ANALYTICS</text>
+    </svg>'''
     
     # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
