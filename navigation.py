@@ -3,9 +3,33 @@ import streamlit as st
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
     
-    # IMPROVED HEADER CSS - Fixed positioning and sidebar interactions
+    # CRITICAL FIX: Inject CSS IMMEDIATELY to prevent flickering
+    # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
+        /* IMMEDIATE HEADER HIDING - Prevents flickering */
+        header[data-testid="stHeader"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            max-height: 0 !important;
+        }
+        
+        /* HIDE STREAMLIT TOOLBAR IMMEDIATELY */
+        .stAppToolbar {
+            display: none !important;
+        }
+        
+        div[data-testid="stToolbar"] {
+            display: none !important;
+        }
+        
+        /* HIDE ANY STREAMLIT HEADER ELEMENTS */
+        .css-18e3th9, .css-1d391kg, .css-k1vhr4 {
+            display: none !important;
+        }
+        
         /* FIXED HEADER - Improved positioning and z-index management */
         .kaspa-header {
             position: fixed;
@@ -188,6 +212,16 @@ def add_navigation():
         /* Ensure sidebar content remains visible */
         section[data-testid="stSidebar"] > div {
             display: block !important;
+        }
+        
+        /* PREVENT BODY OVERFLOW DURING TRANSITIONS */
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* SMOOTH TRANSITIONS FOR ALL ELEMENTS */
+        * {
+            transition: none !important;
         }
         
         /* RESPONSIVE ADJUSTMENTS */
