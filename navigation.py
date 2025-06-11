@@ -160,83 +160,42 @@ def add_navigation():
     </style>
     """, unsafe_allow_html=True)
     
-    # Animated GhostDAG Logo - Properly escaped
+    # Simple GhostDAG Logo without animations
     svg_logo = """<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient id="ghostGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#00d4ff" stop-opacity="1" />
-                <stop offset="100%" stop-color="#7c3aed" stop-opacity="1" />
+                <stop offset="0%" stop-color="#00d4ff" />
+                <stop offset="100%" stop-color="#7c3aed" />
             </linearGradient>
-            <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
         </defs>
         
-        <style type="text/css">
-            @keyframes ghostPulse {
-                0%, 100% { opacity: 0.3; transform: scale(0.9); }
-                50% { opacity: 0.8; transform: scale(1.1); }
-            }
-            @keyframes linkFlow {
-                0% { stroke-dashoffset: 24; opacity: 0; }
-                50% { opacity: 0.6; }
-                100% { stroke-dashoffset: 0; opacity: 0; }
-            }
-            
-            .ghost-node {
-                fill: url(#ghostGrad);
-                filter: url(#glow);
-                animation: ghostPulse 3s ease-in-out infinite;
-            }
-            .main-node {
-                fill: #00d4ff;
-                filter: url(#glow);
-            }
-            .ghost-link {
-                stroke: #7c3aed;
-                stroke-width: 2;
-                stroke-dasharray: 8 4;
-                opacity: 0.4;
-                animation: linkFlow 2s linear infinite;
-            }
-            .main-link {
-                stroke: #00d4ff;
-                stroke-width: 3;
-                opacity: 0.8;
-            }
-        </style>
-        
         <!-- Main chain -->
-        <circle cx="30" cy="60" r="8" class="main-node" />
-        <circle cx="70" cy="60" r="8" class="main-node" />
-        <circle cx="110" cy="60" r="8" class="main-node" />
-        <line x1="38" y1="60" x2="62" y2="60" class="main-link" />
-        <line x1="78" y1="60" x2="102" y2="60" class="main-link" />
+        <circle cx="30" cy="60" r="8" fill="#00d4ff" />
+        <circle cx="70" cy="60" r="8" fill="#00d4ff" />
+        <circle cx="110" cy="60" r="8" fill="#00d4ff" />
+        <line x1="38" y1="60" x2="62" y2="60" stroke="#00d4ff" stroke-width="3" />
+        <line x1="78" y1="60" x2="102" y2="60" stroke="#00d4ff" stroke-width="3" />
         
         <!-- Ghost nodes -->
-        <circle cx="50" cy="30" r="6" class="ghost-node" style="animation-delay: 0s;" />
-        <circle cx="90" cy="30" r="6" class="ghost-node" style="animation-delay: 0.3s;" />
-        <circle cx="50" cy="90" r="6" class="ghost-node" style="animation-delay: 0.6s;" />
-        <circle cx="90" cy="90" r="6" class="ghost-node" style="animation-delay: 0.9s;" />
+        <circle cx="50" cy="30" r="6" fill="url(#ghostGrad)" opacity="0.7" />
+        <circle cx="90" cy="30" r="6" fill="url(#ghostGrad)" opacity="0.7" />
+        <circle cx="50" cy="90" r="6" fill="url(#ghostGrad)" opacity="0.7" />
+        <circle cx="90" cy="90" r="6" fill="url(#ghostGrad)" opacity="0.7" />
         
         <!-- Ghost connections -->
-        <line x1="35" y1="54" x2="45" y2="36" class="ghost-link" style="animation-delay: 0.2s;" />
-        <line x1="55" y1="36" x2="65" y2="54" class="ghost-link" style="animation-delay: 0.2s;" />
-        <line x1="75" y1="54" x2="85" y2="36" class="ghost-link" style="animation-delay: 0.5s;" />
-        <line x1="95" y1="36" x2="105" y2="54" class="ghost-link" style="animation-delay: 0.5s;" />
-        <line x1="35" y1="66" x2="45" y2="84" class="ghost-link" style="animation-delay: 0.8s;" />
-        <line x1="55" y1="84" x2="65" y2="66" class="ghost-link" style="animation-delay: 0.8s;" />
-        <line x1="75" y1="66" x2="85" y2="84" class="ghost-link" style="animation-delay: 1.1s;" />
-        <line x1="95" y1="84" x2="105" y2="66" class="ghost-link" style="animation-delay: 1.1s;" />
+        <line x1="35" y1="54" x2="45" y2="36" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
+        <line x1="55" y1="36" x2="65" y2="54" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
+        <line x1="75" y1="54" x2="85" y2="36" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
+        <line x1="95" y1="36" x2="105" y2="54" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
+        <line x1="35" y1="66" x2="45" y2="84" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
+        <line x1="55" y1="84" x2="65" y2="66" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
+        <line x1="75" y1="66" x2="85" y2="84" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
+        <line x1="95" y1="84" x2="105" y2="66" stroke="#7c3aed" stroke-width="2" opacity="0.5" stroke-dasharray="4 2" />
         
         <!-- Logo text -->
         <text x="140" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#00d4ff">Kaspa</text>
         <text x="230" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="#7c3aed">Metrics</text>
-        <text x="140" y="75" font-family="Arial, sans-serif" font-size="12" font-weight="400" fill="#94a3b8" letter-spacing="2">GHOSTDAG ANALYTICS</text>
+        <text x="140" y="75" font-family="Arial, sans-serif" font-size="12" font-weight="400" fill="#94a3b8" letter-spacing="2">GHOSTDAG</text>
     </svg>"""
     
     # GENERATE HEADER HTML - Improved with better user status handling
