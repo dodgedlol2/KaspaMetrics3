@@ -136,6 +136,15 @@ def add_navigation():
             font-size: 13px !important;
         }
         
+        /* SPECIFIC STYLING FOR TOP-LEVEL NAVIGATION BUTTONS - Home and Login/Register */
+        [data-testid="stSidebar"] > div > div:first-child .stButton > button {
+            max-width: 150px !important;
+        }
+        
+        [data-testid="stSidebar"] > div > div:nth-child(2) .stButton > button {
+            max-width: 150px !important;
+        }
+        
         .stButton > button:hover {
             background: linear-gradient(135deg, 
                 rgba(0, 212, 255, 0.2) 0%, 
