@@ -531,11 +531,12 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # Add home button at top - Material Icon for consistency
+    # YOUR ORIGINAL SIDEBAR NAVIGATION - UPDATED WITH STREAMLIT NATIVE ICONS
+    # Add home button at top
     if st.sidebar.button("Home", key="nav_home", use_container_width=True, icon=":material/home:"):
         st.switch_page("Home.py")
     
-    # Account buttons right under Home - with Material Icons
+    # Account buttons right under Home
     if st.session_state.get('authentication_status'):
         # User is logged in - show Account and Logout side by side
         col1, col2 = st.sidebar.columns(2)
@@ -547,22 +548,21 @@ def add_navigation():
                 st.session_state.clear()
                 st.switch_page("Home.py")
     else:
-        # User not logged in - full width with Material Icon
+        # User not logged in
         if st.sidebar.button("Login / Register", key="nav_login", use_container_width=True, icon=":material/login:"):
             st.switch_page("pages/0_🔑_Login.py")
     
     st.sidebar.markdown("---")
     
-    # Mining Section - with Material Icons (monochrome)
+    # Mining Section
     with st.sidebar.expander("⛏ Mining", expanded=True):
         if st.button("Hashrate", key="sidebar_hashrate", use_container_width=True, icon=":material/trending_up:"):
             st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
         if st.button("Difficulty", key="sidebar_difficulty", use_container_width=True, icon=":material/settings:"):
             st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
     
-    # Spot Section - ADDING MATERIAL ICON TO HEADER
-    with st.sidebar.expander("", expanded=True):
-        st.markdown("### 📊 Spot Market")  # Using a chart icon that's more monochrome
+    # Spot Section with Material Icon
+    with st.sidebar.expander("💹 Spot Market", expanded=True):
         if st.button("Price", key="sidebar_price", use_container_width=True, icon=":material/attach_money:"):
             st.switch_page("pages/3_💰_Spot_Price.py")
         if st.button("Volume", key="sidebar_volume", use_container_width=True, icon=":material/bar_chart:"):
@@ -570,15 +570,14 @@ def add_navigation():
         if st.button("Market Cap", key="sidebar_marketcap", use_container_width=True, icon=":material/account_balance:"):
             st.switch_page("pages/5_💰_Spot_Market_Cap.py")
     
-    # Social Section - ADDING MATERIAL ICON TO HEADER  
-    with st.sidebar.expander("", expanded=True):
-        st.markdown("### 👥 Social Data")  # Using people icon that's more monochrome
+    # Social Section with Material Icon
+    with st.sidebar.expander("📊 Social Data", expanded=True):
         if st.button("Social Metrics", key="sidebar_social1", use_container_width=True, icon=":material/analytics:"):
             st.switch_page("pages/6_📱_Social_Metrics.py")
         if st.button("Social Trends", key="sidebar_social2", use_container_width=True, icon=":material/show_chart:"):
             st.switch_page("pages/7_📱_Social_Trends.py")
     
-    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic and emoji icons
+    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
         with st.sidebar.expander("👑 Premium Analytics", expanded=True):
             if st.button("Premium Features", key="sidebar_premium_features", use_container_width=True, icon=":material/star:"):
