@@ -116,149 +116,167 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* ENHANCED PROFESSIONAL SIDEBAR WITH SOPHISTICATED GRADIENT */
+        /* ENHANCED PROFESSIONAL SIDEBAR WITH ANIMATED GRADIENT */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            /* Multi-layer professional gradient */
+            position: relative !important;
+            overflow: hidden !important;
+            /* Animated gradient background */
             background: 
-                /* Subtle animated accent */
+                /* Moving gradient overlay */
                 linear-gradient(180deg, 
-                    rgba(0, 212, 255, 0.02) 0%, 
-                    transparent 50%, 
-                    rgba(0, 212, 255, 0.02) 100%),
-                /* Main gradient with more depth */
+                    transparent 0%,
+                    rgba(0, 212, 255, 0.05) 50%,
+                    transparent 100%),
+                /* Main static gradient */
                 linear-gradient(180deg, 
                     #0f172a 0%, 
-                    #1a2332 20%,
+                    #1a2332 25%,
                     #1e293b 50%,
-                    #1a2332 80%,
-                    #0f172a 100%),
-                /* Subtle texture */
-                radial-gradient(circle at 50% 0%, 
-                    rgba(59, 130, 246, 0.03) 0%, 
-                    transparent 40%);
+                    #1a2332 75%,
+                    #0f172a 100%);
+            background-size: 100% 200%, 100% 100%;
+            background-position: 0% 0%, 0% 0%;
+            animation: sidebarFlow 8s ease-in-out infinite;
             backdrop-filter: blur(30px) saturate(120%) !important;
             -webkit-backdrop-filter: blur(30px) saturate(120%) !important;
             border-right: 1px solid rgba(100, 116, 139, 0.2) !important;
             box-shadow: 
                 2px 0 20px rgba(0, 0, 0, 0.2),
                 inset -1px 0 0 rgba(255, 255, 255, 0.03) !important;
-            /* Subtle animation */
-            background-size: 100% 200%, 100% 100%, 100% 100%;
-            animation: sidebarPulse 15s ease infinite;
-            position: relative !important;
-            overflow: hidden !important;
         }
         
-        /* SCROLL-REACTIVE BACKGROUND PARTICLES */
+        /* Animated floating orbs in sidebar */
         [data-testid="stSidebar"]::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 10%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 60%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 10% 90%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
-            background-size: 400px 400px, 300px 300px, 350px 350px, 450px 450px, 250px 250px;
-            background-position: 
-                -100px var(--scroll-1), 
-                100px var(--scroll-2), 
-                -50px var(--scroll-3), 
-                50px var(--scroll-4), 
-                0px var(--scroll-5);
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 10%;
+            left: -75px;
+            animation: floatOrb1 15s ease-in-out infinite;
             pointer-events: none;
-            opacity: 0.6;
-            mix-blend-mode: screen;
-            animation: floatParticles 20s ease-in-out infinite;
         }
         
-        /* SCROLLING LIGHT STREAKS */
         [data-testid="stSidebar"]::after {
             content: '';
             position: absolute;
-            top: -100%;
-            left: 0;
-            right: 0;
-            height: 200%;
-            background: linear-gradient(
-                to bottom,
-                transparent 0%,
-                rgba(0, 212, 255, 0.03) 20%,
-                rgba(0, 212, 255, 0.05) 50%,
-                rgba(0, 212, 255, 0.03) 80%,
-                transparent 100%
-            );
-            transform: translateY(var(--scroll-offset, 0));
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: 20%;
+            right: -100px;
+            animation: floatOrb2 20s ease-in-out infinite;
             pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
         
-        /* Show light streak on scroll */
-        [data-testid="stSidebar"][data-scrolling="true"]::after {
-            opacity: 1;
-        }
-        
-        /* Floating particles animation */
-        @keyframes floatParticles {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-30px); }
-        }
-        
-        /* Sidebar animation */
-        @keyframes sidebarPulse {
-            0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
-            50% { background-position: 0% 100%, 0% 0%, 0% 0%; }
-            100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
-        }
-        
-        /* INTERACTIVE SCROLL INDICATOR */
-        .scroll-progress {
-            position: fixed;
-            top: 70px;
-            left: 0;
-            width: 3px;
-            height: var(--scroll-height, 0%);
-            background: linear-gradient(
-                to bottom,
-                #00d4ff,
-                #0ea5e9,
-                #3b82f6
-            );
-            z-index: 999998;
-            transition: height 0.1s ease-out;
-            box-shadow: 
-                0 0 10px rgba(0, 212, 255, 0.8),
-                0 0 20px rgba(0, 212, 255, 0.4);
-        }
-        
-        /* RIPPLE EFFECT ON SCROLL */
-        @keyframes ripple {
-            0% {
-                transform: scale(0);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-        
-        .scroll-ripple {
-            position: fixed;
+        /* Additional floating elements */
+        [data-testid="stSidebar"] > div::before {
+            content: '';
+            position: absolute;
             width: 100px;
             height: 100px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.06) 0%, transparent 70%);
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulseOrb 4s ease-in-out infinite;
             pointer-events: none;
-            animation: ripple 1s ease-out;
-            z-index: 999996;
+        }
+        
+        /* Animated gradient flow */
+        @keyframes sidebarFlow {
+            0%, 100% { 
+                background-position: 0% 0%, 0% 0%;
+            }
+            50% { 
+                background-position: 0% 100%, 0% 0%;
+            }
+        }
+        
+        /* Floating orb animations */
+        @keyframes floatOrb1 {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            25% { 
+                transform: translate(30px, -50px) scale(1.2);
+                opacity: 0.5;
+            }
+            50% { 
+                transform: translate(-20px, 30px) scale(0.8);
+                opacity: 0.3;
+            }
+            75% { 
+                transform: translate(40px, 20px) scale(1.1);
+                opacity: 0.6;
+            }
+        }
+        
+        @keyframes floatOrb2 {
+            0%, 100% { 
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0.3;
+            }
+            33% { 
+                transform: translate(-30px, -30px) rotate(120deg);
+                opacity: 0.5;
+            }
+            66% { 
+                transform: translate(20px, 40px) rotate(240deg);
+                opacity: 0.4;
+            }
+        }
+        
+        @keyframes pulseOrb {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.2;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.1;
+            }
+        }
+        
+        /* Subtle shine effect on sidebar */
+        [data-testid="stSidebar"] > div {
+            position: relative !important;
+            background: transparent !important;
+            padding-top: 20px !important;
+        }
+        
+        /* Add a moving light beam */
+        [data-testid="stSidebar"] > div::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.02) 50%,
+                transparent 70%
+            );
+            animation: lightBeam 10s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes lightBeam {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
         }
         
         /* Style sidebar content container */
@@ -667,110 +685,6 @@ def add_navigation():
             }
         }
     </style>
-    
-    <!-- SCROLL INTERACTION SCRIPT -->
-    <script>
-        // Initialize scroll tracking
-        let lastScrollTop = 0;
-        let scrollTimeout;
-        let rippleCount = 0;
-        
-        // Function to create ripple effect
-        function createRipple(x, y) {
-            const ripple = document.createElement('div');
-            ripple.className = 'scroll-ripple';
-            ripple.style.left = (x - 50) + 'px';
-            ripple.style.top = (y - 50) + 'px';
-            document.body.appendChild(ripple);
-            
-            setTimeout(() => ripple.remove(), 1000);
-        }
-        
-        // Function to update scroll-based CSS variables
-        function updateScrollEffects() {
-            const sidebar = document.querySelector('[data-testid="stSidebar"]');
-            const sidebarContent = sidebar ? sidebar.querySelector('[data-testid="stSidebarUserContent"]') : null;
-            
-            if (sidebarContent) {
-                const scrollTop = sidebarContent.scrollTop;
-                const scrollHeight = sidebarContent.scrollHeight - sidebarContent.clientHeight;
-                const scrollPercent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-                
-                // Update CSS variables for particle positions
-                sidebar.style.setProperty('--scroll-1', scrollTop * 0.5 + 'px');
-                sidebar.style.setProperty('--scroll-2', scrollTop * -0.3 + 'px');
-                sidebar.style.setProperty('--scroll-3', scrollTop * 0.7 + 'px');
-                sidebar.style.setProperty('--scroll-4', scrollTop * -0.4 + 'px');
-                sidebar.style.setProperty('--scroll-5', scrollTop * 0.6 + 'px');
-                
-                // Update scroll progress indicator
-                const progressBar = document.querySelector('.scroll-progress');
-                if (!progressBar) {
-                    const progress = document.createElement('div');
-                    progress.className = 'scroll-progress';
-                    document.body.appendChild(progress);
-                }
-                document.querySelector('.scroll-progress').style.setProperty('--scroll-height', scrollPercent + '%');
-                
-                // Light streak effect
-                sidebar.style.setProperty('--scroll-offset', (scrollTop * 0.5) + 'px');
-                
-                // Add scrolling attribute
-                sidebar.setAttribute('data-scrolling', 'true');
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    sidebar.setAttribute('data-scrolling', 'false');
-                }, 150);
-                
-                // Create ripple effects at intervals
-                if (Math.abs(scrollTop - lastScrollTop) > 100) {
-                    rippleCount++;
-                    if (rippleCount % 3 === 0) {
-                        const sidebarRect = sidebar.getBoundingClientRect();
-                        createRipple(
-                            sidebarRect.left + sidebarRect.width / 2,
-                            sidebarRect.top + sidebarRect.height * (scrollPercent / 100)
-                        );
-                    }
-                    lastScrollTop = scrollTop;
-                }
-                
-                // Dynamic background shift based on scroll direction
-                if (scrollTop > lastScrollTop) {
-                    // Scrolling down
-                    sidebar.style.filter = 'hue-rotate(5deg) brightness(1.05)';
-                } else {
-                    // Scrolling up
-                    sidebar.style.filter = 'hue-rotate(-5deg) brightness(0.95)';
-                }
-                
-                // Reset filter after a delay
-                setTimeout(() => {
-                    sidebar.style.filter = 'hue-rotate(0deg) brightness(1)';
-                }, 300);
-            }
-        }
-        
-        // Attach scroll listener to sidebar
-        const observeSidebar = setInterval(() => {
-            const sidebar = document.querySelector('[data-testid="stSidebar"] [data-testid="stSidebarUserContent"]');
-            if (sidebar) {
-                sidebar.addEventListener('scroll', updateScrollEffects, { passive: true });
-                clearInterval(observeSidebar);
-                
-                // Initial call to set up effects
-                updateScrollEffects();
-            }
-        }, 100);
-        
-        // Clean up on page unload
-        window.addEventListener('beforeunload', () => {
-            const sidebar = document.querySelector('[data-testid="stSidebar"] [data-testid="stSidebarUserContent"]');
-            if (sidebar) {
-                sidebar.removeEventListener('scroll', updateScrollEffects);
-            }
-        });
-    </script>
     """, unsafe_allow_html=True)
     
     # GENERATE HEADER HTML - Improved with better user status handling
