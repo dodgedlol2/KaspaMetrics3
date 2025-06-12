@@ -117,6 +117,7 @@ def add_navigation():
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
+            font-size: 14px !important;
         }
         
         .stButton > button:hover {
