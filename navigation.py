@@ -562,7 +562,7 @@ def add_navigation():
             st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
     
     # Spot Market Section with account_balance icon (same as Market Cap)
-    with st.sidebar.expander("🏛️ Spot Market", expanded=True):
+    with st.sidebar.expander(":material/account_balance: Spot Market", expanded=True):
         if st.button("Price", key="sidebar_price", use_container_width=True, icon=":material/attach_money:"):
             st.switch_page("pages/3_💰_Spot_Price.py")
         if st.button("Volume", key="sidebar_volume", use_container_width=True, icon=":material/bar_chart:"):
