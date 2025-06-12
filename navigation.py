@@ -120,18 +120,6 @@ def add_navigation():
             font-size: 13px !important;
         }
         
-        /* Specific styling for top-level navigation buttons (Home and Login/Register) */
-        [data-testid="stSidebar"] .stButton > button:has-text("Home"),
-        [data-testid="stSidebar"] .stButton > button:has-text("Login / Register") {
-            max-width: 150px !important;
-        }
-        
-        /* Alternative approach - target specific buttons by their container */
-        [data-testid="stSidebar"] > div > div:nth-child(1) .stButton > button,
-        [data-testid="stSidebar"] > div > div:nth-child(2) .stButton > button {
-            max-width: 150px !important;
-        }
-        
         /* Target button text specifically inside sidebar */
         [data-testid="stSidebar"] .stButton > button span,
         [data-testid="stSidebar"] .stButton > button p,
