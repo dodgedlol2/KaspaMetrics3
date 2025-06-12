@@ -113,6 +113,10 @@ def add_navigation():
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
             font-weight: 600 !important;
+            text-align: left !important;
+            justify-content: flex-start !important;
+            display: flex !important;
+            align-items: center !important;
         }
         
         .stButton > button:hover {
