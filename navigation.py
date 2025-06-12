@@ -699,9 +699,7 @@ def add_navigation():
             if st.button("Premium Features", key="sidebar_premium_features_free", use_container_width=True, icon=":material/star:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.warning("Upgrade Required")
-            st.write("Sign in to access premium analytics")
-            if st.button("Login", key="sidebar_login_premium", use_container_width=True, icon=":material/login:"):
-                st.switch_page("pages/0_🔑_Login.py")**Monthly:** $9.99")
+            st.write("**Monthly:** $9.99")
             st.write("**Annual:** $99")
             if st.button("Upgrade Now", key="sidebar_upgrade", use_container_width=True, icon=":material/credit_card:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
@@ -711,4 +709,6 @@ def add_navigation():
             if st.button("Premium Features", key="sidebar_premium_features_guest", use_container_width=True, icon=":material/star:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             st.info("Login Required")
-            st.write("
+            st.write("Sign in to access premium analytics")
+            if st.button("Login", key="sidebar_login_premium", use_container_width=True, icon=":material/login:"):
+                st.switch_page("pages/0_🔑_Login.py")
