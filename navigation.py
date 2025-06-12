@@ -117,7 +117,23 @@ def add_navigation():
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
-            font-size: 13px !important;
+            font-size: 10px !important;
+        }
+        
+        /* Target button text specifically inside sidebar */
+        [data-testid="stSidebar"] .stButton > button span,
+        [data-testid="stSidebar"] .stButton > button p,
+        [data-testid="stSidebar"] .stButton > button div {
+            font-size: 10px !important;
+        }
+        
+        /* Target button text content more specifically */
+        [data-testid="stSidebar"] button[kind="secondary"] {
+            font-size: 10px !important;
+        }
+        
+        [data-testid="stSidebar"] button[kind="secondary"] span {
+            font-size: 10px !important;
         }
         
         .stButton > button:hover {
