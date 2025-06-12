@@ -116,167 +116,44 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* ENHANCED PROFESSIONAL SIDEBAR WITH ANIMATED GRADIENT */
+        /* ENHANCED PROFESSIONAL SIDEBAR WITH SOPHISTICATED GRADIENT */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            position: relative !important;
-            overflow: hidden !important;
-            /* Animated gradient background */
+            /* Multi-layer professional gradient */
             background: 
-                /* Moving gradient overlay */
+                /* Subtle animated accent */
                 linear-gradient(180deg, 
-                    transparent 0%,
-                    rgba(0, 212, 255, 0.05) 50%,
-                    transparent 100%),
-                /* Main static gradient */
+                    rgba(0, 212, 255, 0.02) 0%, 
+                    transparent 50%, 
+                    rgba(0, 212, 255, 0.02) 100%),
+                /* Main gradient with more depth */
                 linear-gradient(180deg, 
                     #0f172a 0%, 
-                    #1a2332 25%,
+                    #1a2332 20%,
                     #1e293b 50%,
-                    #1a2332 75%,
-                    #0f172a 100%);
-            background-size: 100% 200%, 100% 100%;
-            background-position: 0% 0%, 0% 0%;
-            animation: sidebarFlow 8s ease-in-out infinite;
+                    #1a2332 80%,
+                    #0f172a 100%),
+                /* Subtle texture */
+                radial-gradient(circle at 50% 0%, 
+                    rgba(59, 130, 246, 0.03) 0%, 
+                    transparent 40%);
             backdrop-filter: blur(30px) saturate(120%) !important;
             -webkit-backdrop-filter: blur(30px) saturate(120%) !important;
             border-right: 1px solid rgba(100, 116, 139, 0.2) !important;
             box-shadow: 
                 2px 0 20px rgba(0, 0, 0, 0.2),
                 inset -1px 0 0 rgba(255, 255, 255, 0.03) !important;
+            /* Subtle animation */
+            background-size: 100% 200%, 100% 100%, 100% 100%;
+            animation: sidebarPulse 15s ease infinite;
         }
         
-        /* Animated floating orbs in sidebar */
-        [data-testid="stSidebar"]::before {
-            content: '';
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            top: 10%;
-            left: -75px;
-            animation: floatOrb1 15s ease-in-out infinite;
-            pointer-events: none;
-        }
-        
-        [data-testid="stSidebar"]::after {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            bottom: 20%;
-            right: -100px;
-            animation: floatOrb2 20s ease-in-out infinite;
-            pointer-events: none;
-        }
-        
-        /* Additional floating elements */
-        [data-testid="stSidebar"] > div::before {
-            content: '';
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.06) 0%, transparent 70%);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation: pulseOrb 4s ease-in-out infinite;
-            pointer-events: none;
-        }
-        
-        /* Animated gradient flow */
-        @keyframes sidebarFlow {
-            0%, 100% { 
-                background-position: 0% 0%, 0% 0%;
-            }
-            50% { 
-                background-position: 0% 100%, 0% 0%;
-            }
-        }
-        
-        /* Floating orb animations */
-        @keyframes floatOrb1 {
-            0%, 100% { 
-                transform: translate(0, 0) scale(1);
-                opacity: 0.3;
-            }
-            25% { 
-                transform: translate(30px, -50px) scale(1.2);
-                opacity: 0.5;
-            }
-            50% { 
-                transform: translate(-20px, 30px) scale(0.8);
-                opacity: 0.3;
-            }
-            75% { 
-                transform: translate(40px, 20px) scale(1.1);
-                opacity: 0.6;
-            }
-        }
-        
-        @keyframes floatOrb2 {
-            0%, 100% { 
-                transform: translate(0, 0) rotate(0deg);
-                opacity: 0.3;
-            }
-            33% { 
-                transform: translate(-30px, -30px) rotate(120deg);
-                opacity: 0.5;
-            }
-            66% { 
-                transform: translate(20px, 40px) rotate(240deg);
-                opacity: 0.4;
-            }
-        }
-        
-        @keyframes pulseOrb {
-            0%, 100% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.2;
-            }
-            50% { 
-                transform: translate(-50%, -50%) scale(1.5);
-                opacity: 0.1;
-            }
-        }
-        
-        /* Subtle shine effect on sidebar */
-        [data-testid="stSidebar"] > div {
-            position: relative !important;
-            background: transparent !important;
-            padding-top: 20px !important;
-        }
-        
-        /* Add a moving light beam */
-        [data-testid="stSidebar"] > div::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 30%,
-                rgba(255, 255, 255, 0.02) 50%,
-                transparent 70%
-            );
-            animation: lightBeam 10s linear infinite;
-            pointer-events: none;
-        }
-        
-        @keyframes lightBeam {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-            }
-            100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-            }
+        /* Sidebar animation */
+        @keyframes sidebarPulse {
+            0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+            50% { background-position: 0% 100%, 0% 0%, 0% 0%; }
+            100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
         }
         
         /* Style sidebar content container */
