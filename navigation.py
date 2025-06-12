@@ -571,7 +571,7 @@ def add_navigation():
             st.switch_page("pages/5_💰_Spot_Market_Cap.py")
     
     # Social Data Section with analytics icon (same as Social Metrics)
-    with st.sidebar.expander("📊 Social Data", expanded=True):
+    with st.sidebar.expander("📈 Social Data", expanded=True):
         if st.button("Social Metrics", key="sidebar_social1", use_container_width=True, icon=":material/analytics:"):
             st.switch_page("pages/6_📱_Social_Metrics.py")
         if st.button("Social Trends", key="sidebar_social2", use_container_width=True, icon=":material/show_chart:"):
