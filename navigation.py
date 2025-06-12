@@ -560,8 +560,9 @@ def add_navigation():
         if st.button("Difficulty", key="sidebar_difficulty", use_container_width=True, icon=":material/settings:"):
             st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
     
-    # Spot Section with proper Material Icons 
-    with st.sidebar.expander("Spot Market", expanded=True):
+    # Spot Section - ADDING MATERIAL ICON TO HEADER
+    with st.sidebar.expander("", expanded=True):
+        st.markdown("### 📊 Spot Market")  # Using a chart icon that's more monochrome
         if st.button("Price", key="sidebar_price", use_container_width=True, icon=":material/attach_money:"):
             st.switch_page("pages/3_💰_Spot_Price.py")
         if st.button("Volume", key="sidebar_volume", use_container_width=True, icon=":material/bar_chart:"):
@@ -569,8 +570,9 @@ def add_navigation():
         if st.button("Market Cap", key="sidebar_marketcap", use_container_width=True, icon=":material/account_balance:"):
             st.switch_page("pages/5_💰_Spot_Market_Cap.py")
     
-    # Social Section with proper Material Icons
-    with st.sidebar.expander("Social Data", expanded=True):
+    # Social Section - ADDING MATERIAL ICON TO HEADER  
+    with st.sidebar.expander("", expanded=True):
+        st.markdown("### 👥 Social Data")  # Using people icon that's more monochrome
         if st.button("Social Metrics", key="sidebar_social1", use_container_width=True, icon=":material/analytics:"):
             st.switch_page("pages/6_📱_Social_Metrics.py")
         if st.button("Social Trends", key="sidebar_social2", use_container_width=True, icon=":material/show_chart:"):
