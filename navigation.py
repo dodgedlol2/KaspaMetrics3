@@ -102,7 +102,7 @@ def add_navigation():
         }
         
         /* Style sidebar buttons with glassmorphism */
-        .stButton > button {
+        [data-testid="stSidebar"] .stButton > button {
             background: linear-gradient(135deg, 
                 rgba(30, 41, 59, 0.8) 0%, 
                 rgba(15, 23, 42, 0.9) 100%) !important;
@@ -117,7 +117,7 @@ def add_navigation():
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
-            font-size: 14px !important;
+            font-size: 13px !important;
         }
         
         .stButton > button:hover {
