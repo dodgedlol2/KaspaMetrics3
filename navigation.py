@@ -118,9 +118,6 @@ def add_navigation():
             display: flex !important;
             align-items: center !important;
             font-size: 13px !important;
-            margin-left: 12px !important;
-            margin-right: 12px !important;
-            width: calc(100% - 24px) !important;
         }
         
         /* Target button text specifically inside sidebar */
