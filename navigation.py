@@ -75,7 +75,7 @@ def add_navigation():
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            border-bottom: 1px solid rgba(100, 116, 139, 0.3);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
@@ -84,19 +84,14 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* ENHANCED SIDEBAR WITH BEAUTIFUL GRADIENT */
+        /* ENHANCED SIDEBAR WITH SOLID COLOR MATCHING HEADER */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            background: linear-gradient(180deg, 
-                rgba(15, 20, 25, 0.98) 0%, 
-                rgba(30, 41, 59, 0.95) 25%, 
-                rgba(15, 23, 42, 0.98) 50%, 
-                rgba(20, 30, 45, 0.95) 75%, 
-                rgba(15, 20, 25, 0.98) 100%) !important;
+            background: rgba(15, 23, 42, 0.95) !important;
             backdrop-filter: blur(25px) !important;
             -webkit-backdrop-filter: blur(25px) !important;
-            border-right: 1px solid rgba(0, 212, 255, 0.2) !important;
+            border-right: 1px solid rgba(100, 116, 139, 0.3) !important;
             box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3) !important;
         }
         
