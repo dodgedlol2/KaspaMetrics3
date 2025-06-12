@@ -59,7 +59,7 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* FIXED HEADER - Improved positioning and z-index management */
+        /* ENHANCED PROFESSIONAL HEADER WITH ANIMATED GRADIENT */
         .kaspa-header {
             position: fixed;
             top: 0;
@@ -67,16 +67,48 @@ def add_navigation():
             right: 0;
             width: 100vw;
             height: 70px;
-            z-index: 999997;  /* Lower than sidebar controls but higher than content */
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            z-index: 999997;
+            /* Multi-layer gradient for depth */
+            background: 
+                /* Animated gradient overlay */
+                linear-gradient(45deg, 
+                    rgba(0, 212, 255, 0.03) 0%, 
+                    rgba(0, 212, 255, 0.08) 50%, 
+                    rgba(0, 212, 255, 0.03) 100%),
+                /* Main gradient */
+                linear-gradient(135deg, 
+                    #0f172a 0%, 
+                    #1e293b 40%, 
+                    #1e3a5f 70%, 
+                    #0f172a 100%),
+                /* Subtle pattern overlay */
+                radial-gradient(circle at 20% 50%, 
+                    rgba(0, 212, 255, 0.05) 0%, 
+                    transparent 50%),
+                radial-gradient(circle at 80% 50%, 
+                    rgba(59, 130, 246, 0.05) 0%, 
+                    transparent 50%);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            border-bottom: 1px solid rgba(100, 116, 139, 0.3);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+            box-shadow: 
+                0 1px 3px rgba(0, 0, 0, 0.1),
+                0 4px 20px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            /* Animation */
+            background-size: 200% 200%, 100% 100%, 100% 100%, 100% 100%;
+            animation: headerShift 20s ease infinite;
+        }
+        
+        /* Header animation */
+        @keyframes headerShift {
+            0% { background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%; }
+            50% { background-position: 100% 50%, 0% 0%, 0% 0%, 0% 0%; }
+            100% { background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%; }
         }
         
         /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
@@ -84,15 +116,44 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* ENHANCED SIDEBAR WITH SOLID COLOR MATCHING HEADER */
+        /* ENHANCED PROFESSIONAL SIDEBAR WITH SOPHISTICATED GRADIENT */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            background: rgba(15, 23, 42, 0.95) !important;
-            backdrop-filter: blur(25px) !important;
-            -webkit-backdrop-filter: blur(25px) !important;
-            border-right: 1px solid rgba(100, 116, 139, 0.3) !important;
-            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3) !important;
+            /* Multi-layer professional gradient */
+            background: 
+                /* Subtle animated accent */
+                linear-gradient(180deg, 
+                    rgba(0, 212, 255, 0.02) 0%, 
+                    transparent 50%, 
+                    rgba(0, 212, 255, 0.02) 100%),
+                /* Main gradient with more depth */
+                linear-gradient(180deg, 
+                    #0f172a 0%, 
+                    #1a2332 20%,
+                    #1e293b 50%,
+                    #1a2332 80%,
+                    #0f172a 100%),
+                /* Subtle texture */
+                radial-gradient(circle at 50% 0%, 
+                    rgba(59, 130, 246, 0.03) 0%, 
+                    transparent 40%);
+            backdrop-filter: blur(30px) saturate(120%) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(120%) !important;
+            border-right: 1px solid rgba(100, 116, 139, 0.2) !important;
+            box-shadow: 
+                2px 0 20px rgba(0, 0, 0, 0.2),
+                inset -1px 0 0 rgba(255, 255, 255, 0.03) !important;
+            /* Subtle animation */
+            background-size: 100% 200%, 100% 100%, 100% 100%;
+            animation: sidebarPulse 15s ease infinite;
+        }
+        
+        /* Sidebar animation */
+        @keyframes sidebarPulse {
+            0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+            50% { background-position: 0% 100%, 0% 0%, 0% 0%; }
+            100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
         }
         
         /* Style sidebar content container */
@@ -101,23 +162,59 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Style sidebar buttons with glassmorphism */
+        /* Enhanced sidebar buttons with subtle gradient */
         [data-testid="stSidebar"] .stButton > button {
             background: linear-gradient(135deg, 
-                rgba(30, 41, 59, 0.8) 0%, 
-                rgba(15, 23, 42, 0.9) 100%) !important;
-            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+                rgba(30, 41, 59, 0.6) 0%, 
+                rgba(15, 23, 42, 0.8) 100%) !important;
+            border: 1px solid rgba(100, 116, 139, 0.2) !important;
             border-radius: 12px !important;
             color: #f1f5f9 !important;
-            backdrop-filter: blur(15px) !important;
+            backdrop-filter: blur(10px) !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
             font-weight: 600 !important;
             text-align: left !important;
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
             font-size: 13px !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        /* Button hover state with enhanced effect */
+        [data-testid="stSidebar"] .stButton > button:hover {
+            background: linear-gradient(135deg, 
+                rgba(0, 212, 255, 0.15) 0%, 
+                rgba(30, 41, 59, 0.9) 100%) !important;
+            border-color: rgba(0, 212, 255, 0.4) !important;
+            box-shadow: 
+                0 4px 16px rgba(0, 212, 255, 0.15), 
+                0 0 0 1px rgba(0, 212, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* Subtle shimmer effect on hover */
+        [data-testid="stSidebar"] .stButton > button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.05) 50%, 
+                transparent 100%);
+            transition: left 0.5s ease;
+        }
+        
+        [data-testid="stSidebar"] .stButton > button:hover::before {
+            left: 100%;
         }
         
         /* Target button text specifically inside sidebar */
@@ -136,26 +233,16 @@ def add_navigation():
             font-size: 13px !important;
         }
         
-        .stButton > button:hover {
-            background: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.2) 0%, 
-                rgba(30, 41, 59, 0.9) 100%) !important;
-            border-color: #00d4ff !important;
-            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2), 
-                        0 0 0 1px rgba(0, 212, 255, 0.3) !important;
-            transform: translateY(-2px) !important;
-        }
-        
         /* Style expanders - COMPLETELY CLEAN, NO BACKGROUNDS */
         
         /* Target details elements (the actual expanders) */
         [data-testid="stSidebar"] details {
-            border: none !important;  /* Completely remove border */
+            border: none !important;
             outline: none !important;
-            background: transparent !important;  /* Remove default background */
-            border-radius: 0 !important;  /* Remove border radius */
-            backdrop-filter: none !important;  /* Remove backdrop filter */
-            box-shadow: none !important;  /* Remove any shadow */
+            background: transparent !important;
+            border-radius: 0 !important;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
             margin: 0 !important;
             padding: 0 !important;
         }
@@ -169,22 +256,22 @@ def add_navigation():
         
         /* Style the summary (clickable header) - NO BACKGROUND */
         [data-testid="stSidebar"] summary {
-            border: none !important;  /* No border on summary either */
+            border: none !important;
             outline: none !important;
-            background: transparent !important;  /* NO BACKGROUND - completely transparent */
+            background: transparent !important;
             color: #e2e8f0 !important;
             font-weight: 600 !important;
             cursor: pointer !important;
-            border-radius: 0 !important;  /* No border radius */
+            border-radius: 0 !important;
             padding: 8px 12px !important;
-            backdrop-filter: none !important;  /* No backdrop filter */
+            backdrop-filter: none !important;
             margin: 0 !important;
         }
         
         /* Hover effect for summary - still no background, just text color change */
         [data-testid="stSidebar"] summary:hover {
-            background: transparent !important;  /* Keep transparent on hover */
-            color: #00d4ff !important;  /* Just change text color on hover */
+            background: transparent !important;
+            color: #00d4ff !important;
             box-shadow: none !important;
         }
         
@@ -200,15 +287,18 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* Style warning/info/success boxes in sidebar */
+        /* Enhanced warning/info/success boxes in sidebar */
         [data-testid="stSidebar"] .stAlert {
             background: linear-gradient(135deg, 
-                rgba(30, 41, 59, 0.8) 0%, 
-                rgba(15, 23, 42, 0.9) 100%) !important;
-            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+                rgba(30, 41, 59, 0.7) 0%, 
+                rgba(15, 23, 42, 0.85) 100%) !important;
+            border: 1px solid rgba(100, 116, 139, 0.2) !important;
             border-radius: 8px !important;
             backdrop-filter: blur(10px) !important;
             color: #e2e8f0 !important;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
         }
         
         /* ENHANCED SIDEBAR CONTROLS - Single functional button */
@@ -216,19 +306,19 @@ def add_navigation():
         /* Collapse button when sidebar is OPEN - Make it invisible */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
-            top: calc(85px - 2cm) !important;  /* Moved 2cm up */
-            left: calc(21rem - 2cm) !important;  /* Moved 2cm to the left */
+            top: calc(85px - 2cm) !important;
+            left: calc(21rem - 2cm) !important;
             z-index: 999999 !important;
-            background: transparent !important;  /* Made transparent */
-            border: none !important;  /* Remove border */
-            backdrop-filter: none !important;  /* Remove backdrop filter */
+            background: transparent !important;
+            border: none !important;
+            backdrop-filter: none !important;
         }
 
         /* Make the collapse button completely invisible */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
-            opacity: 0 !important;  /* Completely invisible */
+            opacity: 0 !important;
             pointer-events: auto !important;
             cursor: pointer !important;
         }
@@ -236,13 +326,13 @@ def add_navigation():
         /* Expand button when sidebar is COLLAPSED - Clean hamburger only */
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
-            top: 85px !important;  /* Just below header */
-            left: 20px !important;  /* Moved 10px to the right (was 10px, now 20px) */
+            top: 85px !important;
+            left: 20px !important;
             z-index: 999998 !important;
-            background: transparent !important;  /* Remove dark background */
-            border: none !important;  /* Remove border */
-            backdrop-filter: none !important;  /* Remove backdrop filter */
-            box-shadow: none !important;  /* Remove shadow */
+            background: transparent !important;
+            border: none !important;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
             width: 40px !important;
             height: 40px !important;
         }
@@ -257,10 +347,10 @@ def add_navigation():
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            font-size: 0 !important;  /* Hide original > text */
+            font-size: 0 !important;
             cursor: pointer !important;
             position: relative !important;
-            color: transparent !important;  /* Hide any default text */
+            color: transparent !important;
         }
 
         /* Add custom hamburger icon - grey by default */
@@ -268,7 +358,7 @@ def add_navigation():
         button[data-testid="collapsedControl"]::before {
             content: "☰" !important;
             font-size: 18px !important;
-            color: #9ca3af !important;  /* Grey color */
+            color: #9ca3af !important;
             transition: all 0.3s ease !important;
             display: block !important;
             line-height: 1 !important;
@@ -292,7 +382,7 @@ def add_navigation():
             cursor: pointer !important;
         }
         
-        /* HEADER STYLING WITH DATA MATRIX LOGO */
+        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO */
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -303,12 +393,14 @@ def add_navigation():
             color: #ffffff;
         }
         
+        /* Enhanced matrix with subtle animation */
         .matrix {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2px;
             width: 29px;
             height: 29px;
+            position: relative;
         }
         
         .cell {
@@ -320,37 +412,38 @@ def add_navigation():
                 0 0 7px rgba(156, 163, 175, 0.6),
                 inset 0 1px 1px rgba(255, 255, 255, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
         
-        .cell:nth-child(1) { 
-            opacity: 1; 
-            background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
+        /* Enhanced active cells with subtle pulse */
+        .cell:nth-child(1), 
+        .cell:nth-child(3), 
+        .cell:nth-child(5), 
+        .cell:nth-child(7), 
+        .cell:nth-child(9) {
+            background: linear-gradient(45deg, #00d4ff, #0ea5e9);
+            box-shadow: 
+                0 0 12px rgba(0, 212, 255, 0.8), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            animation: cellPulse 3s ease infinite;
         }
+        
+        /* Stagger the animation */
+        .cell:nth-child(1) { animation-delay: 0s; }
+        .cell:nth-child(3) { animation-delay: 0.2s; }
+        .cell:nth-child(5) { animation-delay: 0.4s; }
+        .cell:nth-child(7) { animation-delay: 0.6s; }
+        .cell:nth-child(9) { animation-delay: 0.8s; }
+        
+        @keyframes cellPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
         .cell:nth-child(2) { opacity: 0.9; }
-        .cell:nth-child(3) { 
-            opacity: 0.7; 
-            background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
-        }
         .cell:nth-child(4) { opacity: 0.8; }
-        .cell:nth-child(5) { 
-            opacity: 1; 
-            background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
-        }
         .cell:nth-child(6) { opacity: 0.8; }
-        .cell:nth-child(7) { 
-            opacity: 0.6; 
-            background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
-        }
         .cell:nth-child(8) { opacity: 0.9; }
-        .cell:nth-child(9) { 
-            opacity: 0.5; 
-            background: linear-gradient(45deg, #00d4ff, #0ea5e9); 
-            box-shadow: 0 0 9px rgba(0, 212, 255, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.3); 
-        }
         
         .logo-text { 
             color: #ffffff; 
@@ -443,6 +536,7 @@ def add_navigation():
         .stButton:hover .material-icons {
             color: #00d4ff !important;
         }
+        
         @media (max-width: 768px) {
             .kaspa-header {
                 padding: 0 1rem;
