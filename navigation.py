@@ -612,7 +612,7 @@ def add_navigation():
             color: #5B6CFF !important;
         }
         
-        /* Icon color on hover - purple theme with bigger size on hover only */
+        /* Icon color on hover - purple theme with smaller hover scale */
         [data-testid="stSidebar"] .stButton:hover .material-icons,
         [data-testid="stSidebar"] .stButton:hover span[data-testid],
         [data-testid="stSidebar"] .stButton:hover svg,
@@ -623,8 +623,7 @@ def add_navigation():
         [data-testid="stSidebar"] button:hover svg * {
             color: #8b9aff !important;
             fill: #8b9aff !important;
-            font-size: 18px !important;
-            transform: scale(1.2) !important;
+            transform: scale(1.1) !important;
             transition: all 0.2s ease !important;
         }
         
