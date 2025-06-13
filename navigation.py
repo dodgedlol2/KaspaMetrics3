@@ -96,8 +96,8 @@ def add_navigation():
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            /* UPDATED: New house style background color */
-            background: #1F1F3A !important;
+            /* UPDATED: Same background as header */
+            background: rgba(10, 10, 10, 0.8) !important;
             backdrop-filter: blur(30px) saturate(120%) !important;
             -webkit-backdrop-filter: blur(30px) saturate(120%) !important;
             /* UPDATED: New house style border color */
