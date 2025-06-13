@@ -7,7 +7,7 @@ primaryColor = "#00d4ff"
 backgroundColor = "#0f172a"
 secondaryBackgroundColor = "#1e293b"
 textColor = "#f1f5f9"
-font = "sans serif"
+font = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
 [server]
 port = 8501
