@@ -114,33 +114,35 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Enhanced sidebar buttons - CLEAN TEXT ONLY, NO BORDERS OR BACKGROUNDS */
+        /* Enhanced sidebar buttons - CLEAN BETTERSTACK STYLE */
         [data-testid="stSidebar"] .stButton > button {
             background: transparent !important;
             border: none !important;
             border-radius: 0 !important;
-            color: #f1f5f9 !important;
+            color: #9CA3AF !important;
             backdrop-filter: none !important;
-            transition: all 0.3s ease !important;
+            transition: all 0.2s ease !important;
             box-shadow: none !important;
-            font-weight: 600 !important;
+            font-weight: 400 !important;
             text-align: left !important;
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
-            font-size: 13px !important;
+            font-size: 14px !important;
             position: relative !important;
             overflow: visible !important;
             padding: 8px 12px !important;
+            margin: 0 !important;
         }
         
-        /* Button hover state - simple text color change only */
+        /* Button hover state - subtle highlight like BetterStack */
         [data-testid="stSidebar"] .stButton > button:hover {
-            background: transparent !important;
+            background: rgba(255, 255, 255, 0.05) !important;
             border: none !important;
             box-shadow: none !important;
-            color: #00d4ff !important;
+            color: #F3F4F6 !important;
             transform: none !important;
+            border-radius: 6px !important;
         }
         
         /* Remove shimmer effect */
@@ -164,9 +166,9 @@ def add_navigation():
             font-size: 13px !important;
         }
         
-        /* EXPANDERS - COMPLETELY INVISIBLE BORDERS AND BACKGROUNDS */
+        /* EXPANDERS - BETTERSTACK CLEAN STYLE */
         
-        /* Target all expander elements - make completely invisible */
+        /* Target all expander elements - completely clean */
         [data-testid="stSidebar"] details,
         [data-testid="stSidebar"] details > div,
         [data-testid="stSidebar"] details > div > div,
@@ -181,31 +183,52 @@ def add_navigation():
             border-radius: 0 !important;
         }
         
-        /* Style the summary (clickable header) - clean text only */
+        /* Style the summary (clickable header) - BetterStack style */
         [data-testid="stSidebar"] summary {
-            color: #e2e8f0 !important;
-            font-weight: 600 !important;
+            color: #9CA3AF !important;
+            font-weight: 400 !important;
             cursor: pointer !important;
             padding: 8px 12px !important;
             margin: 0 !important;
+            list-style: none !important;
+            font-size: 14px !important;
         }
         
-        /* Hover effect for summary */
+        /* Remove default arrow */
+        [data-testid="stSidebar"] summary::-webkit-details-marker {
+            display: none !important;
+        }
+        
+        [data-testid="stSidebar"] summary::marker {
+            display: none !important;
+        }
+        
+        /* Hover effect for summary - subtle like BetterStack */
         [data-testid="stSidebar"] summary:hover {
-            color: #00d4ff !important;
+            color: #F3F4F6 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
         }
         
-        /* Ensure all nested elements are borderless */
+        /* Ensure all nested elements are borderless and clean */
         [data-testid="stSidebar"] details *,
         [data-testid="stSidebar"] .streamlit-expanderHeader *,
         [data-testid="stSidebar"] .streamlit-expanderContent * {
             border: none !important;
             box-shadow: none !important;
+            background: transparent !important;
         }
         
-        /* Style sidebar text */
+        /* Style sidebar text - BetterStack soft gray */
         [data-testid="stSidebar"] .stMarkdown {
-            color: #cbd5e1 !important;
+            color: #9CA3AF !important;
+        }
+        
+        /* Style sidebar general text */
+        [data-testid="stSidebar"] p {
+            color: #9CA3AF !important;
+            font-weight: 400 !important;
         }
         
         /* Enhanced warning/info/success boxes in sidebar with house colors */
@@ -461,7 +484,7 @@ def add_navigation():
             transition: none !important;
         }
         
-        /* FORCE ALL SIDEBAR ICONS TO BE #5B6CFF - COMPREHENSIVE TARGETING */
+        /* FORCE ALL SIDEBAR ICONS TO MATCH BETTERSTACK STYLE */
         
         /* Target all possible icon containers in sidebar */
         [data-testid="stSidebar"] .material-icons,
@@ -478,14 +501,14 @@ def add_navigation():
         [data-testid="stSidebar"] button span[data-testid],
         [data-testid="stSidebar"] span[data-testid*="Icon"],
         [data-testid="stSidebar"] span[data-testid*="icon"] {
-            color: #5B6CFF !important;
-            fill: #5B6CFF !important;
+            color: #9CA3AF !important;
+            fill: #9CA3AF !important;
         }
         
         /* Target Streamlit's internal icon structure */
         [data-testid="stSidebar"] button > div > span,
         [data-testid="stSidebar"] .stButton > button > div > span {
-            color: #5B6CFF !important;
+            color: #9CA3AF !important;
         }
         
         /* Target any SVG icons */
@@ -493,11 +516,11 @@ def add_navigation():
         [data-testid="stSidebar"] svg *,
         [data-testid="stSidebar"] button svg,
         [data-testid="stSidebar"] button svg * {
-            fill: #5B6CFF !important;
-            color: #5B6CFF !important;
+            fill: #9CA3AF !important;
+            color: #9CA3AF !important;
         }
         
-        /* Icon color on hover - keep cyan on hover */
+        /* Icon color on hover - brighter like BetterStack */
         [data-testid="stSidebar"] .stButton:hover .material-icons,
         [data-testid="stSidebar"] .stButton:hover span[data-testid],
         [data-testid="stSidebar"] .stButton:hover svg,
@@ -506,8 +529,8 @@ def add_navigation():
         [data-testid="stSidebar"] button:hover span[data-testid],
         [data-testid="stSidebar"] button:hover svg,
         [data-testid="stSidebar"] button:hover svg * {
-            color: #00d4ff !important;
-            fill: #00d4ff !important;
+            color: #F3F4F6 !important;
+            fill: #F3F4F6 !important;
         }
         
         /* Force override any inline styles */
