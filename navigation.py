@@ -114,7 +114,7 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Enhanced sidebar buttons with subtle gradient using house colors */
+        /* Enhanced sidebar buttons with subtle gradient using house colors - INCREASED TEXT/ICON SIZE */
         [data-testid="stSidebar"] .stButton > button {
             background: linear-gradient(135deg, 
                 rgba(54, 54, 80, 0.6) 0%, 
@@ -133,9 +133,10 @@ def add_navigation():
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
-            font-size: 13px !important;
+            font-size: 15px !important;
             position: relative !important;
             overflow: hidden !important;
+            padding: 12px 16px !important;
         }
         
         /* Button hover state with enhanced effect - UPDATED TO PURPLE THEME */
@@ -170,20 +171,20 @@ def add_navigation():
             left: 100%;
         }
         
-        /* Target button text specifically inside sidebar */
+        /* Target button text specifically inside sidebar - INCREASED SIZE */
         [data-testid="stSidebar"] .stButton > button span,
         [data-testid="stSidebar"] .stButton > button p,
         [data-testid="stSidebar"] .stButton > button div {
-            font-size: 13px !important;
+            font-size: 15px !important;
         }
         
-        /* Target button text content more specifically */
+        /* Target button text content more specifically - INCREASED SIZE */
         [data-testid="stSidebar"] button[kind="secondary"] {
-            font-size: 13px !important;
+            font-size: 15px !important;
         }
         
         [data-testid="stSidebar"] button[kind="secondary"] span {
-            font-size: 13px !important;
+            font-size: 15px !important;
         }
         
         /* EXPANDERS - COMPLETELY INVISIBLE BACKGROUNDS AND BORDERS - ENHANCED */
@@ -612,7 +613,7 @@ def add_navigation():
             color: #5B6CFF !important;
         }
         
-        /* Icon color on hover - updated to purple theme */
+        /* Icon color on hover - updated to purple theme with bigger size */
         [data-testid="stSidebar"] .stButton:hover .material-icons,
         [data-testid="stSidebar"] .stButton:hover span[data-testid],
         [data-testid="stSidebar"] .stButton:hover svg,
@@ -623,6 +624,9 @@ def add_navigation():
         [data-testid="stSidebar"] button:hover svg * {
             color: #8b9aff !important;
             fill: #8b9aff !important;
+            font-size: 22px !important;
+            width: 22px !important;
+            height: 22px !important;
         }
         
         /* Force override any inline styles */
