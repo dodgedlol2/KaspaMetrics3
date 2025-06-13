@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.0 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.1 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -186,46 +186,107 @@ def add_navigation():
             font-size: 13px !important;
         }
         
-        /* EXPANDERS - COMPLETELY INVISIBLE BORDERS AND BACKGROUNDS */
+        /* EXPANDERS - COMPLETELY INVISIBLE BACKGROUNDS AND BORDERS - ENHANCED */
         
-        /* Target all expander elements - make completely invisible */
+        /* Target ALL expander-related elements and make them completely transparent */
         [data-testid="stSidebar"] details,
         [data-testid="stSidebar"] details > div,
         [data-testid="stSidebar"] details > div > div,
+        [data-testid="stSidebar"] details > div > div > div,
         [data-testid="stSidebar"] summary,
         [data-testid="stSidebar"] .streamlit-expanderHeader,
-        [data-testid="stSidebar"] .streamlit-expanderContent {
+        [data-testid="stSidebar"] .streamlit-expanderContent,
+        [data-testid="stSidebar"] .stExpander,
+        [data-testid="stSidebar"] [data-testid*="stExpander"],
+        [data-testid="stSidebar"] [data-testid="stExpanderToggleIcon"],
+        [data-testid="stSidebar"] [data-testid="stExpanderDetails"] {
             border: none !important;
             outline: none !important;
             background: transparent !important;
+            background-color: transparent !important;
             backdrop-filter: none !important;
             box-shadow: none !important;
             border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
         
-        /* Style the summary (clickable header) - clean text only */
-        [data-testid="stSidebar"] summary {
+        /* Target the expander header/summary specifically - remove all backgrounds */
+        [data-testid="stSidebar"] summary,
+        [data-testid="stSidebar"] details > summary,
+        [data-testid="stSidebar"] .streamlit-expanderHeader {
             color: #e2e8f0 !important;
             font-weight: 600 !important;
             cursor: pointer !important;
             padding: 8px 12px !important;
             margin: 0 !important;
+            background: transparent !important;
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            transition: color 0.2s ease !important;
         }
         
-        /* Hover effect for summary */
-        [data-testid="stSidebar"] summary:hover {
+        /* Remove any hover backgrounds on summary */
+        [data-testid="stSidebar"] summary:hover,
+        [data-testid="stSidebar"] details > summary:hover {
             color: #00d4ff !important;
-        }
-        
-        /* Ensure all nested elements are borderless */
-        [data-testid="stSidebar"] details *,
-        [data-testid="stSidebar"] .streamlit-expanderHeader *,
-        [data-testid="stSidebar"] .streamlit-expanderContent * {
+            background: transparent !important;
+            background-color: transparent !important;
             border: none !important;
             box-shadow: none !important;
         }
         
-        /* Style sidebar text */
+        /* Target the dropdown arrow/icon specifically and make it invisible */
+        [data-testid="stSidebar"] summary::marker,
+        [data-testid="stSidebar"] summary::-webkit-details-marker,
+        [data-testid="stSidebar"] details > summary::marker,
+        [data-testid="stSidebar"] details > summary::-webkit-details-marker {
+            display: none !important;
+            content: "" !important;
+        }
+        
+        /* Remove any Streamlit-generated dropdown icons */
+        [data-testid="stSidebar"] [data-testid="stExpanderToggleIcon"],
+        [data-testid="stSidebar"] .streamlit-expanderHeader svg,
+        [data-testid="stSidebar"] summary svg,
+        [data-testid="stSidebar"] details svg {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        /* Ensure all nested expander elements are completely borderless */
+        [data-testid="stSidebar"] details *,
+        [data-testid="stSidebar"] .streamlit-expanderHeader *,
+        [data-testid="stSidebar"] .streamlit-expanderContent *,
+        [data-testid="stSidebar"] .stExpander *,
+        [data-testid="stSidebar"] [data-testid*="stExpander"] * {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+        
+        /* Override any possible container backgrounds */
+        [data-testid="stSidebar"] .element-container,
+        [data-testid="stSidebar"] .stExpander > .element-container,
+        [data-testid="stSidebar"] [data-testid*="stExpander"] > .element-container {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+        
+        /* Force override any Streamlit expander container styling */
+        [data-testid="stSidebar"] div[data-testid*="column"] > div,
+        [data-testid="stSidebar"] .stExpander-content,
+        [data-testid="stSidebar"] .streamlit-expander {
+            background: transparent !important;
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        
+        /* Style sidebar text content inside expanders */
         [data-testid="stSidebar"] .stMarkdown {
             color: #cbd5e1 !important;
         }
