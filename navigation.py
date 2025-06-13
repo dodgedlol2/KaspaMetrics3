@@ -114,20 +114,15 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Enhanced sidebar buttons with subtle gradient using house colors */
+        /* Enhanced sidebar buttons - CLEAN TEXT ONLY, NO BORDERS OR BACKGROUNDS */
         [data-testid="stSidebar"] .stButton > button {
-            background: linear-gradient(135deg, 
-                rgba(54, 54, 80, 0.6) 0%, 
-                rgba(31, 31, 58, 0.8) 100%) !important;
-            /* UPDATED: New house style border color */
-            border: 1px solid #363650 !important;
-            border-radius: 12px !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
             color: #f1f5f9 !important;
-            backdrop-filter: blur(10px) !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 
-                0 2px 8px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: none !important;
+            transition: all 0.3s ease !important;
+            box-shadow: none !important;
             font-weight: 600 !important;
             text-align: left !important;
             justify-content: flex-start !important;
@@ -135,39 +130,22 @@ def add_navigation():
             align-items: center !important;
             font-size: 13px !important;
             position: relative !important;
-            overflow: hidden !important;
+            overflow: visible !important;
+            padding: 8px 12px !important;
         }
         
-        /* Button hover state with enhanced effect */
+        /* Button hover state - simple text color change only */
         [data-testid="stSidebar"] .stButton > button:hover {
-            background: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.15) 0%, 
-                rgba(54, 54, 80, 0.9) 100%) !important;
-            border-color: rgba(0, 212, 255, 0.4) !important;
-            box-shadow: 
-                0 4px 16px rgba(0, 212, 255, 0.15), 
-                0 0 0 1px rgba(0, 212, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-            transform: translateY(-1px) !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #00d4ff !important;
+            transform: none !important;
         }
         
-        /* Subtle shimmer effect on hover */
+        /* Remove shimmer effect */
         [data-testid="stSidebar"] .stButton > button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(255, 255, 255, 0.05) 50%, 
-                transparent 100%);
-            transition: left 0.5s ease;
-        }
-        
-        [data-testid="stSidebar"] .stButton > button:hover::before {
-            left: 100%;
+            display: none !important;
         }
         
         /* Target button text specifically inside sidebar */
