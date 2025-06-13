@@ -1,6 +1,5 @@
 import streamlit as st
 from footer import add_footer
-import streamlit.components.v1 as components
 
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
@@ -9,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.3 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.2 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -425,7 +424,6 @@ def add_navigation():
             text-decoration: none !important;
             color: inherit !important;
             display: block !important;
-            cursor: pointer !important;
         }
         
         .kaspa-logo-link:hover {
@@ -762,4 +760,242 @@ def add_navigation():
             }
         }
     </style>
+    
+    <script>
+        // JavaScript to handle logo clicks with direct URL navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to handle logo click - direct navigation
+            function handleLogoClick(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('Logo clicked! Navigating to home...');
+                
+                // Direct navigation to your Streamlit app URL
+                window.location.href = 'https://kaspametrics3test1.streamlit.app';
+            }
+            
+            // Function to add click handler with better targeting
+            function addLogoClickHandler() {
+                // Remove any existing handlers first
+                const existingLogos = document.querySelectorAll('.kaspa-logo');
+                existingLogos.forEach(logo => {
+                    logo.removeEventListener('click', handleLogoClick);
+                });
+                
+                // Add handler to current logo
+                const logo = document.querySelector('.kaspa-logo');
+                if (logo) {
+                    logo.addEventListener('click', handleLogoClick, true);
+                    logo.style.pointerEvents = 'auto';
+                    console.log('Logo click handler added successfully');
+                    return true;
+                } else {
+                    console.log('Logo not found, retrying...');
+                    return false;
+                }
+            }
+            
+            // Initial attempt
+            if (!addLogoClickHandler()) {
+                // Retry with delays if not found immediately
+                let attempts = 0;
+                const retryInterval = setInterval(() => {
+                    attempts++;
+                    if (addLogoClickHandler() || attempts > 50) {
+                        clearInterval(retryInterval);
+                    }
+                }, 100);
+            }
+            
+            // Also handle dynamic content changes
+            const observer = new MutationObserver(function(mutations) {
+                let shouldCheck = false;
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        // Check if any added nodes contain or are the logo
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === 1) { // Element node
+                                if (node.classList && node.classList.contains('kaspa-logo') || 
+                                    node.querySelector && node.querySelector('.kaspa-logo')) {
+                                    shouldCheck = true;
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                if (shouldCheck) {
+                    setTimeout(addLogoClickHandler, 10);
+                }
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
     """, unsafe_allow_html=True)
+    
+    # Check if logo was clicked via JavaScript
+    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
+        st.session_state.pop('logo_clicked', None)
+        st.switch_page("Home.py")
+    
+    # GENERATE HEADER HTML - Improved with better user status handling
+    if st.session_state.get('authentication_status'):
+        user_name = st.session_state.get('name', 'User')
+        is_premium = st.session_state.get('is_premium', False)
+        
+        # Better status display with expiration info
+        if is_premium:
+            status_text = "👑 PREMIUM"
+            status_class = "premium"
+            
+            # Add expiration info if available
+            if st.session_state.get('premium_expires_at'):
+                try:
+                    from datetime import datetime
+                    expires = datetime.fromisoformat(str(st.session_state['premium_expires_at']).replace('Z', '+00:00'))
+                    days_left = (expires - datetime.now()).days
+                    if days_left > 0:
+                        status_text += f" ({days_left}d left)"
+                    elif days_left == 0:
+                        status_text += " (Expires today)"
+                    else:
+                        status_text = "🔒 EXPIRED"
+                        status_class = "free"
+                except:
+                    pass
+        else:
+            status_text = "🔒 FREE TIER"
+            status_class = "free"
+        
+        header_html = f"""
+        <div class="kaspa-header">
+            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
+                </div>
+            </a>
+            <div class="kaspa-user-info">
+                <div>Welcome, {user_name}</div>
+                <div class="kaspa-user-status {status_class}">{status_text}</div>
+            </div>
+        </div>
+        """
+    else:
+        header_html = """
+        <div class="kaspa-header">
+            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
+                </div>
+            </a>
+            <div class="kaspa-user-info">
+                <div>Please log in</div>
+                <div class="kaspa-user-status guest">
+                    <span class="guest-icon">person</span>
+                    GUEST
+                </div>
+            </div>
+        </div>
+        """
+    
+    st.markdown(header_html, unsafe_allow_html=True)
+
+    # SIDEBAR NAVIGATION WITH MATERIAL ICONS
+    # Add home button at top
+    if st.sidebar.button("Home", key="nav_home", use_container_width=True, icon=":material/home:"):
+        st.switch_page("Home.py")
+    
+    # Account buttons right under Home
+    if st.session_state.get('authentication_status'):
+        # User is logged in - show Account and Logout side by side
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            if st.button("Account", key="nav_account", use_container_width=True, icon=":material/account_circle:"):
+                st.switch_page("pages/A_👤_Account.py")
+        with col2:
+            if st.button("Logout", key="nav_logout", use_container_width=True, icon=":material/logout:"):
+                st.session_state.clear()
+                st.switch_page("Home.py")
+    else:
+        # User not logged in
+        if st.sidebar.button("Login / Register", key="nav_login", use_container_width=True, icon=":material/login:"):
+            st.switch_page("pages/0_🔑_Login.py")
+    
+    st.sidebar.markdown("---")
+    
+    # Mining Section
+    with st.sidebar.expander("⛏ Mining", expanded=True):
+        if st.button("Hashrate", key="sidebar_hashrate", use_container_width=True, icon=":material/trending_up:"):
+            st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
+        if st.button("Difficulty", key="sidebar_difficulty", use_container_width=True, icon=":material/settings:"):
+            st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
+    
+    # Spot Market Section with account_balance icon (same as Market Cap)
+    with st.sidebar.expander(":material/account_balance: Spot Market", expanded=True):
+        if st.button("Price", key="sidebar_price", use_container_width=True, icon=":material/attach_money:"):
+            st.switch_page("pages/3_💰_Spot_Price.py")
+        if st.button("Volume", key="sidebar_volume", use_container_width=True, icon=":material/bar_chart:"):
+            st.switch_page("pages/4_💰_Spot_Volume.py")
+        if st.button("Market Cap", key="sidebar_marketcap", use_container_width=True, icon=":material/account_balance:"):
+            st.switch_page("pages/5_💰_Spot_Market_Cap.py")
+    
+    # Social Data Section with Material Icons - UPDATED
+    with st.sidebar.expander(":material/groups: Social Data", expanded=True):
+        if st.button("Social Metrics", key="sidebar_social1", use_container_width=True, icon=":material/analytics:"):
+            st.switch_page("pages/6_📱_Social_Metrics.py")
+        if st.button("Social Trends", key="sidebar_social2", use_container_width=True, icon=":material/show_chart:"):
+            st.switch_page("pages/7_📱_Social_Trends.py")
+    
+    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
+    if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
+        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=True):
+            if st.button("Premium Features", key="sidebar_premium_features", use_container_width=True, icon=":material/star:"):
+                st.switch_page("pages/B_👑_Premium_Features.py")
+            if st.button("Premium Analytics", key="sidebar_premium1", use_container_width=True, icon=":material/science:"):
+                st.switch_page("pages/8_👑_Premium_Analytics.py")
+            if st.button("Advanced Metrics", key="sidebar_premium2", use_container_width=True, icon=":material/insights:"):
+                st.switch_page("pages/9_👑_Advanced_Metrics.py")
+    elif st.session_state.get('authentication_status'):
+        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=False):
+            # Premium Features accessible to logged-in users (but not paying)
+            if st.button("Premium Features", key="sidebar_premium_features_free", use_container_width=True, icon=":material/star:"):
+                st.switch_page("pages/B_👑_Premium_Features.py")
+            st.warning("Upgrade Required")
+            st.write("**Monthly:** $9.99")
+            st.write("**Annual:** $99")
+            if st.button("Upgrade Now", key="sidebar_upgrade", use_container_width=True, icon=":material/credit_card:"):
+                st.switch_page("pages/B_👑_Premium_Features.py")
+    else:
+        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=False):
+            # Premium Features accessible to everyone (including non-logged users)
+            if st.button("Premium Features", key="sidebar_premium_features_guest", use_container_width=True, icon=":material/star:"):
+                st.switch_page("pages/B_👑_Premium_Features.py")
+            # Custom login button with new color and material icon only
+            if st.button("Login Required", key="sidebar_login_premium_custom", use_container_width=True, icon=":material/login:"):
+                st.switch_page("pages/0_🔑_Login.py")
