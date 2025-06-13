@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v1.1 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.0 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -186,61 +186,42 @@ def add_navigation():
             font-size: 13px !important;
         }
         
-        /* Style expanders - COMPLETELY CLEAN, NO BACKGROUNDS */
+        /* EXPANDERS - COMPLETELY INVISIBLE BORDERS AND BACKGROUNDS */
         
-        /* Target details elements (the actual expanders) */
-        [data-testid="stSidebar"] details {
+        /* Target all expander elements - make completely invisible */
+        [data-testid="stSidebar"] details,
+        [data-testid="stSidebar"] details > div,
+        [data-testid="stSidebar"] details > div > div,
+        [data-testid="stSidebar"] summary,
+        [data-testid="stSidebar"] .streamlit-expanderHeader,
+        [data-testid="stSidebar"] .streamlit-expanderContent {
             border: none !important;
             outline: none !important;
             background: transparent !important;
-            border-radius: 0 !important;
             backdrop-filter: none !important;
             box-shadow: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            border-radius: 0 !important;
         }
         
-        /* Also target any wrapper divs around details */
-        [data-testid="stSidebar"] details > div {
-            border: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-        
-        /* Style the summary (clickable header) - NO BACKGROUND, NO BORDERS */
+        /* Style the summary (clickable header) - clean text only */
         [data-testid="stSidebar"] summary {
-            border: none !important;
-            outline: none !important;
-            background: transparent !important;
             color: #e2e8f0 !important;
             font-weight: 600 !important;
             cursor: pointer !important;
-            border-radius: 0 !important;
             padding: 8px 12px !important;
-            backdrop-filter: none !important;
             margin: 0 !important;
-            box-shadow: none !important;
         }
         
-        /* Hover effect for summary - still no background, just text color change */
+        /* Hover effect for summary */
         [data-testid="stSidebar"] summary:hover {
-            background: transparent !important;
             color: #00d4ff !important;
-            box-shadow: none !important;
-            border: none !important;
         }
         
-        /* Make sure content area is also transparent and borderless */
-        [data-testid="stSidebar"] details[open] {
+        /* Ensure all nested elements are borderless */
+        [data-testid="stSidebar"] details *,
+        [data-testid="stSidebar"] .streamlit-expanderHeader *,
+        [data-testid="stSidebar"] .streamlit-expanderContent * {
             border: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-        
-        /* Remove any borders from expander content containers */
-        [data-testid="stSidebar"] details > div > div {
-            border: none !important;
-            background: transparent !important;
             box-shadow: none !important;
         }
         
@@ -502,6 +483,60 @@ def add_navigation():
             transition: none !important;
         }
         
+        /* FORCE ALL SIDEBAR ICONS TO BE #5B6CFF - COMPREHENSIVE TARGETING */
+        
+        /* Target all possible icon containers in sidebar */
+        [data-testid="stSidebar"] .material-icons,
+        [data-testid="stSidebar"] button .material-icons,
+        [data-testid="stSidebar"] .stButton .material-icons,
+        [data-testid="stSidebar"] button[kind="secondary"] .material-icons,
+        [data-testid="stSidebar"] span[data-testid*="material"],
+        [data-testid="stSidebar"] div[data-testid*="material"],
+        [data-testid="stSidebar"] .material-symbols-outlined,
+        [data-testid="stSidebar"] span.material-symbols-outlined,
+        [data-testid="stSidebar"] i[class*="material"],
+        [data-testid="stSidebar"] span[class*="material"],
+        [data-testid="stSidebar"] .stButton span[data-testid],
+        [data-testid="stSidebar"] button span[data-testid],
+        [data-testid="stSidebar"] span[data-testid*="Icon"],
+        [data-testid="stSidebar"] span[data-testid*="icon"] {
+            color: #5B6CFF !important;
+            fill: #5B6CFF !important;
+        }
+        
+        /* Target Streamlit's internal icon structure */
+        [data-testid="stSidebar"] button > div > span,
+        [data-testid="stSidebar"] .stButton > button > div > span {
+            color: #5B6CFF !important;
+        }
+        
+        /* Target any SVG icons */
+        [data-testid="stSidebar"] svg,
+        [data-testid="stSidebar"] svg *,
+        [data-testid="stSidebar"] button svg,
+        [data-testid="stSidebar"] button svg * {
+            fill: #5B6CFF !important;
+            color: #5B6CFF !important;
+        }
+        
+        /* Icon color on hover - keep cyan on hover */
+        [data-testid="stSidebar"] .stButton:hover .material-icons,
+        [data-testid="stSidebar"] .stButton:hover span[data-testid],
+        [data-testid="stSidebar"] .stButton:hover svg,
+        [data-testid="stSidebar"] .stButton:hover svg *,
+        [data-testid="stSidebar"] button:hover .material-icons,
+        [data-testid="stSidebar"] button:hover span[data-testid],
+        [data-testid="stSidebar"] button:hover svg,
+        [data-testid="stSidebar"] button:hover svg * {
+            color: #00d4ff !important;
+            fill: #00d4ff !important;
+        }
+        
+        /* Force override any inline styles */
+        [data-testid="stSidebar"] * {
+            --icon-color: #5B6CFF !important;
+        }
+        
         /* Google Material Icons styling */
         .material-icons {
             font-family: 'Material Icons';
@@ -517,27 +552,6 @@ def add_navigation():
             direction: ltr;
             vertical-align: middle;
             margin-right: 8px;
-        }
-        
-        /* Icon color in sidebar - Multiple selectors for better targeting */
-        [data-testid="stSidebar"] .material-icons,
-        [data-testid="stSidebar"] button .material-icons,
-        [data-testid="stSidebar"] .stButton .material-icons,
-        [data-testid="stSidebar"] button[kind="secondary"] .material-icons {
-            color: #5B6CFF !important;
-        }
-        
-        /* Streamlit material icons - force color */
-        [data-testid="stSidebar"] span[data-testid*="material"],
-        [data-testid="stSidebar"] div[data-testid*="material"] {
-            color: #5B6CFF !important;
-        }
-        
-        /* Icon color on hover */
-        .stButton:hover .material-icons,
-        [data-testid="stSidebar"] .stButton:hover .material-icons,
-        [data-testid="stSidebar"] button:hover .material-icons {
-            color: #00d4ff !important;
         }
         
         @media (max-width: 768px) {
