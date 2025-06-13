@@ -138,15 +138,15 @@ def add_navigation():
             overflow: hidden !important;
         }
         
-        /* Button hover state with enhanced effect */
+        /* Button hover state with enhanced effect - UPDATED TO PURPLE THEME */
         [data-testid="stSidebar"] .stButton > button:hover {
             background: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.15) 0%, 
+                rgba(91, 108, 255, 0.15) 0%, 
                 rgba(54, 54, 80, 0.9) 100%) !important;
-            border-color: rgba(0, 212, 255, 0.4) !important;
+            border-color: rgba(91, 108, 255, 0.4) !important;
             box-shadow: 
-                0 4px 16px rgba(0, 212, 255, 0.15), 
-                0 0 0 1px rgba(0, 212, 255, 0.2),
+                0 4px 16px rgba(91, 108, 255, 0.15), 
+                0 0 0 1px rgba(91, 108, 255, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
             transform: translateY(-1px) !important;
         }
@@ -282,9 +282,9 @@ def add_navigation():
             opacity: 1 !important;
         }
         
-        /* Arrow hover effect */
+        /* Arrow hover effect - updated to purple theme */
         [data-testid="stSidebar"] summary:hover::after {
-            color: #00d4ff !important;
+            color: #8b9aff !important;
             opacity: 1 !important;
         }
         
@@ -612,7 +612,7 @@ def add_navigation():
             color: #5B6CFF !important;
         }
         
-        /* Icon color on hover - keep cyan on hover */
+        /* Icon color on hover - updated to purple theme */
         [data-testid="stSidebar"] .stButton:hover .material-icons,
         [data-testid="stSidebar"] .stButton:hover span[data-testid],
         [data-testid="stSidebar"] .stButton:hover svg,
@@ -621,8 +621,8 @@ def add_navigation():
         [data-testid="stSidebar"] button:hover span[data-testid],
         [data-testid="stSidebar"] button:hover svg,
         [data-testid="stSidebar"] button:hover svg * {
-            color: #00d4ff !important;
-            fill: #00d4ff !important;
+            color: #8b9aff !important;
+            fill: #8b9aff !important;
         }
         
         /* Force override any inline styles */
