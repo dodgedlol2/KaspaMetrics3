@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.0 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v3.0 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -114,60 +114,41 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Enhanced sidebar buttons with subtle gradient using house colors */
+        /* Enhanced sidebar buttons - CLEAN BETTERSTACK STYLE with Inter font */
         [data-testid="stSidebar"] .stButton > button {
-            background: linear-gradient(135deg, 
-                rgba(54, 54, 80, 0.6) 0%, 
-                rgba(31, 31, 58, 0.8) 100%) !important;
-            /* UPDATED: New house style border color */
-            border: 1px solid #363650 !important;
-            border-radius: 12px !important;
-            color: #f1f5f9 !important;
-            backdrop-filter: blur(10px) !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 
-                0 2px 8px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
-            font-weight: 600 !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            color: #9CA3AF !important;
+            backdrop-filter: none !important;
+            transition: all 0.2s ease !important;
+            box-shadow: none !important;
+            font-weight: 400 !important;
             text-align: left !important;
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
-            font-size: 13px !important;
+            font-size: 14px !important;
             position: relative !important;
-            overflow: hidden !important;
+            overflow: visible !important;
+            padding: 8px 12px !important;
+            margin: 0 !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
-        /* Button hover state with enhanced effect */
+        /* Button hover state - subtle highlight like BetterStack */
         [data-testid="stSidebar"] .stButton > button:hover {
-            background: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.15) 0%, 
-                rgba(54, 54, 80, 0.9) 100%) !important;
-            border-color: rgba(0, 212, 255, 0.4) !important;
-            box-shadow: 
-                0 4px 16px rgba(0, 212, 255, 0.15), 
-                0 0 0 1px rgba(0, 212, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-            transform: translateY(-1px) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #F3F4F6 !important;
+            transform: none !important;
+            border-radius: 6px !important;
         }
         
-        /* Subtle shimmer effect on hover */
+        /* Remove shimmer effect */
         [data-testid="stSidebar"] .stButton > button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(255, 255, 255, 0.05) 50%, 
-                transparent 100%);
-            transition: left 0.5s ease;
-        }
-        
-        [data-testid="stSidebar"] .stButton > button:hover::before {
-            left: 100%;
+            display: none !important;
         }
         
         /* Target button text specifically inside sidebar */
@@ -186,9 +167,9 @@ def add_navigation():
             font-size: 13px !important;
         }
         
-        /* EXPANDERS - COMPLETELY INVISIBLE BORDERS AND BACKGROUNDS */
+        /* EXPANDERS - BETTERSTACK CLEAN STYLE with Inter font */
         
-        /* Target all expander elements - make completely invisible */
+        /* Target all expander elements - completely clean */
         [data-testid="stSidebar"] details,
         [data-testid="stSidebar"] details > div,
         [data-testid="stSidebar"] details > div > div,
@@ -201,33 +182,63 @@ def add_navigation():
             backdrop-filter: none !important;
             box-shadow: none !important;
             border-radius: 0 !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
-        /* Style the summary (clickable header) - clean text only */
+        /* Style the summary (clickable header) - BetterStack style */
         [data-testid="stSidebar"] summary {
-            color: #e2e8f0 !important;
-            font-weight: 600 !important;
+            color: #9CA3AF !important;
+            font-weight: 400 !important;
             cursor: pointer !important;
             padding: 8px 12px !important;
             margin: 0 !important;
+            list-style: none !important;
+            font-size: 14px !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
-        /* Hover effect for summary */
+        /* Remove default arrow */
+        [data-testid="stSidebar"] summary::-webkit-details-marker {
+            display: none !important;
+        }
+        
+        [data-testid="stSidebar"] summary::marker {
+            display: none !important;
+        }
+        
+        /* Hover effect for summary - subtle like BetterStack */
         [data-testid="stSidebar"] summary:hover {
-            color: #00d4ff !important;
+            color: #F3F4F6 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
         }
         
-        /* Ensure all nested elements are borderless */
+        /* Ensure all nested elements are borderless and clean */
         [data-testid="stSidebar"] details *,
         [data-testid="stSidebar"] .streamlit-expanderHeader *,
         [data-testid="stSidebar"] .streamlit-expanderContent * {
             border: none !important;
             box-shadow: none !important;
+            background: transparent !important;
         }
         
-        /* Style sidebar text */
+        /* Style sidebar text - BetterStack soft gray with Inter font */
         [data-testid="stSidebar"] .stMarkdown {
-            color: #cbd5e1 !important;
+            color: #9CA3AF !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        }
+        
+        /* Style sidebar general text */
+        [data-testid="stSidebar"] p {
+            color: #9CA3AF !important;
+            font-weight: 400 !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        }
+        
+        /* Apply Inter font to all sidebar text elements */
+        [data-testid="stSidebar"] * {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
         /* Enhanced warning/info/success boxes in sidebar with house colors */
@@ -483,53 +494,42 @@ def add_navigation():
             transition: none !important;
         }
         
-        /* FORCE ALL SIDEBAR ICONS TO BE #5B6CFF - COMPREHENSIVE TARGETING */
+        /* FORCE SIDEBAR ICONS TO PURPLE - PRESERVE STREAMLIT ICON FUNCTIONALITY */
         
-        /* Target all possible icon containers in sidebar */
-        [data-testid="stSidebar"] .material-icons,
-        [data-testid="stSidebar"] button .material-icons,
-        [data-testid="stSidebar"] .stButton .material-icons,
-        [data-testid="stSidebar"] button[kind="secondary"] .material-icons,
-        [data-testid="stSidebar"] span[data-testid*="material"],
-        [data-testid="stSidebar"] div[data-testid*="material"],
-        [data-testid="stSidebar"] .material-symbols-outlined,
-        [data-testid="stSidebar"] span.material-symbols-outlined,
-        [data-testid="stSidebar"] i[class*="material"],
-        [data-testid="stSidebar"] span[class*="material"],
-        [data-testid="stSidebar"] .stButton span[data-testid],
-        [data-testid="stSidebar"] button span[data-testid],
-        [data-testid="stSidebar"] span[data-testid*="Icon"],
-        [data-testid="stSidebar"] span[data-testid*="icon"] {
-            color: #5B6CFF !important;
-            fill: #5B6CFF !important;
-        }
-        
-        /* Target Streamlit's internal icon structure */
-        [data-testid="stSidebar"] button > div > span,
-        [data-testid="stSidebar"] .stButton > button > div > span {
+        /* Target Streamlit's icon elements specifically without breaking functionality */
+        [data-testid="stSidebar"] button[data-testid] span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] button span[data-testid*="stIcon"] {
             color: #5B6CFF !important;
         }
         
-        /* Target any SVG icons */
-        [data-testid="stSidebar"] svg,
-        [data-testid="stSidebar"] svg *,
-        [data-testid="stSidebar"] button svg,
-        [data-testid="stSidebar"] button svg * {
+        /* Target Material Icons specifically */
+        [data-testid="stSidebar"] span[data-testid*="stIcon"] svg,
+        [data-testid="stSidebar"] span[data-testid*="stIcon"] svg path {
             fill: #5B6CFF !important;
             color: #5B6CFF !important;
         }
         
-        /* Icon color on hover - keep cyan on hover */
-        [data-testid="stSidebar"] .stButton:hover .material-icons,
-        [data-testid="stSidebar"] .stButton:hover span[data-testid],
-        [data-testid="stSidebar"] .stButton:hover svg,
-        [data-testid="stSidebar"] .stButton:hover svg *,
-        [data-testid="stSidebar"] button:hover .material-icons,
-        [data-testid="stSidebar"] button:hover span[data-testid],
-        [data-testid="stSidebar"] button:hover svg,
-        [data-testid="stSidebar"] button:hover svg * {
-            color: #00d4ff !important;
-            fill: #00d4ff !important;
+        /* More specific targeting for Streamlit's button icons */
+        [data-testid="stSidebar"] .stButton button span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] .stButton button span[data-testid*="stIcon"] * {
+            color: #5B6CFF !important;
+            fill: #5B6CFF !important;
+        }
+        
+        /* Target any remaining icon elements */
+        [data-testid="stSidebar"] [data-testid*="stIcon"],
+        [data-testid="stSidebar"] [data-testid*="stIcon"] * {
+            color: #5B6CFF !important;
+            fill: #5B6CFF !important;
+        }
+        
+        /* Icon hover states */
+        [data-testid="stSidebar"] .stButton:hover span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] .stButton:hover span[data-testid*="stIcon"] *,
+        [data-testid="stSidebar"] button:hover span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] button:hover span[data-testid*="stIcon"] * {
+            color: #6D7DFF !important;
+            fill: #6D7DFF !important;
         }
         
         /* Force override any inline styles */
