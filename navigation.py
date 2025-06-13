@@ -1,4 +1,4 @@
-import streamlit as st
+pythonimport streamlit as st
 from footer import add_footer
 
 def add_navigation():
@@ -8,6 +8,9 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
+        /* Import Inter font like BetterStack */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         /* IMMEDIATE COMPLETE HEADER REMOVAL - Multiple targeting approaches */
         header[data-testid="stHeader"] {
             display: none !important;
@@ -59,7 +62,7 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* ENHANCED PROFESSIONAL HEADER WITH ANIMATED GRADIENT */
+        /* BETTERSTACK-STYLE HEADER */
         .kaspa-header {
             position: fixed;
             top: 0;
@@ -68,47 +71,16 @@ def add_navigation():
             width: 100vw;
             height: 70px;
             z-index: 999997;
-            /* Multi-layer gradient for depth */
-            background: 
-                /* Animated gradient overlay */
-                linear-gradient(45deg, 
-                    rgba(0, 212, 255, 0.03) 0%, 
-                    rgba(0, 212, 255, 0.08) 50%, 
-                    rgba(0, 212, 255, 0.03) 100%),
-                /* Main gradient */
-                linear-gradient(135deg, 
-                    #0f172a 0%, 
-                    #1e293b 40%, 
-                    #1e3a5f 70%, 
-                    #0f172a 100%),
-                /* Subtle pattern overlay */
-                radial-gradient(circle at 20% 50%, 
-                    rgba(0, 212, 255, 0.05) 0%, 
-                    transparent 50%),
-                radial-gradient(circle at 80% 50%, 
-                    rgba(59, 130, 246, 0.05) 0%, 
-                    transparent 50%);
-            backdrop-filter: blur(20px) saturate(150%);
-            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            /* BetterStack-style black with transparency */
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            border-bottom: 1px solid rgba(100, 116, 139, 0.2);
-            box-shadow: 
-                0 1px 3px rgba(0, 0, 0, 0.1),
-                0 4px 20px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            /* Animation */
-            background-size: 200% 200%, 100% 100%, 100% 100%, 100% 100%;
-            animation: headerShift 20s ease infinite;
-        }
-        
-        /* Header animation */
-        @keyframes headerShift {
-            0% { background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%; }
-            50% { background-position: 100% 50%, 0% 0%, 0% 0%, 0% 0%; }
-            100% { background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%; }
+            border-bottom: 1px solid rgba(38, 38, 38, 0.5);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
@@ -387,7 +359,7 @@ def add_navigation():
             display: flex;
             align-items: center;
             gap: 12px;
-            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            font-family: Inter, -apple-system, sans-serif;
             font-size: 22px;
             font-weight: 600;
             color: #ffffff;
@@ -448,30 +420,34 @@ def add_navigation():
         .logo-text { 
             color: #ffffff; 
             letter-spacing: -0.5px;
-            background: linear-gradient(45deg, #f8fafc, #e2e8f0, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            font-weight: 700;
+            font-weight: 600;
         }
         
+        /* BetterStack-style user info styling */
         .kaspa-user-info {
-            color: #f1f5f9;
+            font-family: Inter, -apple-system, sans-serif;
+            color: #a3a3a3;
             font-size: 14px;
             text-align: right;
+            font-weight: 400;
+        }
+        
+        .kaspa-user-info > div:first-child {
+            color: #e2e8f0;
+            margin-bottom: 2px;
         }
         
         .kaspa-user-status {
-            color: #00d4ff;
-            font-size: 11px;
-            text-transform: uppercase;
-            font-weight: 600;
+            color: #a3a3a3;
+            font-size: 12px;
+            font-weight: 500;
             margin-top: 2px;
+            letter-spacing: 0.5px;
         }
         
         .kaspa-user-status.premium {
             color: #fbbf24;
-            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
         }
         
         .kaspa-user-status.free {
