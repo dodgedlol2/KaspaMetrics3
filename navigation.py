@@ -8,15 +8,12 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.0 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v3.0 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
         /* Import Google Material Symbols */
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
-        
-        /* Import Google Material Icons */
-        @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
         
         /* IMMEDIATE COMPLETE HEADER REMOVAL - Multiple targeting approaches */
         header[data-testid="stHeader"] {
