@@ -206,7 +206,7 @@ def add_navigation():
             box-shadow: none !important;
         }
         
-        /* Style the summary (clickable header) - NO BACKGROUND */
+        /* Style the summary (clickable header) - NO BACKGROUND, NO BORDERS */
         [data-testid="stSidebar"] summary {
             border: none !important;
             outline: none !important;
@@ -218,6 +218,7 @@ def add_navigation():
             padding: 8px 12px !important;
             backdrop-filter: none !important;
             margin: 0 !important;
+            box-shadow: none !important;
         }
         
         /* Hover effect for summary - still no background, just text color change */
@@ -225,10 +226,18 @@ def add_navigation():
             background: transparent !important;
             color: #00d4ff !important;
             box-shadow: none !important;
+            border: none !important;
         }
         
-        /* Make sure content area is also transparent */
+        /* Make sure content area is also transparent and borderless */
         [data-testid="stSidebar"] details[open] {
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        /* Remove any borders from expander content containers */
+        [data-testid="stSidebar"] details > div > div {
             border: none !important;
             background: transparent !important;
             box-shadow: none !important;
@@ -511,7 +520,7 @@ def add_navigation():
         
         /* Icon color in sidebar */
         [data-testid="stSidebar"] .material-icons {
-            color: #cbd5e1 !important;
+            color: #5B6CFF !important;
         }
         
         /* Icon color on hover */
