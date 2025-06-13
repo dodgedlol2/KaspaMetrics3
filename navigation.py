@@ -390,7 +390,7 @@ def add_navigation():
             color: transparent !important;
         }
 
-        /* Add custom hamburger icon - grey by default */
+        /* Add custom hamburger icon - grey by default, purple on hover */
         div[data-testid="stSidebarCollapsedControl"] button::before,
         button[data-testid="collapsedControl"]::before {
             content: "☰" !important;
@@ -401,13 +401,13 @@ def add_navigation():
             line-height: 1 !important;
         }
 
-        /* Light blue glow on hover and click */
+        /* Purple glow on hover and click - updated to match theme */
         div[data-testid="stSidebarCollapsedControl"]:hover button::before,
         div[data-testid="stSidebarCollapsedControl"]:active button::before,
         button[data-testid="collapsedControl"]:hover::before,
         button[data-testid="collapsedControl"]:active::before {
-            color: #00d4ff !important;
-            text-shadow: 0 0 8px rgba(0, 212, 255, 0.8) !important;
+            color: #8b9aff !important;
+            text-shadow: 0 0 8px rgba(139, 154, 255, 0.8) !important;
             transform: scale(1.1) !important;
             transition: all 0.2s ease !important;
         }
