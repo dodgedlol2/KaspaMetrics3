@@ -420,6 +420,17 @@ def add_navigation():
         }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
+        .kaspa-logo-link {
+            text-decoration: none !important;
+            color: inherit !important;
+            display: block !important;
+        }
+        
+        .kaspa-logo-link:hover {
+            text-decoration: none !important;
+            color: inherit !important;
+        }
+        
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -749,55 +760,12 @@ def add_navigation():
             }
         }
     </style>
-    <script>
-        // Simplified JavaScript to handle logo clicks like sidebar buttons
-        document.addEventListener('DOMContentLoaded', function() {
-            function handleLogoClick(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                console.log('Logo clicked!');
-                
-                // Method 1: Try to click the existing Home button
-                const homeButton = document.querySelector('button[data-testid="nav_home"]');
-                if (homeButton) {
-                    console.log('Found home button, clicking it...');
-                    homeButton.click();
-                    return;
-                }
-                
-                // Method 2: Set query parameter for Python to detect
-                console.log('Setting query parameter...');
-                const url = new URL(window.location);
-                url.searchParams.set('goto_home', 'true');
-                window.location.href = url.toString();
-            }
-            
-            function addLogoClickHandler() {
-                const logo = document.querySelector('.kaspa-logo');
-                if (logo) {
-                    logo.addEventListener('click', handleLogoClick);
-                    console.log('Logo click handler added');
-                    return true;
-                }
-                return false;
-            }
-            
-            // Try to add handler
-            if (!addLogoClickHandler()) {
-                setTimeout(addLogoClickHandler, 500);
-            }
-            
-            // Re-add handler when page updates
-            const observer = new MutationObserver(addLogoClickHandler);
-            observer.observe(document.body, { childList: true, subtree: true });
-        });
-    </script>
     """, unsafe_allow_html=True)
     
-    # Check for logo click navigation signals
-    if st.query_params.get('goto_home') == 'true':
-        # Clear the parameter and navigate
-        st.query_params.clear()
+    # Remove the JavaScript section since we're using native HTML links now
+    # Check if logo was clicked via JavaScript (keeping this for compatibility)
+    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
+        st.session_state.pop('logo_clicked', None)
         st.switch_page("Home.py")
     
     # GENERATE HEADER HTML - Improved with better user status handling
@@ -831,20 +799,22 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <div class="kaspa-logo">
-                <div class="matrix">
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
+            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
                 </div>
-                <span class="logo-text">Kaspa Metrics</span>
-            </div>
+            </a>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
                 <div class="kaspa-user-status {status_class}">{status_text}</div>
@@ -854,20 +824,22 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <div class="kaspa-logo">
-                <div class="matrix">
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
+            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
                 </div>
-                <span class="logo-text">Kaspa Metrics</span>
-            </div>
+            </a>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
                 <div class="kaspa-user-status guest">
