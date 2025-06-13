@@ -856,6 +856,6 @@ def add_navigation():
             # Premium Features accessible to everyone (including non-logged users)
             if st.button("Premium Features", key="sidebar_premium_features_guest", use_container_width=True, icon=":material/star:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
-            # Custom login button with new color and no icon
-            if st.button("Login Required", key="sidebar_login_premium_custom", use_container_width=True):
+            # Custom login button with new color and material icon only
+            if st.button("Login Required", key="sidebar_login_premium_custom", use_container_width=True, icon=":material/login:"):
                 st.switch_page("pages/0_🔑_Login.py")
