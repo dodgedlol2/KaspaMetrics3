@@ -8,6 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
+        /* CACHE BUSTER - Change this comment to force CSS reload: v1.1 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -82,7 +83,8 @@ def add_navigation():
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            border-bottom: 1px solid rgba(38, 38, 38, 0.5);
+            /* UPDATED: New house style border color */
+            border-bottom: 1px solid #363650;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
@@ -91,44 +93,19 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* ENHANCED PROFESSIONAL SIDEBAR WITH SOPHISTICATED GRADIENT */
+        /* UPDATED SIDEBAR WITH NEW HOUSE STYLE COLORS */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            /* Multi-layer professional gradient */
-            background: 
-                /* Subtle animated accent */
-                linear-gradient(180deg, 
-                    rgba(0, 212, 255, 0.02) 0%, 
-                    transparent 50%, 
-                    rgba(0, 212, 255, 0.02) 100%),
-                /* Main gradient with more depth */
-                linear-gradient(180deg, 
-                    #0f172a 0%, 
-                    #1a2332 20%,
-                    #1e293b 50%,
-                    #1a2332 80%,
-                    #0f172a 100%),
-                /* Subtle texture */
-                radial-gradient(circle at 50% 0%, 
-                    rgba(59, 130, 246, 0.03) 0%, 
-                    transparent 40%);
+            /* UPDATED: Same background as header */
+            background: rgba(10, 10, 10, 0.8) !important;
             backdrop-filter: blur(30px) saturate(120%) !important;
             -webkit-backdrop-filter: blur(30px) saturate(120%) !important;
-            border-right: 1px solid rgba(100, 116, 139, 0.2) !important;
+            /* UPDATED: New house style border color */
+            border-right: 1px solid #363650 !important;
             box-shadow: 
                 2px 0 20px rgba(0, 0, 0, 0.2),
                 inset -1px 0 0 rgba(255, 255, 255, 0.03) !important;
-            /* Subtle animation */
-            background-size: 100% 200%, 100% 100%, 100% 100%;
-            animation: sidebarPulse 15s ease infinite;
-        }
-        
-        /* Sidebar animation */
-        @keyframes sidebarPulse {
-            0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
-            50% { background-position: 0% 100%, 0% 0%, 0% 0%; }
-            100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
         }
         
         /* Style sidebar content container */
@@ -137,12 +114,13 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Enhanced sidebar buttons with subtle gradient */
+        /* Enhanced sidebar buttons with subtle gradient using house colors */
         [data-testid="stSidebar"] .stButton > button {
             background: linear-gradient(135deg, 
-                rgba(30, 41, 59, 0.6) 0%, 
-                rgba(15, 23, 42, 0.8) 100%) !important;
-            border: 1px solid rgba(100, 116, 139, 0.2) !important;
+                rgba(54, 54, 80, 0.6) 0%, 
+                rgba(31, 31, 58, 0.8) 100%) !important;
+            /* UPDATED: New house style border color */
+            border: 1px solid #363650 !important;
             border-radius: 12px !important;
             color: #f1f5f9 !important;
             backdrop-filter: blur(10px) !important;
@@ -164,7 +142,7 @@ def add_navigation():
         [data-testid="stSidebar"] .stButton > button:hover {
             background: linear-gradient(135deg, 
                 rgba(0, 212, 255, 0.15) 0%, 
-                rgba(30, 41, 59, 0.9) 100%) !important;
+                rgba(54, 54, 80, 0.9) 100%) !important;
             border-color: rgba(0, 212, 255, 0.4) !important;
             box-shadow: 
                 0 4px 16px rgba(0, 212, 255, 0.15), 
@@ -229,7 +207,7 @@ def add_navigation():
             box-shadow: none !important;
         }
         
-        /* Style the summary (clickable header) - NO BACKGROUND */
+        /* Style the summary (clickable header) - NO BACKGROUND, NO BORDERS */
         [data-testid="stSidebar"] summary {
             border: none !important;
             outline: none !important;
@@ -241,6 +219,7 @@ def add_navigation():
             padding: 8px 12px !important;
             backdrop-filter: none !important;
             margin: 0 !important;
+            box-shadow: none !important;
         }
         
         /* Hover effect for summary - still no background, just text color change */
@@ -248,10 +227,18 @@ def add_navigation():
             background: transparent !important;
             color: #00d4ff !important;
             box-shadow: none !important;
+            border: none !important;
         }
         
-        /* Make sure content area is also transparent */
+        /* Make sure content area is also transparent and borderless */
         [data-testid="stSidebar"] details[open] {
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        /* Remove any borders from expander content containers */
+        [data-testid="stSidebar"] details > div > div {
             border: none !important;
             background: transparent !important;
             box-shadow: none !important;
@@ -262,12 +249,13 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* Enhanced warning/info/success boxes in sidebar */
+        /* Enhanced warning/info/success boxes in sidebar with house colors */
         [data-testid="stSidebar"] .stAlert {
             background: linear-gradient(135deg, 
-                rgba(30, 41, 59, 0.7) 0%, 
-                rgba(15, 23, 42, 0.85) 100%) !important;
-            border: 1px solid rgba(100, 116, 139, 0.2) !important;
+                rgba(54, 54, 80, 0.7) 0%, 
+                rgba(31, 31, 58, 0.85) 100%) !important;
+            /* UPDATED: New house style border color */
+            border: 1px solid #363650 !important;
             border-radius: 8px !important;
             backdrop-filter: blur(10px) !important;
             color: #e2e8f0 !important;
@@ -531,13 +519,24 @@ def add_navigation():
             margin-right: 8px;
         }
         
-        /* Icon color in sidebar */
-        [data-testid="stSidebar"] .material-icons {
-            color: #cbd5e1 !important;
+        /* Icon color in sidebar - Multiple selectors for better targeting */
+        [data-testid="stSidebar"] .material-icons,
+        [data-testid="stSidebar"] button .material-icons,
+        [data-testid="stSidebar"] .stButton .material-icons,
+        [data-testid="stSidebar"] button[kind="secondary"] .material-icons {
+            color: #5B6CFF !important;
+        }
+        
+        /* Streamlit material icons - force color */
+        [data-testid="stSidebar"] span[data-testid*="material"],
+        [data-testid="stSidebar"] div[data-testid*="material"] {
+            color: #5B6CFF !important;
         }
         
         /* Icon color on hover */
-        .stButton:hover .material-icons {
+        .stButton:hover .material-icons,
+        [data-testid="stSidebar"] .stButton:hover .material-icons,
+        [data-testid="stSidebar"] button:hover .material-icons {
             color: #00d4ff !important;
         }
         
