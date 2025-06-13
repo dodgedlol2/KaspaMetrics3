@@ -15,6 +15,9 @@ def add_navigation():
         /* Import Google Material Symbols */
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
         
+        /* Import Google Material Icons */
+        @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+        
         /* IMMEDIATE COMPLETE HEADER REMOVAL - Multiple targeting approaches */
         header[data-testid="stHeader"] {
             display: none !important;
