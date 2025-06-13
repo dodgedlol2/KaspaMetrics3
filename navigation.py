@@ -420,17 +420,6 @@ def add_navigation():
         }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
-        .kaspa-logo-link {
-            text-decoration: none !important;
-            color: inherit !important;
-            display: block !important;
-        }
-        
-        .kaspa-logo-link:hover {
-            text-decoration: none !important;
-            color: inherit !important;
-        }
-        
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -761,89 +750,46 @@ def add_navigation():
         }
     </style>
     <script>
-        // JavaScript to handle logo clicks using Streamlit's internal navigation
+        // Simplified JavaScript to handle logo clicks like sidebar buttons
         document.addEventListener('DOMContentLoaded', function() {
             function handleLogoClick(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                console.log('Logo clicked! Using Streamlit navigation...');
+                console.log('Logo clicked!');
                 
-                // Set a flag in session state that Python can detect
+                // Method 1: Try to click the existing Home button
                 const homeButton = document.querySelector('button[data-testid="nav_home"]');
                 if (homeButton) {
-                    // Simulate clicking the existing Home button
+                    console.log('Found home button, clicking it...');
                     homeButton.click();
-                } else {
-                    // Fallback: try to trigger Streamlit's page switch mechanism
-                    // Create a temporary form to signal the Python backend
-                    const event = new CustomEvent('logo_click_home', {
-                        detail: { page: 'Home.py' }
-                    });
-                    document.dispatchEvent(event);
-                    
-                    // Also try setting a query parameter that Streamlit can detect
-                    const url = new URL(window.location);
-                    url.searchParams.set('goto_home', 'true');
-                    window.history.pushState({}, '', url);
-                    
-                    // Force a Streamlit rerun if available
-                    if (window.parent && window.parent.streamlitRerun) {
-                        window.parent.streamlitRerun();
-                    } else if (window.streamlitRerun) {
-                        window.streamlitRerun();
-                    }
+                    return;
                 }
+                
+                // Method 2: Set query parameter for Python to detect
+                console.log('Setting query parameter...');
+                const url = new URL(window.location);
+                url.searchParams.set('goto_home', 'true');
+                window.location.href = url.toString();
             }
             
             function addLogoClickHandler() {
                 const logo = document.querySelector('.kaspa-logo');
                 if (logo) {
-                    // Remove any existing handlers
-                    logo.removeEventListener('click', handleLogoClick);
-                    // Add new handler
-                    logo.addEventListener('click', handleLogoClick, true);
-                    console.log('Logo click handler added successfully');
+                    logo.addEventListener('click', handleLogoClick);
+                    console.log('Logo click handler added');
                     return true;
                 }
                 return false;
             }
             
-            // Initial setup
+            // Try to add handler
             if (!addLogoClickHandler()) {
-                // Retry with delays
-                let attempts = 0;
-                const retryInterval = setInterval(() => {
-                    attempts++;
-                    if (addLogoClickHandler() || attempts > 20) {
-                        clearInterval(retryInterval);
-                    }
-                }, 100);
+                setTimeout(addLogoClickHandler, 500);
             }
             
-            // Watch for Streamlit re-renders
-            const observer = new MutationObserver(function(mutations) {
-                let shouldRecheck = false;
-                mutations.forEach(function(mutation) {
-                    if (mutation.addedNodes.length > 0) {
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1 && 
-                                (node.classList && node.classList.contains('kaspa-logo') || 
-                                 (node.querySelector && node.querySelector('.kaspa-logo')))) {
-                                shouldRecheck = true;
-                            }
-                        });
-                    }
-                });
-                
-                if (shouldRecheck) {
-                    setTimeout(addLogoClickHandler, 50);
-                }
-            });
-            
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
+            // Re-add handler when page updates
+            const observer = new MutationObserver(addLogoClickHandler);
+            observer.observe(document.body, { childList: true, subtree: true });
         });
     </script>
     """, unsafe_allow_html=True)
