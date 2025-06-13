@@ -750,85 +750,31 @@ def add_navigation():
         }
     </style>
     <script>
-        // Much simpler and more direct approach
-        function setupLogoClick() {
-            console.log('Setting up logo click...');
-            
-            // Find the logo element
-            const logo = document.querySelector('.kaspa-logo');
-            if (!logo) {
-                console.log('Logo not found, retrying...');
-                setTimeout(setupLogoClick, 200);
-                return;
-            }
-            
-            console.log('Logo found! Adding click handler...');
-            
-            // Remove any existing handler first
-            logo.removeEventListener('click', logoClickHandler);
-            
-            // Add the click handler
-            logo.addEventListener('click', logoClickHandler);
-            
-            // Test that the handler is working
-            logo.addEventListener('mouseenter', function() {
-                console.log('Logo hover detected - click handler should work');
-            });
-            
-            console.log('Logo click handler added successfully');
-        }
-        
-        function logoClickHandler(event) {
-            console.log('LOGO CLICKED! Starting navigation...');
-            event.preventDefault();
-            event.stopPropagation();
-            
-            // Try method 1: Click the existing Home button
-            const homeBtn = document.querySelector('button[data-testid="nav_home"]');
-            if (homeBtn) {
-                console.log('Found Home button, clicking it...');
-                homeBtn.click();
-                return;
-            }
-            
-            // Method 2: Reload page with parameter
-            console.log('Home button not found, using reload method...');
-            const currentUrl = new URL(window.location);
-            currentUrl.searchParams.set('logo_home_clicked', 'true');
-            window.location.href = currentUrl.toString();
-        }
-        
-        // Start immediately when page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupLogoClick);
-        } else {
-            setupLogoClick();
-        }
-        
-        // Also retry when Streamlit updates the page
-        let retryCount = 0;
-        const maxRetries = 20;
-        const retryInterval = setInterval(() => {
-            retryCount++;
-            if (retryCount >= maxRetries) {
-                clearInterval(retryInterval);
-                return;
-            }
-            
-            const logo = document.querySelector('.kaspa-logo');
-            if (logo && !logo.onclick && !logo._clickHandlerAdded) {
-                logo._clickHandlerAdded = true;
-                setupLogoClick();
-            }
-        }, 500);
+        // No complex JavaScript needed - just using inline onclick
+        console.log('Streamlit logo navigation ready');
     </script>
     """, unsafe_allow_html=True)
     
-    # Check for logo click navigation
-    if st.query_params.get('logo_home_clicked') == 'true':
-        # Clear the parameter and navigate
-        st.query_params.clear()
+    # Create a hidden button that we can trigger from JavaScript
+    # This button will be invisible but functional
+    if st.button("🏠", key="hidden_home_button", help="Navigate to Home", 
+                 type="primary", use_container_width=False):
         st.switch_page("Home.py")
+    
+    # Hide the button with CSS
+    st.markdown("""
+    <style>
+        /* Hide the hidden home button */
+        button[data-testid="hidden_home_button"],
+        button[title="Navigate to Home"],
+        .stButton:has(button[data-testid="hidden_home_button"]) {
+            display: none !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
     
     # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
@@ -861,7 +807,7 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <div class="kaspa-logo">
+            <div class="kaspa-logo" onclick="document.querySelector('button[data-testid=hidden_home_button]')?.click() || document.querySelector('button[title=&quot;Navigate to Home&quot;]')?.click()">
                 <div class="matrix">
                     <div class="cell"></div>
                     <div class="cell"></div>
@@ -884,7 +830,7 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <div class="kaspa-logo">
+            <div class="kaspa-logo" onclick="document.querySelector('button[data-testid=hidden_home_button]')?.click() || document.querySelector('button[title=&quot;Navigate to Home&quot;]')?.click()">
                 <div class="matrix">
                     <div class="cell"></div>
                     <div class="cell"></div>
