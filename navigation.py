@@ -237,7 +237,7 @@ def add_navigation():
             box-shadow: none !important;
         }
         
-        /* Target the dropdown arrow/icon specifically and make it invisible */
+        /* Hide default dropdown arrows and replace with custom ones */
         [data-testid="stSidebar"] summary::marker,
         [data-testid="stSidebar"] summary::-webkit-details-marker,
         [data-testid="stSidebar"] details > summary::marker,
@@ -246,7 +246,7 @@ def add_navigation():
             content: "" !important;
         }
         
-        /* Remove any Streamlit-generated dropdown icons */
+        /* Hide Streamlit-generated dropdown icons */
         [data-testid="stSidebar"] [data-testid="stExpanderToggleIcon"],
         [data-testid="stSidebar"] .streamlit-expanderHeader svg,
         [data-testid="stSidebar"] summary svg,
@@ -254,6 +254,38 @@ def add_navigation():
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
+        }
+        
+        /* Add custom dropdown arrow with clean styling */
+        [data-testid="stSidebar"] summary {
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        
+        /* Custom arrow - right-pointing by default */
+        [data-testid="stSidebar"] summary::after {
+            content: "▶" !important;
+            font-size: 10px !important;
+            color: #64748b !important;
+            transition: all 0.2s ease !important;
+            transform-origin: center !important;
+            margin-left: auto !important;
+            opacity: 0.7 !important;
+        }
+        
+        /* Arrow points down when expanded */
+        [data-testid="stSidebar"] details[open] > summary::after {
+            transform: rotate(90deg) !important;
+            color: #5B6CFF !important;
+            opacity: 1 !important;
+        }
+        
+        /* Arrow hover effect */
+        [data-testid="stSidebar"] summary:hover::after {
+            color: #00d4ff !important;
+            opacity: 1 !important;
         }
         
         /* Ensure all nested expander elements are completely borderless */
