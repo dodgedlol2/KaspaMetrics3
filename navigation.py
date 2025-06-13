@@ -8,6 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
+        /* CACHE BUSTER - Change this comment to force CSS reload: v1.1 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -518,13 +519,24 @@ def add_navigation():
             margin-right: 8px;
         }
         
-        /* Icon color in sidebar */
-        [data-testid="stSidebar"] .material-icons {
+        /* Icon color in sidebar - Multiple selectors for better targeting */
+        [data-testid="stSidebar"] .material-icons,
+        [data-testid="stSidebar"] button .material-icons,
+        [data-testid="stSidebar"] .stButton .material-icons,
+        [data-testid="stSidebar"] button[kind="secondary"] .material-icons {
+            color: #5B6CFF !important;
+        }
+        
+        /* Streamlit material icons - force color */
+        [data-testid="stSidebar"] span[data-testid*="material"],
+        [data-testid="stSidebar"] div[data-testid*="material"] {
             color: #5B6CFF !important;
         }
         
         /* Icon color on hover */
-        .stButton:hover .material-icons {
+        .stButton:hover .material-icons,
+        [data-testid="stSidebar"] .stButton:hover .material-icons,
+        [data-testid="stSidebar"] button:hover .material-icons {
             color: #00d4ff !important;
         }
         
