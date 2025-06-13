@@ -452,15 +452,15 @@ def add_navigation():
             transition: all 0.3s ease;
         }
         
-        /* Enhanced active cells with subtle pulse */
+        /* Enhanced active cells with subtle pulse - UPDATED TO PURPLE */
         .cell:nth-child(1), 
         .cell:nth-child(3), 
         .cell:nth-child(5), 
         .cell:nth-child(7), 
         .cell:nth-child(9) {
-            background: linear-gradient(45deg, #00d4ff, #0ea5e9);
+            background: linear-gradient(45deg, #5B6CFF, #4c5fd7);
             box-shadow: 
-                0 0 12px rgba(0, 212, 255, 0.8), 
+                0 0 12px rgba(91, 108, 255, 0.8), 
                 inset 0 1px 1px rgba(255, 255, 255, 0.3);
             animation: cellPulse 3s ease infinite;
         }
