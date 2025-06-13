@@ -3,9 +3,9 @@ showSidebarNavigation = false
 
 [theme]
 base = "dark"
-primaryColor = "#00d4ff"
+primaryColor = "#FFFFFF"
 backgroundColor = "#0F0F1A"
-secondaryBackgroundColor = "#1e293b"
+secondaryBackgroundColor = "#161629"
 textColor = "#f1f5f9"
 font = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
