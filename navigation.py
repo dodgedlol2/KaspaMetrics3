@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v5.0 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v6.0 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -502,64 +502,60 @@ def add_navigation():
             transition: none !important;
         }
         
-        /* FORCE SIDEBAR ICONS TO PURPLE - PRESERVE STREAMLIT ICON FUNCTIONALITY */
-        
-        /* Target Streamlit's icon elements specifically without breaking functionality */
-        [data-testid="stSidebar"] button[data-testid] span[data-testid*="stIcon"],
-        [data-testid="stSidebar"] button span[data-testid*="stIcon"] {
+        /* FORCE STREAMLIT ICONS TO BE PURPLE */
+        /* Target the icon container that Streamlit creates */
+        [data-testid="stSidebar"] [data-testid*="baseButton"] span[data-testid*="stIcon"] {
             color: #5B6CFF !important;
         }
         
-        /* Target Material Icons specifically */
-        [data-testid="stSidebar"] span[data-testid*="stIcon"] svg,
-        [data-testid="stSidebar"] span[data-testid*="stIcon"] svg path {
+        /* Target Material Icons in Streamlit's icon system */
+        [data-testid="stSidebar"] .material-icons-outlined,
+        [data-testid="stSidebar"] .material-icons {
+            color: #5B6CFF !important;
+            font-size: 18px !important;
+        }
+        
+        /* Force color on SVG icons if Streamlit uses them */
+        [data-testid="stSidebar"] svg {
             fill: #5B6CFF !important;
+            stroke: #5B6CFF !important;
             color: #5B6CFF !important;
         }
         
-        /* More specific targeting for Streamlit's button icons */
-        [data-testid="stSidebar"] .stButton button span[data-testid*="stIcon"],
-        [data-testid="stSidebar"] .stButton button span[data-testid*="stIcon"] * {
-            color: #5B6CFF !important;
+        [data-testid="stSidebar"] svg path,
+        [data-testid="stSidebar"] svg * {
             fill: #5B6CFF !important;
+            stroke: #5B6CFF !important;
         }
         
-        /* Target any remaining icon elements */
-        [data-testid="stSidebar"] [data-testid*="stIcon"],
-        [data-testid="stSidebar"] [data-testid*="stIcon"] * {
-            color: #5B6CFF !important;
-            fill: #5B6CFF !important;
-        }
-        
-        /* Icon hover states */
-        [data-testid="stSidebar"] .stButton:hover span[data-testid*="stIcon"],
-        [data-testid="stSidebar"] .stButton:hover span[data-testid*="stIcon"] *,
-        [data-testid="stSidebar"] button:hover span[data-testid*="stIcon"],
-        [data-testid="stSidebar"] button:hover span[data-testid*="stIcon"] * {
+        /* Hover states for icons */
+        [data-testid="stSidebar"] button:hover [data-testid*="stIcon"],
+        [data-testid="stSidebar"] button:hover .material-icons,
+        [data-testid="stSidebar"] button:hover .material-icons-outlined,
+        [data-testid="stSidebar"] button:hover svg,
+        [data-testid="stSidebar"] button:hover svg * {
             color: #6D7DFF !important;
             fill: #6D7DFF !important;
+            stroke: #6D7DFF !important;
         }
         
-        /* Force override any inline styles */
-        [data-testid="stSidebar"] * {
-            --icon-color: #5B6CFF !important;
-        }
-        
-        /* Google Material Icons styling */
-        .material-icons {
-            font-family: 'Material Icons';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 18px;
-            line-height: 1;
-            letter-spacing: normal;
-            text-transform: none;
-            display: inline-block;
-            white-space: nowrap;
-            word-wrap: normal;
-            direction: ltr;
-            vertical-align: middle;
+        /* Target icons in expander headers */
+        [data-testid="stSidebar"] summary::before {
+            font-family: 'Material Symbols Outlined';
+            color: #5B6CFF;
             margin-right: 8px;
+            font-size: 18px;
+            vertical-align: middle;
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 20;
+        }
+        
+        /* Add specific icons to expander sections */
+        [data-testid="stSidebar"] summary:hover::before {
+            color: #6D7DFF;
         }
         
         @media (max-width: 768px) {
@@ -670,6 +666,7 @@ def add_navigation():
     st.markdown(header_html, unsafe_allow_html=True)
 
     # SIDEBAR NAVIGATION WITH MATERIAL ICONS
+    # Using Streamlit's built-in icon parameter which supports Material Design
     # Add home button at top
     if st.sidebar.button("Home", key="nav_home", use_container_width=True, icon=":material/home:"):
         st.switch_page("Home.py")
