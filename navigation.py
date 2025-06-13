@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.1 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.2 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -419,7 +419,7 @@ def add_navigation():
             cursor: pointer !important;
         }
         
-        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO */
+        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -428,6 +428,18 @@ def add_navigation():
             font-size: 22px;
             font-weight: 600;
             color: #ffffff;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            margin: -8px -12px !important;
+        }
+        
+        /* Logo hover effect */
+        .kaspa-logo:hover {
+            background: rgba(91, 108, 255, 0.1) !important;
+            transform: scale(1.02) !important;
+            box-shadow: 0 0 20px rgba(91, 108, 255, 0.3) !important;
         }
         
         /* Enhanced matrix with subtle animation */
@@ -438,6 +450,12 @@ def add_navigation():
             width: 29px;
             height: 29px;
             position: relative;
+            transition: transform 0.3s ease !important;
+        }
+        
+        /* Matrix hover effect */
+        .kaspa-logo:hover .matrix {
+            transform: rotate(5deg) scale(1.05) !important;
         }
         
         .cell {
@@ -465,6 +483,18 @@ def add_navigation():
             animation: cellPulse 3s ease infinite;
         }
         
+        /* Enhanced pulse on logo hover */
+        .kaspa-logo:hover .cell:nth-child(1), 
+        .kaspa-logo:hover .cell:nth-child(3), 
+        .kaspa-logo:hover .cell:nth-child(5), 
+        .kaspa-logo:hover .cell:nth-child(7), 
+        .kaspa-logo:hover .cell:nth-child(9) {
+            animation: cellPulseHover 1s ease infinite !important;
+            box-shadow: 
+                0 0 20px rgba(91, 108, 255, 1.0), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+        }
+        
         /* Stagger the animation */
         .cell:nth-child(1) { animation-delay: 0s; }
         .cell:nth-child(3) { animation-delay: 0.2s; }
@@ -477,6 +507,11 @@ def add_navigation():
             50% { opacity: 1; transform: scale(1.1); }
         }
         
+        @keyframes cellPulseHover {
+            0%, 100% { opacity: 0.7; transform: scale(1.05); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
         .cell:nth-child(2) { opacity: 0.9; }
         .cell:nth-child(4) { opacity: 0.8; }
         .cell:nth-child(6) { opacity: 0.8; }
@@ -486,6 +521,12 @@ def add_navigation():
             color: #ffffff; 
             letter-spacing: -0.5px;
             font-weight: 600;
+            transition: color 0.3s ease !important;
+        }
+        
+        /* Logo text hover effect */
+        .kaspa-logo:hover .logo-text {
+            color: #8b9aff !important;
         }
         
         /* BetterStack-style user info styling */
@@ -703,7 +744,73 @@ def add_navigation():
             }
         }
     </style>
+    
+    <script>
+        // JavaScript to handle logo clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to handle logo click
+            function handleLogoClick() {
+                // Create a hidden form to submit to Streamlit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.style.display = 'none';
+                
+                // Add a hidden input to indicate this is a logo click
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'logo_clicked';
+                input.value = 'true';
+                form.appendChild(input);
+                
+                document.body.appendChild(form);
+                
+                // Try to use Streamlit's rerun mechanism
+                if (window.streamlitRerun) {
+                    window.streamlitRerun();
+                } else {
+                    // Fallback: reload the page to home
+                    window.location.href = '/';
+                }
+                
+                document.body.removeChild(form);
+            }
+            
+            // Wait for the logo to be rendered and add click handler
+            function addLogoClickHandler() {
+                const logo = document.querySelector('.kaspa-logo');
+                if (logo) {
+                    logo.addEventListener('click', handleLogoClick);
+                    console.log('Logo click handler added successfully');
+                } else {
+                    // If logo not found, try again after a short delay
+                    setTimeout(addLogoClickHandler, 100);
+                }
+            }
+            
+            // Start trying to add the click handler
+            addLogoClickHandler();
+            
+            // Also add handler when Streamlit re-renders
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        addLogoClickHandler();
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
     """, unsafe_allow_html=True)
+    
+    # Check if logo was clicked via JavaScript
+    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
+        st.session_state.pop('logo_clicked', None)
+        st.switch_page("Home.py")
     
     # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
@@ -736,7 +843,7 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <div class="kaspa-logo">
+            <div class="kaspa-logo" onclick="window.location.href='/'">
                 <div class="matrix">
                     <div class="cell"></div>
                     <div class="cell"></div>
@@ -759,7 +866,7 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <div class="kaspa-logo">
+            <div class="kaspa-logo" onclick="window.location.href='/'">
                 <div class="matrix">
                     <div class="cell"></div>
                     <div class="cell"></div>
