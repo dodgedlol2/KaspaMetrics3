@@ -1,5 +1,6 @@
 import streamlit as st
 from footer import add_footer
+import streamlit.components.v1 as components
 
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
@@ -419,34 +420,17 @@ def add_navigation():
             cursor: pointer !important;
         }
         
-        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW WITH INVISIBLE BUTTON OVERLAY */
-        .kaspa-logo-container {
-            position: relative;
-            display: inline-block;
-        }
-        
-        /* The invisible Streamlit button for navigation */
-        .logo-button-overlay {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            z-index: 999998 !important;
-        }
-        
-        .logo-button-overlay button {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            background: transparent !important;
-            border: none !important;
+        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
+        .kaspa-logo-link {
+            text-decoration: none !important;
+            color: inherit !important;
+            display: block !important;
             cursor: pointer !important;
-            opacity: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
+        }
+        
+        .kaspa-logo-link:hover {
+            text-decoration: none !important;
+            color: inherit !important;
         }
         
         .kaspa-logo {
@@ -461,7 +445,8 @@ def add_navigation():
             transition: all 0.3s ease !important;
             border-radius: 8px !important;
             padding: 8px 12px !important;
-            pointer-events: none !important; /* Let button handle clicks */
+            margin: -8px -12px !important;
+            pointer-events: auto !important;
             user-select: none !important;
             -webkit-user-select: none !important;
             -moz-user-select: none !important;
@@ -469,7 +454,7 @@ def add_navigation():
         }
         
         /* Logo hover effect */
-        .kaspa-logo-container:hover .kaspa-logo {
+        .kaspa-logo-link:hover .kaspa-logo {
             background: rgba(91, 108, 255, 0.1) !important;
             transform: scale(1.02) !important;
             box-shadow: 0 0 20px rgba(91, 108, 255, 0.3) !important;
@@ -487,7 +472,7 @@ def add_navigation():
         }
         
         /* Matrix hover effect */
-        .kaspa-logo-container:hover .matrix {
+        .kaspa-logo-link:hover .matrix {
             transform: rotate(5deg) scale(1.05) !important;
         }
         
@@ -517,11 +502,11 @@ def add_navigation():
         }
         
         /* Enhanced pulse on logo hover */
-        .kaspa-logo-container:hover .cell:nth-child(1), 
-        .kaspa-logo-container:hover .cell:nth-child(3), 
-        .kaspa-logo-container:hover .cell:nth-child(5), 
-        .kaspa-logo-container:hover .cell:nth-child(7), 
-        .kaspa-logo-container:hover .cell:nth-child(9) {
+        .kaspa-logo-link:hover .cell:nth-child(1), 
+        .kaspa-logo-link:hover .cell:nth-child(3), 
+        .kaspa-logo-link:hover .cell:nth-child(5), 
+        .kaspa-logo-link:hover .cell:nth-child(7), 
+        .kaspa-logo-link:hover .cell:nth-child(9) {
             animation: cellPulseHover 1s ease infinite !important;
             box-shadow: 
                 0 0 20px rgba(91, 108, 255, 1.0), 
@@ -558,7 +543,7 @@ def add_navigation():
         }
         
         /* Logo text hover effect */
-        .kaspa-logo-container:hover .logo-text {
+        .kaspa-logo-link:hover .logo-text {
             color: #8b9aff !important;
         }
         
