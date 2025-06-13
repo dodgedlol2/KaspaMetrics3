@@ -420,6 +420,17 @@ def add_navigation():
         }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
+        .kaspa-logo-link {
+            text-decoration: none !important;
+            color: inherit !important;
+            display: block !important;
+        }
+        
+        .kaspa-logo-link:hover {
+            text-decoration: none !important;
+            color: inherit !important;
+        }
+        
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -749,32 +760,13 @@ def add_navigation():
             }
         }
     </style>
-    <script>
-        // No complex JavaScript needed - just using inline onclick
-        console.log('Streamlit logo navigation ready');
-    </script>
     """, unsafe_allow_html=True)
     
-    # Create a hidden button that we can trigger from JavaScript
-    # This button will be invisible but functional
-    if st.button("🏠", key="hidden_home_button", help="Navigate to Home", 
-                 type="primary", use_container_width=False):
+    # Remove the JavaScript section since we're using native HTML links now
+    # Check if logo was clicked via JavaScript (keeping this for compatibility)
+    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
+        st.session_state.pop('logo_clicked', None)
         st.switch_page("Home.py")
-    
-    # Hide the button with CSS
-    st.markdown("""
-    <style>
-        /* Hide the hidden home button */
-        button[data-testid="hidden_home_button"],
-        button[title="Navigate to Home"],
-        .stButton:has(button[data-testid="hidden_home_button"]) {
-            display: none !important;
-            visibility: hidden !important;
-            position: absolute !important;
-            left: -9999px !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
     
     # GENERATE HEADER HTML - Improved with better user status handling
     if st.session_state.get('authentication_status'):
@@ -807,20 +799,22 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <div class="kaspa-logo" onclick="document.querySelector('button[data-testid=hidden_home_button]')?.click() || document.querySelector('button[title=&quot;Navigate to Home&quot;]')?.click()">
-                <div class="matrix">
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
+            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
                 </div>
-                <span class="logo-text">Kaspa Metrics</span>
-            </div>
+            </a>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
                 <div class="kaspa-user-status {status_class}">{status_text}</div>
@@ -830,20 +824,22 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <div class="kaspa-logo" onclick="document.querySelector('button[data-testid=hidden_home_button]')?.click() || document.querySelector('button[title=&quot;Navigate to Home&quot;]')?.click()">
-                <div class="matrix">
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
+            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
                 </div>
-                <span class="logo-text">Kaspa Metrics</span>
-            </div>
+            </a>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
                 <div class="kaspa-user-status guest">
