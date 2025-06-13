@@ -802,7 +802,7 @@ def add_navigation():
     
     # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
     if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
-        with st.sidebar.expander("👑 Premium Analytics", expanded=True):
+        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=True):
             if st.button("Premium Features", key="sidebar_premium_features", use_container_width=True, icon=":material/star:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
             if st.button("Premium Analytics", key="sidebar_premium1", use_container_width=True, icon=":material/science:"):
@@ -810,7 +810,7 @@ def add_navigation():
             if st.button("Advanced Metrics", key="sidebar_premium2", use_container_width=True, icon=":material/insights:"):
                 st.switch_page("pages/9_👑_Advanced_Metrics.py")
     elif st.session_state.get('authentication_status'):
-        with st.sidebar.expander("👑 Premium Analytics", expanded=False):
+        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=False):
             # Premium Features accessible to logged-in users (but not paying)
             if st.button("Premium Features", key="sidebar_premium_features_free", use_container_width=True, icon=":material/star:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
@@ -820,7 +820,7 @@ def add_navigation():
             if st.button("Upgrade Now", key="sidebar_upgrade", use_container_width=True, icon=":material/credit_card:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
     else:
-        with st.sidebar.expander("👑 Premium Analytics", expanded=False):
+        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=False):
             # Premium Features accessible to everyone (including non-logged users)
             if st.button("Premium Features", key="sidebar_premium_features_guest", use_container_width=True, icon=":material/star:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
