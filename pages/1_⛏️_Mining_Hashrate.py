@@ -25,7 +25,7 @@ def init_handlers():
 db, auth_handler, payment_handler = init_handlers()
 
 # Main content
-st.title("📈 Kaspa Network Hashrate")
+st.title("Kaspa Network Hashrate")
 st.write("Current network hashrate metrics and mining trends")
 # Sample data - replace with real Kaspa API data later
 dates = pd.date_range(start='2024-01-01', end='2024-06-01', freq='D')
