@@ -750,96 +750,84 @@ def add_navigation():
         }
     </style>
     <script>
-        // JavaScript to handle logo clicks using session state communication
-        document.addEventListener('DOMContentLoaded', function() {
-            function handleLogoClick(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                console.log('Logo clicked! Triggering navigation...');
-                
-                // Method 1: Try to find and click the existing Home button directly
-                const homeButton = document.querySelector('button[data-testid="nav_home"]');
-                if (homeButton) {
-                    console.log('Found Home button, clicking it...');
-                    homeButton.click();
-                    return;
-                }
-                
-                // Method 2: Use URL hash to communicate with Python
-                console.log('Using hash method...');
-                window.location.hash = '#logo_home_click';
-                
-                // Force a page refresh to trigger Streamlit rerun
-                setTimeout(() => {
-                    window.location.reload();
-                }, 100);
+        // Much simpler and more direct approach
+        function setupLogoClick() {
+            console.log('Setting up logo click...');
+            
+            // Find the logo element
+            const logo = document.querySelector('.kaspa-logo');
+            if (!logo) {
+                console.log('Logo not found, retrying...');
+                setTimeout(setupLogoClick, 200);
+                return;
             }
             
-            function addLogoClickHandler() {
-                const logo = document.querySelector('.kaspa-logo');
-                if (logo) {
-                    // Remove any existing handlers
-                    logo.removeEventListener('click', handleLogoClick);
-                    // Add the click handler
-                    logo.addEventListener('click', handleLogoClick);
-                    console.log('Logo click handler added successfully');
-                    return true;
-                }
-                return false;
-            }
+            console.log('Logo found! Adding click handler...');
             
-            // Try to add handler immediately
-            if (!addLogoClickHandler()) {
-                // Retry with delay if logo not ready
-                const retryTimer = setInterval(() => {
-                    if (addLogoClickHandler()) {
-                        clearInterval(retryTimer);
-                    }
-                }, 100);
-                
-                // Stop trying after 5 seconds
-                setTimeout(() => clearInterval(retryTimer), 5000);
-            }
+            // Remove any existing handler first
+            logo.removeEventListener('click', logoClickHandler);
             
-            // Re-add handler when page updates (Streamlit reruns)
-            const observer = new MutationObserver(() => {
-                addLogoClickHandler();
+            // Add the click handler
+            logo.addEventListener('click', logoClickHandler);
+            
+            // Test that the handler is working
+            logo.addEventListener('mouseenter', function() {
+                console.log('Logo hover detected - click handler should work');
             });
             
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        });
+            console.log('Logo click handler added successfully');
+        }
+        
+        function logoClickHandler(event) {
+            console.log('LOGO CLICKED! Starting navigation...');
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Try method 1: Click the existing Home button
+            const homeBtn = document.querySelector('button[data-testid="nav_home"]');
+            if (homeBtn) {
+                console.log('Found Home button, clicking it...');
+                homeBtn.click();
+                return;
+            }
+            
+            // Method 2: Reload page with parameter
+            console.log('Home button not found, using reload method...');
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('logo_home_clicked', 'true');
+            window.location.href = currentUrl.toString();
+        }
+        
+        // Start immediately when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupLogoClick);
+        } else {
+            setupLogoClick();
+        }
+        
+        // Also retry when Streamlit updates the page
+        let retryCount = 0;
+        const maxRetries = 20;
+        const retryInterval = setInterval(() => {
+            retryCount++;
+            if (retryCount >= maxRetries) {
+                clearInterval(retryInterval);
+                return;
+            }
+            
+            const logo = document.querySelector('.kaspa-logo');
+            if (logo && !logo.onclick && !logo._clickHandlerAdded) {
+                logo._clickHandlerAdded = true;
+                setupLogoClick();
+            }
+        }, 500);
     </script>
     """, unsafe_allow_html=True)
     
-    # Check for logo click navigation using URL hash
-    import urllib.parse
-    
-    # Get current URL components
-    url_parts = st.query_params
-    current_hash = ""
-    
-    # Check if we're on a page that was accessed via logo click
-    try:
-        # This is a workaround since Streamlit doesn't directly expose URL hash
-        # We'll use a session state flag instead that gets set by our JavaScript
-        if 'logo_click_home' not in st.session_state:
-            st.session_state.logo_click_home = False
-            
-        # Alternative check using query params
-        if st.query_params.get('goto_home') == 'true':
-            # Clear the parameter and navigate
-            st.query_params.clear()
-            st.switch_page("Home.py")
-            
-    except Exception as e:
-        pass  # Ignore any URL parsing errors
-    
-    # JavaScript-accessible flag check
-    if st.session_state.get('logo_click_home', False):
-        st.session_state.logo_click_home = False
+    # Check for logo click navigation
+    if st.query_params.get('logo_home_clicked') == 'true':
+        # Clear the parameter and navigate
+        st.query_params.clear()
         st.switch_page("Home.py")
     
     # GENERATE HEADER HTML - Improved with better user status handling
