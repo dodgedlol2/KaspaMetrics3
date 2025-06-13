@@ -760,12 +760,98 @@ def add_navigation():
             }
         }
     </style>
+    <script>
+        // JavaScript to handle logo clicks using Streamlit's internal navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            function handleLogoClick(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('Logo clicked! Using Streamlit navigation...');
+                
+                // Set a flag in session state that Python can detect
+                const homeButton = document.querySelector('button[data-testid="nav_home"]');
+                if (homeButton) {
+                    // Simulate clicking the existing Home button
+                    homeButton.click();
+                } else {
+                    // Fallback: try to trigger Streamlit's page switch mechanism
+                    // Create a temporary form to signal the Python backend
+                    const event = new CustomEvent('logo_click_home', {
+                        detail: { page: 'Home.py' }
+                    });
+                    document.dispatchEvent(event);
+                    
+                    // Also try setting a query parameter that Streamlit can detect
+                    const url = new URL(window.location);
+                    url.searchParams.set('goto_home', 'true');
+                    window.history.pushState({}, '', url);
+                    
+                    // Force a Streamlit rerun if available
+                    if (window.parent && window.parent.streamlitRerun) {
+                        window.parent.streamlitRerun();
+                    } else if (window.streamlitRerun) {
+                        window.streamlitRerun();
+                    }
+                }
+            }
+            
+            function addLogoClickHandler() {
+                const logo = document.querySelector('.kaspa-logo');
+                if (logo) {
+                    // Remove any existing handlers
+                    logo.removeEventListener('click', handleLogoClick);
+                    // Add new handler
+                    logo.addEventListener('click', handleLogoClick, true);
+                    console.log('Logo click handler added successfully');
+                    return true;
+                }
+                return false;
+            }
+            
+            // Initial setup
+            if (!addLogoClickHandler()) {
+                // Retry with delays
+                let attempts = 0;
+                const retryInterval = setInterval(() => {
+                    attempts++;
+                    if (addLogoClickHandler() || attempts > 20) {
+                        clearInterval(retryInterval);
+                    }
+                }, 100);
+            }
+            
+            // Watch for Streamlit re-renders
+            const observer = new MutationObserver(function(mutations) {
+                let shouldRecheck = false;
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === 1 && 
+                                (node.classList && node.classList.contains('kaspa-logo') || 
+                                 (node.querySelector && node.querySelector('.kaspa-logo')))) {
+                                shouldRecheck = true;
+                            }
+                        });
+                    }
+                });
+                
+                if (shouldRecheck) {
+                    setTimeout(addLogoClickHandler, 50);
+                }
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
     """, unsafe_allow_html=True)
     
-    # Remove the JavaScript section since we're using native HTML links now
-    # Check if logo was clicked via JavaScript (keeping this for compatibility)
-    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
-        st.session_state.pop('logo_clicked', None)
+    # Check for logo click navigation signals
+    if st.query_params.get('goto_home') == 'true':
+        # Clear the parameter and navigate
+        st.query_params.clear()
         st.switch_page("Home.py")
     
     # GENERATE HEADER HTML - Improved with better user status handling
@@ -799,22 +885,20 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
+            <div class="kaspa-logo">
+                <div class="matrix">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
                 </div>
-            </a>
+                <span class="logo-text">Kaspa Metrics</span>
+            </div>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
                 <div class="kaspa-user-status {status_class}">{status_text}</div>
@@ -824,22 +908,20 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
+            <div class="kaspa-logo">
+                <div class="matrix">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
                 </div>
-            </a>
+                <span class="logo-text">Kaspa Metrics</span>
+            </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
                 <div class="kaspa-user-status guest">
