@@ -114,7 +114,7 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Enhanced sidebar buttons - CLEAN BETTERSTACK STYLE */
+        /* Enhanced sidebar buttons - CLEAN BETTERSTACK STYLE with Inter font */
         [data-testid="stSidebar"] .stButton > button {
             background: transparent !important;
             border: none !important;
@@ -133,6 +133,7 @@ def add_navigation():
             overflow: visible !important;
             padding: 8px 12px !important;
             margin: 0 !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
         /* Button hover state - subtle highlight like BetterStack */
@@ -166,7 +167,7 @@ def add_navigation():
             font-size: 13px !important;
         }
         
-        /* EXPANDERS - BETTERSTACK CLEAN STYLE */
+        /* EXPANDERS - BETTERSTACK CLEAN STYLE with Inter font */
         
         /* Target all expander elements - completely clean */
         [data-testid="stSidebar"] details,
@@ -181,6 +182,7 @@ def add_navigation():
             backdrop-filter: none !important;
             box-shadow: none !important;
             border-radius: 0 !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
         /* Style the summary (clickable header) - BetterStack style */
@@ -192,6 +194,7 @@ def add_navigation():
             margin: 0 !important;
             list-style: none !important;
             font-size: 14px !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
         /* Remove default arrow */
@@ -220,15 +223,22 @@ def add_navigation():
             background: transparent !important;
         }
         
-        /* Style sidebar text - BetterStack soft gray */
+        /* Style sidebar text - BetterStack soft gray with Inter font */
         [data-testid="stSidebar"] .stMarkdown {
             color: #9CA3AF !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
         /* Style sidebar general text */
         [data-testid="stSidebar"] p {
             color: #9CA3AF !important;
             font-weight: 400 !important;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        }
+        
+        /* Apply Inter font to all sidebar text elements */
+        [data-testid="stSidebar"] * {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
         
         /* Enhanced warning/info/success boxes in sidebar with house colors */
@@ -484,7 +494,7 @@ def add_navigation():
             transition: none !important;
         }
         
-        /* FORCE ALL SIDEBAR ICONS TO MATCH BETTERSTACK STYLE */
+        /* FORCE ALL SIDEBAR ICONS TO MATCH GUEST ICON PURPLE COLOR */
         
         /* Target all possible icon containers in sidebar */
         [data-testid="stSidebar"] .material-icons,
@@ -501,14 +511,14 @@ def add_navigation():
         [data-testid="stSidebar"] button span[data-testid],
         [data-testid="stSidebar"] span[data-testid*="Icon"],
         [data-testid="stSidebar"] span[data-testid*="icon"] {
-            color: #9CA3AF !important;
-            fill: #9CA3AF !important;
+            color: #5B6CFF !important;
+            fill: #5B6CFF !important;
         }
         
         /* Target Streamlit's internal icon structure */
         [data-testid="stSidebar"] button > div > span,
         [data-testid="stSidebar"] .stButton > button > div > span {
-            color: #9CA3AF !important;
+            color: #5B6CFF !important;
         }
         
         /* Target any SVG icons */
@@ -516,11 +526,11 @@ def add_navigation():
         [data-testid="stSidebar"] svg *,
         [data-testid="stSidebar"] button svg,
         [data-testid="stSidebar"] button svg * {
-            fill: #9CA3AF !important;
-            color: #9CA3AF !important;
+            fill: #5B6CFF !important;
+            color: #5B6CFF !important;
         }
         
-        /* Icon color on hover - brighter like BetterStack */
+        /* Icon color on hover - keep same purple, maybe slightly brighter */
         [data-testid="stSidebar"] .stButton:hover .material-icons,
         [data-testid="stSidebar"] .stButton:hover span[data-testid],
         [data-testid="stSidebar"] .stButton:hover svg,
@@ -529,8 +539,8 @@ def add_navigation():
         [data-testid="stSidebar"] button:hover span[data-testid],
         [data-testid="stSidebar"] button:hover svg,
         [data-testid="stSidebar"] button:hover svg * {
-            color: #F3F4F6 !important;
-            fill: #F3F4F6 !important;
+            color: #6D7DFF !important;
+            fill: #6D7DFF !important;
         }
         
         /* Force override any inline styles */
