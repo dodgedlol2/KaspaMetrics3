@@ -433,6 +433,11 @@ def add_navigation():
             border-radius: 8px !important;
             padding: 8px 12px !important;
             margin: -8px -12px !important;
+            pointer-events: auto !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
         }
         
         /* Logo hover effect */
@@ -746,57 +751,71 @@ def add_navigation():
     </style>
     
     <script>
-        // JavaScript to handle logo clicks
+        // JavaScript to handle logo clicks with direct URL navigation
         document.addEventListener('DOMContentLoaded', function() {
-            // Function to handle logo click
-            function handleLogoClick() {
-                // Create a hidden form to submit to Streamlit
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.style.display = 'none';
+            // Function to handle logo click - direct navigation
+            function handleLogoClick(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('Logo clicked! Navigating to home...');
                 
-                // Add a hidden input to indicate this is a logo click
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'logo_clicked';
-                input.value = 'true';
-                form.appendChild(input);
-                
-                document.body.appendChild(form);
-                
-                // Try to use Streamlit's rerun mechanism
-                if (window.streamlitRerun) {
-                    window.streamlitRerun();
-                } else {
-                    // Fallback: reload the page to home
-                    window.location.href = '/';
-                }
-                
-                document.body.removeChild(form);
+                // Direct navigation to your Streamlit app URL
+                window.location.href = 'https://kaspametrics3test1.streamlit.app';
             }
             
-            // Wait for the logo to be rendered and add click handler
+            // Function to add click handler with better targeting
             function addLogoClickHandler() {
+                // Remove any existing handlers first
+                const existingLogos = document.querySelectorAll('.kaspa-logo');
+                existingLogos.forEach(logo => {
+                    logo.removeEventListener('click', handleLogoClick);
+                });
+                
+                // Add handler to current logo
                 const logo = document.querySelector('.kaspa-logo');
                 if (logo) {
-                    logo.addEventListener('click', handleLogoClick);
+                    logo.addEventListener('click', handleLogoClick, true);
+                    logo.style.pointerEvents = 'auto';
                     console.log('Logo click handler added successfully');
+                    return true;
                 } else {
-                    // If logo not found, try again after a short delay
-                    setTimeout(addLogoClickHandler, 100);
+                    console.log('Logo not found, retrying...');
+                    return false;
                 }
             }
             
-            // Start trying to add the click handler
-            addLogoClickHandler();
+            // Initial attempt
+            if (!addLogoClickHandler()) {
+                // Retry with delays if not found immediately
+                let attempts = 0;
+                const retryInterval = setInterval(() => {
+                    attempts++;
+                    if (addLogoClickHandler() || attempts > 50) {
+                        clearInterval(retryInterval);
+                    }
+                }, 100);
+            }
             
-            // Also add handler when Streamlit re-renders
+            // Also handle dynamic content changes
             const observer = new MutationObserver(function(mutations) {
+                let shouldCheck = false;
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes.length > 0) {
-                        addLogoClickHandler();
+                        // Check if any added nodes contain or are the logo
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === 1) { // Element node
+                                if (node.classList && node.classList.contains('kaspa-logo') || 
+                                    node.querySelector && node.querySelector('.kaspa-logo')) {
+                                    shouldCheck = true;
+                                }
+                            }
+                        });
                     }
                 });
+                
+                if (shouldCheck) {
+                    setTimeout(addLogoClickHandler, 10);
+                }
             });
             
             observer.observe(document.body, {
@@ -843,7 +862,7 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <div class="kaspa-logo" onclick="window.location.href='/'">
+            <div class="kaspa-logo" onclick="window.open('https://kaspametrics3test1.streamlit.app', '_self')">
                 <div class="matrix">
                     <div class="cell"></div>
                     <div class="cell"></div>
@@ -866,7 +885,7 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <div class="kaspa-logo" onclick="window.location.href='/'">
+            <div class="kaspa-logo" onclick="window.open('https://kaspametrics3test1.streamlit.app', '_self')">
                 <div class="matrix">
                     <div class="cell"></div>
                     <div class="cell"></div>
