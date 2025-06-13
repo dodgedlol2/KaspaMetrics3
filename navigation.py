@@ -760,84 +760,10 @@ def add_navigation():
             }
         }
     </style>
-    
-    <script>
-        // JavaScript to handle logo clicks with direct URL navigation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Function to handle logo click - direct navigation
-            function handleLogoClick(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                console.log('Logo clicked! Navigating to home...');
-                
-                // Direct navigation to your Streamlit app URL
-                window.location.href = 'https://kaspametrics3test1.streamlit.app';
-            }
-            
-            // Function to add click handler with better targeting
-            function addLogoClickHandler() {
-                // Remove any existing handlers first
-                const existingLogos = document.querySelectorAll('.kaspa-logo');
-                existingLogos.forEach(logo => {
-                    logo.removeEventListener('click', handleLogoClick);
-                });
-                
-                // Add handler to current logo
-                const logo = document.querySelector('.kaspa-logo');
-                if (logo) {
-                    logo.addEventListener('click', handleLogoClick, true);
-                    logo.style.pointerEvents = 'auto';
-                    console.log('Logo click handler added successfully');
-                    return true;
-                } else {
-                    console.log('Logo not found, retrying...');
-                    return false;
-                }
-            }
-            
-            // Initial attempt
-            if (!addLogoClickHandler()) {
-                // Retry with delays if not found immediately
-                let attempts = 0;
-                const retryInterval = setInterval(() => {
-                    attempts++;
-                    if (addLogoClickHandler() || attempts > 50) {
-                        clearInterval(retryInterval);
-                    }
-                }, 100);
-            }
-            
-            // Also handle dynamic content changes
-            const observer = new MutationObserver(function(mutations) {
-                let shouldCheck = false;
-                mutations.forEach(function(mutation) {
-                    if (mutation.addedNodes.length > 0) {
-                        // Check if any added nodes contain or are the logo
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1) { // Element node
-                                if (node.classList && node.classList.contains('kaspa-logo') || 
-                                    node.querySelector && node.querySelector('.kaspa-logo')) {
-                                    shouldCheck = true;
-                                }
-                            }
-                        });
-                    }
-                });
-                
-                if (shouldCheck) {
-                    setTimeout(addLogoClickHandler, 10);
-                }
-            });
-            
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        });
-    </script>
     """, unsafe_allow_html=True)
     
-    # Check if logo was clicked via JavaScript
+    # Remove the JavaScript section since we're using native HTML links now
+    # Check if logo was clicked via JavaScript (keeping this for compatibility)
     if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
         st.session_state.pop('logo_clicked', None)
         st.switch_page("Home.py")
@@ -873,7 +799,7 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
                 <div class="kaspa-logo">
                     <div class="matrix">
                         <div class="cell"></div>
@@ -898,7 +824,7 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
                 <div class="kaspa-logo">
                     <div class="matrix">
                         <div class="cell"></div>
