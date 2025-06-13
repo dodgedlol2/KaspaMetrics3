@@ -632,32 +632,31 @@ def add_navigation():
             --icon-color: #5B6CFF !important;
         }
         
-        /* Special styling for the custom login button - DISTINCT #6366F1 THEME */
-        [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"] {
-            background: linear-gradient(135deg, 
-                #6366F1 0%, 
-                #4f46e5 100%) !important;
-            border: 1px solid #6366F1 !important;
+        /* OVERRIDE SPECIFICALLY FOR LOGIN REQUIRED BUTTON - FORCE #6366F1 STYLING */
+        [data-testid="stSidebar"] .stButton > button[aria-label*="Login Required"],
+        [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"],
+        [data-testid="stSidebar"] .stButton:has(button[data-testid*="sidebar_login_premium_custom"]) > button {
+            background: #6366F1 !important;
+            border: 2px solid #6366F1 !important;
             color: #ffffff !important;
             font-weight: 700 !important;
             border-radius: 8px !important;
             box-shadow: 
-                0 3px 12px rgba(99, 102, 241, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+                0 4px 16px rgba(99, 102, 241, 0.8),
+                0 0 24px rgba(99, 102, 241, 0.6) !important;
             text-align: center !important;
             justify-content: center !important;
         }
         
-        /* Hover effect for custom login button - ENHANCED #6366F1 GLOW */
-        [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"]:hover {
-            background: linear-gradient(135deg, 
-                #7c3aed 0%, 
-                #6366F1 100%) !important;
+        /* OVERRIDE HOVER FOR LOGIN REQUIRED BUTTON ONLY */
+        [data-testid="stSidebar"] .stButton > button[aria-label*="Login Required"]:hover,
+        [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"]:hover,
+        [data-testid="stSidebar"] .stButton:has(button[data-testid*="sidebar_login_premium_custom"]) > button:hover {
+            background: #7c3aed !important;
             border-color: #8b5cf6 !important;
             box-shadow: 
-                0 6px 20px rgba(99, 102, 241, 0.6), 
-                0 0 0 2px rgba(139, 92, 246, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+                0 8px 32px rgba(99, 102, 241, 1.0), 
+                0 0 40px rgba(139, 92, 246, 0.8) !important;
             transform: translateY(-2px) !important;
             color: #ffffff !important;
         }
