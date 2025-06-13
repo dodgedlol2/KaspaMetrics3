@@ -632,10 +632,11 @@ def add_navigation():
             --icon-color: #5B6CFF !important;
         }
         
-        /* OVERRIDE SPECIFICALLY FOR LOGIN REQUIRED BUTTON - FORCE #6366F1 STYLING */
-        [data-testid="stSidebar"] .stButton > button[aria-label*="Login Required"],
-        [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"],
-        [data-testid="stSidebar"] .stButton:has(button[data-testid*="sidebar_login_premium_custom"]) > button {
+        /* NUCLEAR OPTION - Target any button containing "Login Required" text */
+        [data-testid="stSidebar"] button:has-text("Login Required"),
+        [data-testid="stSidebar"] button[kind="secondary"]:nth-of-type(2),
+        [data-testid="stSidebar"] div[data-testid*="stExpander"] button:last-child,
+        [data-testid="stSidebar"] button[data-baseweb="button"]:has-text("Login Required") {
             background: #6366F1 !important;
             border: 2px solid #6366F1 !important;
             color: #ffffff !important;
@@ -644,21 +645,28 @@ def add_navigation():
             box-shadow: 
                 0 4px 16px rgba(99, 102, 241, 0.8),
                 0 0 24px rgba(99, 102, 241, 0.6) !important;
-            text-align: center !important;
-            justify-content: center !important;
         }
         
-        /* OVERRIDE HOVER FOR LOGIN REQUIRED BUTTON ONLY */
-        [data-testid="stSidebar"] .stButton > button[aria-label*="Login Required"]:hover,
-        [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"]:hover,
-        [data-testid="stSidebar"] .stButton:has(button[data-testid*="sidebar_login_premium_custom"]) > button:hover {
-            background: #7c3aed !important;
-            border-color: #8b5cf6 !important;
-            box-shadow: 
-                0 8px 32px rgba(99, 102, 241, 1.0), 
-                0 0 40px rgba(139, 92, 246, 0.8) !important;
-            transform: translateY(-2px) !important;
+        /* Add !important to all properties to force override */
+        [data-testid="stSidebar"] .stButton > button {
+            background: linear-gradient(135deg, 
+                rgba(54, 54, 80, 0.6) 0%, 
+                rgba(31, 31, 58, 0.8) 100%) !important;
+            border: 1px solid #363650 !important;
+            color: #f1f5f9 !important;
+        }
+        
+        /* Force the login button styling with even higher specificity */
+        [data-testid="stSidebar"] details:last-child .stButton:last-child > button,
+        [data-testid="stSidebar"] details[open]:last-child .stButton:last-child > button {
+            background: #6366F1 !important;
+            border: 2px solid #6366F1 !important;
             color: #ffffff !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
+            box-shadow: 
+                0 4px 16px rgba(99, 102, 241, 0.8),
+                0 0 24px rgba(99, 102, 241, 0.6) !important;
         }
         
         /* Google Material Icons styling */
