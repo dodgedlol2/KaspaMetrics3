@@ -632,27 +632,34 @@ def add_navigation():
             --icon-color: #5B6CFF !important;
         }
         
-        /* Special styling for the custom login button */
+        /* Special styling for the custom login button - DISTINCT #6366F1 THEME */
         [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"] {
             background: linear-gradient(135deg, 
-                rgba(99, 102, 241, 0.8) 0%, 
-                rgba(79, 82, 201, 0.9) 100%) !important;
+                #6366F1 0%, 
+                #4f46e5 100%) !important;
             border: 1px solid #6366F1 !important;
             color: #ffffff !important;
             font-weight: 700 !important;
+            border-radius: 8px !important;
+            box-shadow: 
+                0 3px 12px rgba(99, 102, 241, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+            text-align: center !important;
+            justify-content: center !important;
         }
         
-        /* Hover effect for custom login button */
+        /* Hover effect for custom login button - ENHANCED #6366F1 GLOW */
         [data-testid="stSidebar"] button[data-testid*="sidebar_login_premium_custom"]:hover {
             background: linear-gradient(135deg, 
-                rgba(99, 102, 241, 0.9) 0%, 
-                rgba(79, 82, 201, 1.0) 100%) !important;
-            border-color: #8b9aff !important;
+                #7c3aed 0%, 
+                #6366F1 100%) !important;
+            border-color: #8b5cf6 !important;
             box-shadow: 
-                0 4px 16px rgba(99, 102, 241, 0.3), 
-                0 0 0 1px rgba(99, 102, 241, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-            transform: translateY(-1px) !important;
+                0 6px 20px rgba(99, 102, 241, 0.6), 
+                0 0 0 2px rgba(139, 92, 246, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+            transform: translateY(-2px) !important;
+            color: #ffffff !important;
         }
         
         /* Google Material Icons styling */
@@ -849,6 +856,6 @@ def add_navigation():
             # Premium Features accessible to everyone (including non-logged users)
             if st.button("Premium Features", key="sidebar_premium_features_guest", use_container_width=True, icon=":material/star:"):
                 st.switch_page("pages/B_👑_Premium_Features.py")
-            # Custom login button with new color
-            if st.button("🔑 Login Required", key="sidebar_login_premium_custom", use_container_width=True, icon=":material/login:"):
+            # Custom login button with new color and no icon
+            if st.button("Login Required", key="sidebar_login_premium_custom", use_container_width=True):
                 st.switch_page("pages/0_🔑_Login.py")
