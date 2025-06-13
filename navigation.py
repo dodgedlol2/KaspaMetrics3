@@ -1,4 +1,4 @@
-pythonimport streamlit as st
+import streamlit as st
 from footer import add_footer
 
 def add_navigation():
