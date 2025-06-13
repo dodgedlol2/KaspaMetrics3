@@ -12,8 +12,16 @@ def add_navigation():
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        /* Import Google Material Symbols */
+        /* Import Google Material Symbols - FORCE LOAD */
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+        
+        /* FORCE Material Symbols font to load properly */
+        @font-face {
+            font-family: 'Material Symbols Outlined';
+            font-style: normal;
+            font-weight: 100 700;
+            src: url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v135/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1v-p_4MrImHCIJIZrDCvHOej.woff2) format('woff2');
+        }
         
         /* IMMEDIATE COMPLETE HEADER REMOVAL - Multiple targeting approaches */
         header[data-testid="stHeader"] {
