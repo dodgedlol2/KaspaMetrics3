@@ -227,10 +227,10 @@ def add_navigation():
             transition: color 0.2s ease !important;
         }
         
-        /* Remove any hover backgrounds on summary */
+        /* Remove any hover backgrounds on summary - updated to purple theme */
         [data-testid="stSidebar"] summary:hover,
         [data-testid="stSidebar"] details > summary:hover {
-            color: #00d4ff !important;
+            color: #8b9aff !important;
             background: transparent !important;
             background-color: transparent !important;
             border: none !important;
