@@ -11,6 +11,9 @@ def add_navigation():
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
+        /* Import Google Material Symbols */
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+        
         /* IMMEDIATE COMPLETE HEADER REMOVAL - Multiple targeting approaches */
         header[data-testid="stHeader"] {
             display: none !important;
@@ -443,6 +446,10 @@ def add_navigation():
             font-weight: 500;
             margin-top: 2px;
             letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
         }
         
         .kaspa-user-status.premium {
@@ -455,7 +462,28 @@ def add_navigation():
         }
         
         .kaspa-user-status.guest {
-            color: #64748b;
+            color: #A0A0B8;
+        }
+        
+        /* Custom guest icon styling */
+        .guest-icon {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            color: #5B6CFF;
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 20;
         }
         
         /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
@@ -610,7 +638,10 @@ def add_navigation():
             </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
-                <div class="kaspa-user-status guest">👤 GUEST</div>
+                <div class="kaspa-user-status guest">
+                    <span class="guest-icon">person</span>
+                    GUEST
+                </div>
             </div>
         </div>
         """
