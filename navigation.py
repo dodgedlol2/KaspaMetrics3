@@ -420,6 +420,17 @@ def add_navigation():
         }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
+        .kaspa-logo-link {
+            text-decoration: none !important;
+            color: inherit !important;
+            display: block !important;
+        }
+        
+        .kaspa-logo-link:hover {
+            text-decoration: none !important;
+            color: inherit !important;
+        }
+        
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -441,7 +452,7 @@ def add_navigation():
         }
         
         /* Logo hover effect */
-        .kaspa-logo:hover {
+        .kaspa-logo-link:hover .kaspa-logo {
             background: rgba(91, 108, 255, 0.1) !important;
             transform: scale(1.02) !important;
             box-shadow: 0 0 20px rgba(91, 108, 255, 0.3) !important;
@@ -459,7 +470,7 @@ def add_navigation():
         }
         
         /* Matrix hover effect */
-        .kaspa-logo:hover .matrix {
+        .kaspa-logo-link:hover .matrix {
             transform: rotate(5deg) scale(1.05) !important;
         }
         
@@ -489,11 +500,11 @@ def add_navigation():
         }
         
         /* Enhanced pulse on logo hover */
-        .kaspa-logo:hover .cell:nth-child(1), 
-        .kaspa-logo:hover .cell:nth-child(3), 
-        .kaspa-logo:hover .cell:nth-child(5), 
-        .kaspa-logo:hover .cell:nth-child(7), 
-        .kaspa-logo:hover .cell:nth-child(9) {
+        .kaspa-logo-link:hover .cell:nth-child(1), 
+        .kaspa-logo-link:hover .cell:nth-child(3), 
+        .kaspa-logo-link:hover .cell:nth-child(5), 
+        .kaspa-logo-link:hover .cell:nth-child(7), 
+        .kaspa-logo-link:hover .cell:nth-child(9) {
             animation: cellPulseHover 1s ease infinite !important;
             box-shadow: 
                 0 0 20px rgba(91, 108, 255, 1.0), 
@@ -530,7 +541,7 @@ def add_navigation():
         }
         
         /* Logo text hover effect */
-        .kaspa-logo:hover .logo-text {
+        .kaspa-logo-link:hover .logo-text {
             color: #8b9aff !important;
         }
         
@@ -862,20 +873,22 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <div class="kaspa-logo" onclick="window.open('https://kaspametrics3test1.streamlit.app', '_self')">
-                <div class="matrix">
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
+            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
                 </div>
-                <span class="logo-text">Kaspa Metrics</span>
-            </div>
+            </a>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
                 <div class="kaspa-user-status {status_class}">{status_text}</div>
@@ -885,20 +898,22 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <div class="kaspa-logo" onclick="window.open('https://kaspametrics3test1.streamlit.app', '_self')">
-                <div class="matrix">
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
-                    <div class="cell"></div>
+            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
+                <div class="kaspa-logo">
+                    <div class="matrix">
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                    </div>
+                    <span class="logo-text">Kaspa Metrics</span>
                 </div>
-                <span class="logo-text">Kaspa Metrics</span>
-            </div>
+            </a>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
                 <div class="kaspa-user-status guest">
