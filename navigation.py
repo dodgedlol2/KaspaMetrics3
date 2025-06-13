@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.2 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.3 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -419,16 +419,34 @@ def add_navigation():
             cursor: pointer !important;
         }
         
-        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
-        .kaspa-logo-link {
-            text-decoration: none !important;
-            color: inherit !important;
-            display: block !important;
+        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW WITH INVISIBLE BUTTON OVERLAY */
+        .kaspa-logo-container {
+            position: relative;
+            display: inline-block;
         }
         
-        .kaspa-logo-link:hover {
-            text-decoration: none !important;
-            color: inherit !important;
+        /* The invisible Streamlit button for navigation */
+        .logo-button-overlay {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 999998 !important;
+        }
+        
+        .logo-button-overlay button {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer !important;
+            opacity: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
         
         .kaspa-logo {
@@ -443,8 +461,7 @@ def add_navigation():
             transition: all 0.3s ease !important;
             border-radius: 8px !important;
             padding: 8px 12px !important;
-            margin: -8px -12px !important;
-            pointer-events: auto !important;
+            pointer-events: none !important; /* Let button handle clicks */
             user-select: none !important;
             -webkit-user-select: none !important;
             -moz-user-select: none !important;
@@ -452,7 +469,7 @@ def add_navigation():
         }
         
         /* Logo hover effect */
-        .kaspa-logo-link:hover .kaspa-logo {
+        .kaspa-logo-container:hover .kaspa-logo {
             background: rgba(91, 108, 255, 0.1) !important;
             transform: scale(1.02) !important;
             box-shadow: 0 0 20px rgba(91, 108, 255, 0.3) !important;
@@ -470,7 +487,7 @@ def add_navigation():
         }
         
         /* Matrix hover effect */
-        .kaspa-logo-link:hover .matrix {
+        .kaspa-logo-container:hover .matrix {
             transform: rotate(5deg) scale(1.05) !important;
         }
         
@@ -500,11 +517,11 @@ def add_navigation():
         }
         
         /* Enhanced pulse on logo hover */
-        .kaspa-logo-link:hover .cell:nth-child(1), 
-        .kaspa-logo-link:hover .cell:nth-child(3), 
-        .kaspa-logo-link:hover .cell:nth-child(5), 
-        .kaspa-logo-link:hover .cell:nth-child(7), 
-        .kaspa-logo-link:hover .cell:nth-child(9) {
+        .kaspa-logo-container:hover .cell:nth-child(1), 
+        .kaspa-logo-container:hover .cell:nth-child(3), 
+        .kaspa-logo-container:hover .cell:nth-child(5), 
+        .kaspa-logo-container:hover .cell:nth-child(7), 
+        .kaspa-logo-container:hover .cell:nth-child(9) {
             animation: cellPulseHover 1s ease infinite !important;
             box-shadow: 
                 0 0 20px rgba(91, 108, 255, 1.0), 
@@ -541,7 +558,7 @@ def add_navigation():
         }
         
         /* Logo text hover effect */
-        .kaspa-logo-link:hover .logo-text {
+        .kaspa-logo-container:hover .logo-text {
             color: #8b9aff !important;
         }
         
@@ -761,167 +778,3 @@ def add_navigation():
         }
     </style>
     """, unsafe_allow_html=True)
-    
-    # Remove the JavaScript section since we're using native HTML links now
-    # Check if logo was clicked via JavaScript (keeping this for compatibility)
-    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
-        st.session_state.pop('logo_clicked', None)
-        st.switch_page("Home.py")
-    
-    # GENERATE HEADER HTML - Improved with better user status handling
-    if st.session_state.get('authentication_status'):
-        user_name = st.session_state.get('name', 'User')
-        is_premium = st.session_state.get('is_premium', False)
-        
-        # Better status display with expiration info
-        if is_premium:
-            status_text = "👑 PREMIUM"
-            status_class = "premium"
-            
-            # Add expiration info if available
-            if st.session_state.get('premium_expires_at'):
-                try:
-                    from datetime import datetime
-                    expires = datetime.fromisoformat(str(st.session_state['premium_expires_at']).replace('Z', '+00:00'))
-                    days_left = (expires - datetime.now()).days
-                    if days_left > 0:
-                        status_text += f" ({days_left}d left)"
-                    elif days_left == 0:
-                        status_text += " (Expires today)"
-                    else:
-                        status_text = "🔒 EXPIRED"
-                        status_class = "free"
-                except:
-                    pass
-        else:
-            status_text = "🔒 FREE TIER"
-            status_class = "free"
-        
-        header_html = f"""
-        <div class="kaspa-header">
-            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
-                </div>
-            </a>
-            <div class="kaspa-user-info">
-                <div>Welcome, {user_name}</div>
-                <div class="kaspa-user-status {status_class}">{status_text}</div>
-            </div>
-        </div>
-        """
-    else:
-        header_html = """
-        <div class="kaspa-header">
-            <a href="/" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
-                </div>
-            </a>
-            <div class="kaspa-user-info">
-                <div>Please log in</div>
-                <div class="kaspa-user-status guest">
-                    <span class="guest-icon">person</span>
-                    GUEST
-                </div>
-            </div>
-        </div>
-        """
-    
-    st.markdown(header_html, unsafe_allow_html=True)
-
-    # SIDEBAR NAVIGATION WITH MATERIAL ICONS
-    # Add home button at top
-    if st.sidebar.button("Home", key="nav_home", use_container_width=True, icon=":material/home:"):
-        st.switch_page("Home.py")
-    
-    # Account buttons right under Home
-    if st.session_state.get('authentication_status'):
-        # User is logged in - show Account and Logout side by side
-        col1, col2 = st.sidebar.columns(2)
-        with col1:
-            if st.button("Account", key="nav_account", use_container_width=True, icon=":material/account_circle:"):
-                st.switch_page("pages/A_👤_Account.py")
-        with col2:
-            if st.button("Logout", key="nav_logout", use_container_width=True, icon=":material/logout:"):
-                st.session_state.clear()
-                st.switch_page("Home.py")
-    else:
-        # User not logged in
-        if st.sidebar.button("Login / Register", key="nav_login", use_container_width=True, icon=":material/login:"):
-            st.switch_page("pages/0_🔑_Login.py")
-    
-    st.sidebar.markdown("---")
-    
-    # Mining Section
-    with st.sidebar.expander("⛏ Mining", expanded=True):
-        if st.button("Hashrate", key="sidebar_hashrate", use_container_width=True, icon=":material/trending_up:"):
-            st.switch_page("pages/1_⛏️_Mining_Hashrate.py")
-        if st.button("Difficulty", key="sidebar_difficulty", use_container_width=True, icon=":material/settings:"):
-            st.switch_page("pages/2_⛏️_Mining_Difficulty.py")
-    
-    # Spot Market Section with account_balance icon (same as Market Cap)
-    with st.sidebar.expander(":material/account_balance: Spot Market", expanded=True):
-        if st.button("Price", key="sidebar_price", use_container_width=True, icon=":material/attach_money:"):
-            st.switch_page("pages/3_💰_Spot_Price.py")
-        if st.button("Volume", key="sidebar_volume", use_container_width=True, icon=":material/bar_chart:"):
-            st.switch_page("pages/4_💰_Spot_Volume.py")
-        if st.button("Market Cap", key="sidebar_marketcap", use_container_width=True, icon=":material/account_balance:"):
-            st.switch_page("pages/5_💰_Spot_Market_Cap.py")
-    
-    # Social Data Section with Material Icons - UPDATED
-    with st.sidebar.expander(":material/groups: Social Data", expanded=True):
-        if st.button("Social Metrics", key="sidebar_social1", use_container_width=True, icon=":material/analytics:"):
-            st.switch_page("pages/6_📱_Social_Metrics.py")
-        if st.button("Social Trends", key="sidebar_social2", use_container_width=True, icon=":material/show_chart:"):
-            st.switch_page("pages/7_📱_Social_Trends.py")
-    
-    # Premium Analytics Section - PRESERVED EXACTLY with all access control logic
-    if st.session_state.get('authentication_status') and st.session_state.get('is_premium'):
-        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=True):
-            if st.button("Premium Features", key="sidebar_premium_features", use_container_width=True, icon=":material/star:"):
-                st.switch_page("pages/B_👑_Premium_Features.py")
-            if st.button("Premium Analytics", key="sidebar_premium1", use_container_width=True, icon=":material/science:"):
-                st.switch_page("pages/8_👑_Premium_Analytics.py")
-            if st.button("Advanced Metrics", key="sidebar_premium2", use_container_width=True, icon=":material/insights:"):
-                st.switch_page("pages/9_👑_Advanced_Metrics.py")
-    elif st.session_state.get('authentication_status'):
-        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=False):
-            # Premium Features accessible to logged-in users (but not paying)
-            if st.button("Premium Features", key="sidebar_premium_features_free", use_container_width=True, icon=":material/star:"):
-                st.switch_page("pages/B_👑_Premium_Features.py")
-            st.warning("Upgrade Required")
-            st.write("**Monthly:** $9.99")
-            st.write("**Annual:** $99")
-            if st.button("Upgrade Now", key="sidebar_upgrade", use_container_width=True, icon=":material/credit_card:"):
-                st.switch_page("pages/B_👑_Premium_Features.py")
-    else:
-        with st.sidebar.expander(":material/crown: Premium Analytics", expanded=False):
-            # Premium Features accessible to everyone (including non-logged users)
-            if st.button("Premium Features", key="sidebar_premium_features_guest", use_container_width=True, icon=":material/star:"):
-                st.switch_page("pages/B_👑_Premium_Features.py")
-            # Custom login button with new color and material icon only
-            if st.button("Login Required", key="sidebar_login_premium_custom", use_container_width=True, icon=":material/login:"):
-                st.switch_page("pages/0_🔑_Login.py")
