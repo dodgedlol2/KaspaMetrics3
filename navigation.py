@@ -494,51 +494,40 @@ def add_navigation():
             transition: none !important;
         }
         
-        /* FORCE ALL SIDEBAR ICONS TO MATCH GUEST ICON PURPLE COLOR */
+        /* FORCE SIDEBAR ICONS TO PURPLE - PRESERVE STREAMLIT ICON FUNCTIONALITY */
         
-        /* Target all possible icon containers in sidebar */
-        [data-testid="stSidebar"] .material-icons,
-        [data-testid="stSidebar"] button .material-icons,
-        [data-testid="stSidebar"] .stButton .material-icons,
-        [data-testid="stSidebar"] button[kind="secondary"] .material-icons,
-        [data-testid="stSidebar"] span[data-testid*="material"],
-        [data-testid="stSidebar"] div[data-testid*="material"],
-        [data-testid="stSidebar"] .material-symbols-outlined,
-        [data-testid="stSidebar"] span.material-symbols-outlined,
-        [data-testid="stSidebar"] i[class*="material"],
-        [data-testid="stSidebar"] span[class*="material"],
-        [data-testid="stSidebar"] .stButton span[data-testid],
-        [data-testid="stSidebar"] button span[data-testid],
-        [data-testid="stSidebar"] span[data-testid*="Icon"],
-        [data-testid="stSidebar"] span[data-testid*="icon"] {
-            color: #5B6CFF !important;
-            fill: #5B6CFF !important;
-        }
-        
-        /* Target Streamlit's internal icon structure */
-        [data-testid="stSidebar"] button > div > span,
-        [data-testid="stSidebar"] .stButton > button > div > span {
+        /* Target Streamlit's icon elements specifically without breaking functionality */
+        [data-testid="stSidebar"] button[data-testid] span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] button span[data-testid*="stIcon"] {
             color: #5B6CFF !important;
         }
         
-        /* Target any SVG icons */
-        [data-testid="stSidebar"] svg,
-        [data-testid="stSidebar"] svg *,
-        [data-testid="stSidebar"] button svg,
-        [data-testid="stSidebar"] button svg * {
+        /* Target Material Icons specifically */
+        [data-testid="stSidebar"] span[data-testid*="stIcon"] svg,
+        [data-testid="stSidebar"] span[data-testid*="stIcon"] svg path {
             fill: #5B6CFF !important;
             color: #5B6CFF !important;
         }
         
-        /* Icon color on hover - keep same purple, maybe slightly brighter */
-        [data-testid="stSidebar"] .stButton:hover .material-icons,
-        [data-testid="stSidebar"] .stButton:hover span[data-testid],
-        [data-testid="stSidebar"] .stButton:hover svg,
-        [data-testid="stSidebar"] .stButton:hover svg *,
-        [data-testid="stSidebar"] button:hover .material-icons,
-        [data-testid="stSidebar"] button:hover span[data-testid],
-        [data-testid="stSidebar"] button:hover svg,
-        [data-testid="stSidebar"] button:hover svg * {
+        /* More specific targeting for Streamlit's button icons */
+        [data-testid="stSidebar"] .stButton button span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] .stButton button span[data-testid*="stIcon"] * {
+            color: #5B6CFF !important;
+            fill: #5B6CFF !important;
+        }
+        
+        /* Target any remaining icon elements */
+        [data-testid="stSidebar"] [data-testid*="stIcon"],
+        [data-testid="stSidebar"] [data-testid*="stIcon"] * {
+            color: #5B6CFF !important;
+            fill: #5B6CFF !important;
+        }
+        
+        /* Icon hover states */
+        [data-testid="stSidebar"] .stButton:hover span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] .stButton:hover span[data-testid*="stIcon"] *,
+        [data-testid="stSidebar"] button:hover span[data-testid*="stIcon"],
+        [data-testid="stSidebar"] button:hover span[data-testid*="stIcon"] * {
             color: #6D7DFF !important;
             fill: #6D7DFF !important;
         }
