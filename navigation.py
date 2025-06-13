@@ -8,9 +8,6 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* Import modern fonts - Inter and Space Grotesk */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-        
         /* IMMEDIATE COMPLETE HEADER REMOVAL - Multiple targeting approaches */
         header[data-testid="stHeader"] {
             display: none !important;
@@ -62,7 +59,7 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* LUNARCRUSH-STYLE BLACK HEADER */
+        /* ENHANCED PROFESSIONAL HEADER WITH ANIMATED GRADIENT */
         .kaspa-header {
             position: fixed;
             top: 0;
@@ -71,22 +68,47 @@ def add_navigation():
             width: 100vw;
             height: 70px;
             z-index: 999997;
-            /* Pure black background with subtle gradient */
-            background: linear-gradient(180deg, 
-                #000000 0%,
-                #000000 85%,
-                rgba(0, 0, 0, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            /* Multi-layer gradient for depth */
+            background: 
+                /* Animated gradient overlay */
+                linear-gradient(45deg, 
+                    rgba(0, 212, 255, 0.03) 0%, 
+                    rgba(0, 212, 255, 0.08) 50%, 
+                    rgba(0, 212, 255, 0.03) 100%),
+                /* Main gradient */
+                linear-gradient(135deg, 
+                    #0f172a 0%, 
+                    #1e293b 40%, 
+                    #1e3a5f 70%, 
+                    #0f172a 100%),
+                /* Subtle pattern overlay */
+                radial-gradient(circle at 20% 50%, 
+                    rgba(0, 212, 255, 0.05) 0%, 
+                    transparent 50%),
+                radial-gradient(circle at 80% 50%, 
+                    rgba(59, 130, 246, 0.05) 0%, 
+                    transparent 50%);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(100, 116, 139, 0.2);
             box-shadow: 
-                0 1px 0 rgba(255, 255, 255, 0.05) inset,
-                0 -1px 0 rgba(0, 0, 0, 0.2) inset,
-                0 2px 24px rgba(0, 0, 0, 0.5);
+                0 1px 3px rgba(0, 0, 0, 0.1),
+                0 4px 20px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            /* Animation */
+            background-size: 200% 200%, 100% 100%, 100% 100%, 100% 100%;
+            animation: headerShift 20s ease infinite;
+        }
+        
+        /* Header animation */
+        @keyframes headerShift {
+            0% { background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%; }
+            50% { background-position: 100% 50%, 0% 0%, 0% 0%, 0% 0%; }
+            100% { background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%; }
         }
         
         /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
@@ -94,45 +116,44 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* LUNARCRUSH-STYLE BLACK SIDEBAR */
+        /* ENHANCED PROFESSIONAL SIDEBAR WITH SOPHISTICATED GRADIENT */
         [data-testid="stSidebar"] {
             margin-top: 70px;
             height: calc(100vh - 70px);
-            position: relative !important;
-            overflow: hidden !important;
-            /* Pure black with subtle depth */
-            background: linear-gradient(180deg,
-                #000000 0%,
-                #050505 50%,
-                #000000 100%);
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+            /* Multi-layer professional gradient */
+            background: 
+                /* Subtle animated accent */
+                linear-gradient(180deg, 
+                    rgba(0, 212, 255, 0.02) 0%, 
+                    transparent 50%, 
+                    rgba(0, 212, 255, 0.02) 100%),
+                /* Main gradient with more depth */
+                linear-gradient(180deg, 
+                    #0f172a 0%, 
+                    #1a2332 20%,
+                    #1e293b 50%,
+                    #1a2332 80%,
+                    #0f172a 100%),
+                /* Subtle texture */
+                radial-gradient(circle at 50% 0%, 
+                    rgba(59, 130, 246, 0.03) 0%, 
+                    transparent 40%);
+            backdrop-filter: blur(30px) saturate(120%) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(120%) !important;
+            border-right: 1px solid rgba(100, 116, 139, 0.2) !important;
             box-shadow: 
-                inset 1px 0 0 rgba(255, 255, 255, 0.03),
-                2px 0 24px rgba(0, 0, 0, 0.5) !important;
+                2px 0 20px rgba(0, 0, 0, 0.2),
+                inset -1px 0 0 rgba(255, 255, 255, 0.03) !important;
+            /* Subtle animation */
+            background-size: 100% 200%, 100% 100%, 100% 100%;
+            animation: sidebarPulse 15s ease infinite;
         }
         
-        /* Animated accent line */
-        [data-testid="stSidebar"]::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(180deg,
-                transparent 0%,
-                rgba(0, 212, 255, 0.5) 20%,
-                rgba(0, 212, 255, 0.8) 50%,
-                rgba(0, 212, 255, 0.5) 80%,
-                transparent 100%);
-            animation: slideAccent 6s ease-in-out infinite;
-        }
-        
-        @keyframes slideAccent {
-            0%, 100% { transform: translateY(-100%); }
-            50% { transform: translateY(100%); }
+        /* Sidebar animation */
+        @keyframes sidebarPulse {
+            0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+            50% { background-position: 0% 100%, 0% 0%, 0% 0%; }
+            100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
         }
         
         /* Style sidebar content container */
@@ -141,57 +162,59 @@ def add_navigation():
             padding-top: 20px !important;
         }
         
-        /* Modern sidebar buttons */
+        /* Enhanced sidebar buttons with subtle gradient */
         [data-testid="stSidebar"] .stButton > button {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border: 1px solid rgba(255, 255, 255, 0.06) !important;
-            border-radius: 8px !important;
-            color: #ffffff !important;
-            font-family: 'Inter', -apple-system, sans-serif !important;
-            font-weight: 500 !important;
+            background: linear-gradient(135deg, 
+                rgba(30, 41, 59, 0.6) 0%, 
+                rgba(15, 23, 42, 0.8) 100%) !important;
+            border: 1px solid rgba(100, 116, 139, 0.2) !important;
+            border-radius: 12px !important;
+            color: #f1f5f9 !important;
             backdrop-filter: blur(10px) !important;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             box-shadow: 
-                0 1px 2px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+            font-weight: 600 !important;
             text-align: left !important;
             justify-content: flex-start !important;
             display: flex !important;
             align-items: center !important;
             font-size: 13px !important;
-            letter-spacing: 0.01em !important;
             position: relative !important;
             overflow: hidden !important;
         }
         
-        /* Button hover state */
+        /* Button hover state with enhanced effect */
         [data-testid="stSidebar"] .stButton > button:hover {
-            background: rgba(0, 212, 255, 0.1) !important;
-            border-color: rgba(0, 212, 255, 0.3) !important;
-            color: #00d4ff !important;
-            transform: translateX(2px) !important;
+            background: linear-gradient(135deg, 
+                rgba(0, 212, 255, 0.15) 0%, 
+                rgba(30, 41, 59, 0.9) 100%) !important;
+            border-color: rgba(0, 212, 255, 0.4) !important;
             box-shadow: 
-                0 0 20px rgba(0, 212, 255, 0.2),
-                0 2px 8px rgba(0, 0, 0, 0.3),
+                0 4px 16px rgba(0, 212, 255, 0.15), 
+                0 0 0 1px rgba(0, 212, 255, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+            transform: translateY(-1px) !important;
         }
         
-        /* Subtle glow effect on hover */
-        [data-testid="stSidebar"] .stButton > button::after {
+        /* Subtle shimmer effect on hover */
+        [data-testid="stSidebar"] .stButton > button::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            transition: width 0.3s ease, height 0.3s ease;
-        }
-        
-        [data-testid="stSidebar"] .stButton > button:hover::after {
+            top: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.05) 50%, 
+                transparent 100%);
+            transition: left 0.5s ease;
+        }
+        
+        [data-testid="stSidebar"] .stButton > button:hover::before {
+            left: 100%;
         }
         
         /* Target button text specifically inside sidebar */
@@ -199,7 +222,6 @@ def add_navigation():
         [data-testid="stSidebar"] .stButton > button p,
         [data-testid="stSidebar"] .stButton > button div {
             font-size: 13px !important;
-            font-family: 'Inter', -apple-system, sans-serif !important;
         }
         
         /* Target button text content more specifically */
@@ -237,25 +259,20 @@ def add_navigation():
             border: none !important;
             outline: none !important;
             background: transparent !important;
-            color: #ffffff !important;
-            font-family: 'Inter', -apple-system, sans-serif !important;
+            color: #e2e8f0 !important;
             font-weight: 600 !important;
-            font-size: 14px !important;
-            letter-spacing: 0.02em !important;
             cursor: pointer !important;
             border-radius: 0 !important;
             padding: 8px 12px !important;
             backdrop-filter: none !important;
             margin: 0 !important;
-            transition: all 0.2s ease !important;
         }
         
-        /* Hover effect for summary */
+        /* Hover effect for summary - still no background, just text color change */
         [data-testid="stSidebar"] summary:hover {
             background: transparent !important;
             color: #00d4ff !important;
             box-shadow: none !important;
-            transform: translateX(4px) !important;
         }
         
         /* Make sure content area is also transparent */
@@ -267,20 +284,20 @@ def add_navigation():
         
         /* Style sidebar text */
         [data-testid="stSidebar"] .stMarkdown {
-            color: rgba(255, 255, 255, 0.8) !important;
-            font-family: 'Inter', -apple-system, sans-serif !important;
+            color: #cbd5e1 !important;
         }
         
-        /* Modern warning/info/success boxes in sidebar */
+        /* Enhanced warning/info/success boxes in sidebar */
         [data-testid="stSidebar"] .stAlert {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background: linear-gradient(135deg, 
+                rgba(30, 41, 59, 0.7) 0%, 
+                rgba(15, 23, 42, 0.85) 100%) !important;
+            border: 1px solid rgba(100, 116, 139, 0.2) !important;
             border-radius: 8px !important;
             backdrop-filter: blur(10px) !important;
-            color: rgba(255, 255, 255, 0.9) !important;
-            font-family: 'Inter', -apple-system, sans-serif !important;
+            color: #e2e8f0 !important;
             box-shadow: 
-                0 2px 8px rgba(0, 0, 0, 0.2),
+                0 2px 8px rgba(0, 0, 0, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
         }
         
@@ -306,7 +323,7 @@ def add_navigation():
             cursor: pointer !important;
         }
 
-        /* Expand button when sidebar is COLLAPSED - Modern style */
+        /* Expand button when sidebar is COLLAPSED - Clean hamburger only */
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
             top: 85px !important;
@@ -336,12 +353,12 @@ def add_navigation():
             color: transparent !important;
         }
 
-        /* Add custom hamburger icon - white/grey */
+        /* Add custom hamburger icon - grey by default */
         div[data-testid="stSidebarCollapsedControl"] button::before,
         button[data-testid="collapsedControl"]::before {
             content: "☰" !important;
-            font-size: 20px !important;
-            color: rgba(255, 255, 255, 0.5) !important;
+            font-size: 18px !important;
+            color: #9ca3af !important;
             transition: all 0.3s ease !important;
             display: block !important;
             line-height: 1 !important;
@@ -353,8 +370,9 @@ def add_navigation():
         button[data-testid="collapsedControl"]:hover::before,
         button[data-testid="collapsedControl"]:active::before {
             color: #00d4ff !important;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8) !important;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.8) !important;
             transform: scale(1.1) !important;
+            transition: all 0.2s ease !important;
         }
 
         /* Ensure the functional button remains clickable */
@@ -364,88 +382,81 @@ def add_navigation():
             cursor: pointer !important;
         }
         
-        /* MODERN HEADER STYLING WITH DATA MATRIX LOGO */
+        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO */
         .kaspa-logo {
             display: flex;
             align-items: center;
-            gap: 14px;
-            font-family: 'Space Grotesk', -apple-system, sans-serif;
-            font-size: 24px;
-            font-weight: 700;
+            gap: 12px;
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            font-size: 22px;
+            font-weight: 600;
             color: #ffffff;
         }
         
-        /* Enhanced matrix with modern animation */
+        /* Enhanced matrix with subtle animation */
         .matrix {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2px;
-            width: 32px;
-            height: 32px;
+            width: 29px;
+            height: 29px;
             position: relative;
         }
         
         .cell {
-            width: 8px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            width: 7px;
+            height: 7px;
+            background: linear-gradient(45deg, #e5e7eb, #9ca3af, #6b7280);
             border-radius: 1px;
+            box-shadow: 
+                0 0 7px rgba(156, 163, 175, 0.6),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
         
-        /* Active cells with modern glow */
+        /* Enhanced active cells with subtle pulse */
         .cell:nth-child(1), 
         .cell:nth-child(3), 
         .cell:nth-child(5), 
         .cell:nth-child(7), 
         .cell:nth-child(9) {
-            background: linear-gradient(135deg, #00d4ff, #0080ff);
+            background: linear-gradient(45deg, #00d4ff, #0ea5e9);
             box-shadow: 
-                0 0 20px rgba(0, 212, 255, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            animation: cellPulse 4s ease-in-out infinite;
+                0 0 12px rgba(0, 212, 255, 0.8), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            animation: cellPulse 3s ease infinite;
         }
         
         /* Stagger the animation */
         .cell:nth-child(1) { animation-delay: 0s; }
-        .cell:nth-child(3) { animation-delay: 0.3s; }
-        .cell:nth-child(5) { animation-delay: 0.6s; }
-        .cell:nth-child(7) { animation-delay: 0.9s; }
-        .cell:nth-child(9) { animation-delay: 1.2s; }
+        .cell:nth-child(3) { animation-delay: 0.2s; }
+        .cell:nth-child(5) { animation-delay: 0.4s; }
+        .cell:nth-child(7) { animation-delay: 0.6s; }
+        .cell:nth-child(9) { animation-delay: 0.8s; }
         
         @keyframes cellPulse {
-            0%, 100% { 
-                opacity: 0.4; 
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 1; 
-                transform: scale(1.1);
-            }
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
         }
         
-        /* Inactive cells */
-        .cell:nth-child(2), 
-        .cell:nth-child(4), 
-        .cell:nth-child(6), 
-        .cell:nth-child(8) {
-            background: rgba(255, 255, 255, 0.1);
-            opacity: 0.6;
-        }
+        .cell:nth-child(2) { opacity: 0.9; }
+        .cell:nth-child(4) { opacity: 0.8; }
+        .cell:nth-child(6) { opacity: 0.8; }
+        .cell:nth-child(8) { opacity: 0.9; }
         
         .logo-text { 
-            color: #ffffff;
-            letter-spacing: -0.02em;
+            color: #ffffff; 
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #f8fafc, #e2e8f0, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             font-weight: 700;
-            text-transform: uppercase;
-            font-size: 20px;
         }
         
         .kaspa-user-info {
-            color: rgba(255, 255, 255, 0.9);
-            font-family: 'Inter', -apple-system, sans-serif;
+            color: #f1f5f9;
             font-size: 14px;
             text-align: right;
         }
@@ -455,24 +466,23 @@ def add_navigation():
             font-size: 11px;
             text-transform: uppercase;
             font-weight: 600;
-            margin-top: 3px;
-            letter-spacing: 0.05em;
+            margin-top: 2px;
         }
         
         .kaspa-user-status.premium {
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            color: #fbbf24;
+            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
         }
         
         .kaspa-user-status.free {
-            color: rgba(255, 255, 255, 0.5);
+            color: #94a3b8;
         }
         
         .kaspa-user-status.guest {
-            color: rgba(255, 255, 255, 0.3);
+            color: #64748b;
         }
         
-        /* HIDE NATIVE PAGE NAVIGATION */
+        /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
         .css-1q1n0ol[data-testid="stSidebarNav"] {
             display: none;
         }
@@ -495,6 +505,11 @@ def add_navigation():
             overflow-x: hidden;
         }
         
+        /* SMOOTH TRANSITIONS FOR ALL ELEMENTS */
+        * {
+            transition: none !important;
+        }
+        
         /* Google Material Icons styling */
         .material-icons {
             font-family: 'Material Icons';
@@ -514,20 +529,12 @@ def add_navigation():
         
         /* Icon color in sidebar */
         [data-testid="stSidebar"] .material-icons {
-            color: rgba(255, 255, 255, 0.7) !important;
+            color: #cbd5e1 !important;
         }
         
         /* Icon color on hover */
         .stButton:hover .material-icons {
             color: #00d4ff !important;
-        }
-        
-        /* Divider styling */
-        [data-testid="stSidebar"] hr {
-            border: none !important;
-            height: 1px !important;
-            background: rgba(255, 255, 255, 0.08) !important;
-            margin: 16px 0 !important;
         }
         
         @media (max-width: 768px) {
@@ -536,22 +543,18 @@ def add_navigation():
             }
             
             .kaspa-logo {
-                font-size: 18px;
+                font-size: 17px;
                 gap: 10px;
             }
             
             .matrix {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
             }
             
             .cell {
-                width: 6px;
-                height: 6px;
-            }
-            
-            .logo-text {
-                font-size: 16px;
+                width: 5px;
+                height: 5px;
             }
             
             .kaspa-user-info {
