@@ -166,21 +166,10 @@ div[data-testid="stColumn"] * {
     color: #e2e8f0 !important;
 }
 
-/* Controls container - Remove complex positioning */
+/* Controls container */
 .chart-controls {
     margin: 0;
     padding: 0;
-}
-
-/* Override fit-content for specific segmented control positioning */
-div[data-testid="stColumn"]:has([data-testid="hashrate_time_range_segment"]) {
-    display: flex !important;
-    justify-content: flex-end !important;
-}
-
-/* Make the Time Period control align right within its container */
-div[data-testid="stColumn"]:has([data-testid="hashrate_time_range_segment"]) div[data-baseweb="segmented-control"] {
-    margin-left: auto !important;
 }
 
 .control-group {
@@ -350,10 +339,10 @@ header {visibility: hidden;}
 """, unsafe_allow_html=True)
 
 # BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
-# Use a container with forced flex layout
-st.markdown('<div class="controls-wrapper">', unsafe_allow_html=True)
+st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
-col1, col2, col3, col4 = st.columns(4)
+# Create the layout with proper spacing
+col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
@@ -387,6 +376,9 @@ with col3:
         key="hashrate_power_law_segment"
     )
     st.markdown('</div>', unsafe_allow_html=True)
+
+with spacer:
+    st.empty()  # Creates the space between left and right groups
 
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
