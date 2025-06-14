@@ -127,9 +127,9 @@ setTimeout(function() {
             // Set widths based on position/index
             if (index === 0) {
                 // First control (Hashrate Scale)
-                control.style.width = '110px';
-                control.style.maxWidth = '110px';
-                control.style.minWidth = '110px';
+                control.style.width = '5px';
+                control.style.maxWidth = '5px';
+                control.style.minWidth = '5px';
             } else if (index === 1) {
                 // Second control (Time Scale) 
                 control.style.width = '110px';
