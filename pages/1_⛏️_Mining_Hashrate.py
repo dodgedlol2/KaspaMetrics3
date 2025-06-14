@@ -31,8 +31,6 @@ def init_handlers():
 
 db, auth_handler, payment_handler = init_handlers()
 
-st.markdown("Kaspa Title Text")
-
 # Custom CSS for Betterstack-inspired dark theme
 st.markdown("""
 <style>
@@ -239,7 +237,7 @@ st.markdown("""
 # Header with user info - using columns like your other page
 col1, col2 = st.columns([3, 1])
 with col1:
-    st.markdown('<h1 class="gradient-title">⚡ Kaspa Network Hashrate</h1>', unsafe_allow_html=True)
+    st.markdown("**⚡ Kaspa Network Hashrate**")
 
 st.markdown("""
     <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
