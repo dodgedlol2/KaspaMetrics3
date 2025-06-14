@@ -353,7 +353,14 @@ fig.update_layout(
         gridwidth=1,
         color='#9CA3AF'
     ),
-    showlegend=False
+    showlegend=False,
+    margin=dict(l=50, r=20, t=20, b=50),
+    modebar=dict(
+        orientation="v",
+        bgcolor="rgba(26, 26, 46, 0.8)",
+        color="#9CA3AF",
+        activecolor="#5B6CFF"
+    )
 )
 
 st.plotly_chart(fig, use_container_width=True)
