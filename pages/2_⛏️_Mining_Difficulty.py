@@ -99,7 +99,7 @@ st.markdown("""
 }
 
 .big-font {
-    font-size: 48px !important;
+    font-size: 60px !important;
     font-weight: bold;
     background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
     -webkit-background-clip: text;
@@ -373,21 +373,8 @@ header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# COMPACT HEADER WITH TITLE AND CONTROLS
-st.markdown('<div class="header-container">', unsafe_allow_html=True)
-
-# Title section
-st.markdown("""
-<div class="title-section">
-    <div class='big-font'>Kaspa Network Hashrate</div>
-</div>
-""", unsafe_allow_html=True)
-
-# Controls section
-st.markdown('<div class="controls-section">', unsafe_allow_html=True)
-
-# Create compact control layout
-col1, col2, col3, col4, col5 = st.columns([0.8, 0.8, 0.8, 0.8, 1])
+# Create invisible columns to position controls to the right of title
+col_spacer, col1, col2, col3, col4 = st.columns([4, 0.8, 0.8, 0.8, 1])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
@@ -404,7 +391,7 @@ with col2:
     st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
     x_scale_type = st.segmented_control(
         label="",
-        options=["Linear", "Log"],
+        options=["Linear", "Log"], 
         default="Linear",
         label_visibility="collapsed",
         key="hashrate_x_scale_segment"
@@ -432,9 +419,6 @@ with col4:
         key="hashrate_time_range_segment"
     )
     st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)  # Close controls-section
-st.markdown('</div>', unsafe_allow_html=True)  # Close header-container
 
 # Data filtering based on time range
 if not hashrate_df.empty:
