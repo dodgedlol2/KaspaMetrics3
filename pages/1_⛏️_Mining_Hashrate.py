@@ -242,31 +242,8 @@ header {visibility: hidden;}
 st.markdown("""
     <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
 """, unsafe_allow_html=True)
-
-# Sample data - replace with real Kaspa API data later
 dates = pd.date_range(start='2024-01-01', end='2024-06-01', freq='D')
 hashrate_data = np.random.normal(1.2, 0.1, len(dates))  # EH/s
-
-# Custom metrics cards
-st.markdown("""
-<div class="metrics-container">
-    <div class="metric-card">
-        <div class="metric-label">Current Hashrate</div>
-        <div class="metric-value">1.24 EH/s</div>
-        <div class="metric-change">+2.1%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">7d Average</div>
-        <div class="metric-value">1.18 EH/s</div>
-        <div class="metric-change">+0.8%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">30d Average</div>
-        <div class="metric-value">1.15 EH/s</div>
-        <div class="metric-change">+5.2%</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
 # Hashrate chart with dark theme immediately after metrics
 fig = go.Figure()
@@ -357,6 +334,27 @@ mini_fig.update_layout(
 st.plotly_chart(mini_fig, use_container_width=True)
 
 st.markdown("""
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Custom metrics cards moved to bottom
+st.markdown("""
+<div class="metrics-container">
+    <div class="metric-card">
+        <div class="metric-label">Current Hashrate</div>
+        <div class="metric-value">1.24 EH/s</div>
+        <div class="metric-change">+2.1%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">7d Average</div>
+        <div class="metric-value">1.18 EH/s</div>
+        <div class="metric-change">+0.8%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">30d Average</div>
+        <div class="metric-value">1.15 EH/s</div>
+        <div class="metric-change">+5.2%</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
