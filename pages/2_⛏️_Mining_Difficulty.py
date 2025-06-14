@@ -324,7 +324,7 @@ header {visibility: hidden;}
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
 # Create the layout with proper spacing
-col1, col2, col3, spacer, col4 = st.columns([1, 1, 1, 2, 1.5])
+col1, col2, col3, spacer, col4 = st.columns([1, 1, 1, 5, 1.5])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
