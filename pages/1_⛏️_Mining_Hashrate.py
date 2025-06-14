@@ -232,7 +232,14 @@ header {visibility: hidden;}
 # Hero Section
 st.markdown("""
 <div class="hero-section">
-    <h1 class="gradient-title">Kaspa Network Hashrate</h1>
+""", unsafe_allow_html=True)
+
+# Header with user info - using columns like your other page
+col1, col2 = st.columns([3, 1])
+with col1:
+    st.markdown('<h1 class="gradient-title">⚡ Kaspa Network Hashrate</h1>', unsafe_allow_html=True)
+
+st.markdown("""
     <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
 </div>
 """, unsafe_allow_html=True)
