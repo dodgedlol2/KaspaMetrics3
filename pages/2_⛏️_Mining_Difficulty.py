@@ -150,11 +150,25 @@ st.markdown("""
 
 /* Controls container */
 .chart-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    position: relative;
     margin: 0;
     padding: 0;
+    width: 100%;
+}
+
+.left-controls-group {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    gap: 1rem;
+}
+
+.right-controls-group {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
 }
 
 .control-group {
@@ -162,7 +176,7 @@ st.markdown("""
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    width: 100%;
+    min-width: fit-content;
 }
 
 .control-group-right {
@@ -182,7 +196,7 @@ st.markdown("""
     margin: 0;
     font-family: 'Inter', sans-serif;
     text-align: center;
-    width: 100%;
+    white-space: nowrap;
 }
 
 /* Metrics cards */
@@ -335,11 +349,11 @@ header {visibility: hidden;}
 # BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
-# Split into two groups: left group (3 controls) and right group (1 control)
-left_col, right_col = st.columns([3, 1])
-
-with left_col:
-    # Left side - 3 controls in a row
+# Left group - 3 controls packed tight
+left_group = st.container()
+with left_group:
+    st.markdown('<div class="left-controls-group">', unsafe_allow_html=True)
+    
     subcol1, subcol2, subcol3 = st.columns(3)
     
     with subcol1:
@@ -374,10 +388,14 @@ with left_col:
             key="hashrate_power_law_segment"
         )
         st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with right_col:
-    # Right side - Time Period control aligned to the right
-    st.markdown('<div class="control-group control-group-right"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
+# Right group - Time Period far right
+right_group = st.container()
+with right_group:
+    st.markdown('<div class="right-controls-group">', unsafe_allow_html=True)
+    st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
         label="",
         options=["1W", "1M", "3M", "6M", "1Y", "All"],
@@ -385,7 +403,7 @@ with right_col:
         label_visibility="collapsed",
         key="hashrate_time_range_segment"
     )
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
