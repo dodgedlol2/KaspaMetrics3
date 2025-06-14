@@ -163,6 +163,7 @@ st.markdown("""
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    width: 100%;
 }
 
 .control-label {
@@ -173,6 +174,8 @@ st.markdown("""
     letter-spacing: 0.5px;
     margin: 0;
     font-family: 'Inter', sans-serif;
+    text-align: center;
+    width: 100%;
 }
 
 /* Metrics cards */
@@ -350,17 +353,6 @@ with col2:
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col3:
-    st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
-    time_range = st.segmented_control(
-        label="",
-        options=["1W", "1M", "3M", "6M", "1Y", "All"],
-        default="All",
-        label_visibility="collapsed",
-        key="hashrate_time_range_segment"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col4:
     st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
     show_power_law = st.segmented_control(
         label="",
@@ -368,6 +360,17 @@ with col4:
         default="Show",
         label_visibility="collapsed",
         key="hashrate_power_law_segment"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col4:
+    st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
+    time_range = st.segmented_control(
+        label="",
+        options=["1W", "1M", "3M", "6M", "1Y", "All"],
+        default="All",
+        label_visibility="collapsed",
+        key="hashrate_time_range_segment"
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
