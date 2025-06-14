@@ -170,6 +170,23 @@ div[data-testid="stColumn"] * {
 .chart-controls {
     margin: 0;
     padding: 0;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+/* Left group container */
+.left-group {
+    display: flex !important;
+    gap: 1rem !important;
+    align-items: center !important;
+}
+
+/* Right group container */
+.right-group {
+    display: flex !important;
+    align-items: center !important;
 }
 
 .control-group {
@@ -341,8 +358,10 @@ header {visibility: hidden;}
 # BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
-# Create the layout with proper spacing
-col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
+# Left group - 3 controls together
+st.markdown('<div class="left-group">', unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
@@ -377,10 +396,14 @@ with col3:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-with spacer:
-    st.empty()  # Creates the space between left and right groups
+st.markdown('</div>', unsafe_allow_html=True)  # End left group
 
-with col4:
+# Right group - Time Period control
+st.markdown('<div class="right-group">', unsafe_allow_html=True)
+
+# Create a single column for the right control
+right_col = st.columns(1)[0]
+with right_col:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
         label="",
@@ -391,7 +414,8 @@ with col4:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)  # End right group
+st.markdown('</div>', unsafe_allow_html=True)  # End chart controls
 
 # Data filtering based on time range
 if not hashrate_df.empty:
