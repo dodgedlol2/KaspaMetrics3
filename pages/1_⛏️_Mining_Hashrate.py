@@ -49,15 +49,15 @@ st.markdown("""
 }
 
 .stApp > .main .block-container {
-    padding-top: 2rem;
+    padding-top: 0.5rem;
     padding-bottom: 2rem;
     max-width: 1200px;
 }
 
 /* Main gradient title */
 .hero-section {
-    padding: 2rem 0;
-    margin-bottom: 3rem;
+    padding: 0.5rem 0;
+    margin-bottom: 2rem;
 }
 
 .gradient-title {
@@ -69,6 +69,7 @@ st.markdown("""
     font-weight: 800;
     text-align: center;
     margin-bottom: 1rem;
+    margin-top: 0;
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.03em;
     line-height: 1.1;
