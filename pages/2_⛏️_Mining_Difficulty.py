@@ -79,7 +79,7 @@ st.markdown("""
 <div class='big-font'>Kaspa Network Hashrate</div>
 """, unsafe_allow_html=True)
 
-# Custom CSS for Betterstack-inspired dark theme - KEEPING YOUR EXACT STYLING
+# Custom CSS for BetterStack-inspired dark theme with segmented controls
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -102,71 +102,88 @@ st.markdown("""
     max-width: 1200px;
 }
 
-/* Main gradient title */
-.hero-section {
-    padding: 0.5rem 0;
-    margin-bottom: 1rem;
+/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
+/* Target all segmented controls */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
+    background: rgba(26, 26, 46, 0.6) !important;
+    border: 1px solid rgba(54, 54, 80, 0.4) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(12px) !important;
+    padding: 2px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-.gradient-title {
-    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 3.5rem;
-    font-weight: 800;
-    text-align: center;
-    margin-bottom: 1rem;
-    margin-top: 0;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
+/* Individual segments - inactive state */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: #9CA3AF !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding: 6px 12px !important;
+    margin: 0 1px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-family: 'Inter', sans-serif !important;
+    min-height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-.hero-subtitle {
-    color: #9CA3AF;
-    font-size: 1.25rem;
-    text-align: center;
-    margin-bottom: 0;
-    font-weight: 400;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+/* Active segment - BetterStack style */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
+    background: rgba(91, 108, 255, 0.15) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(91, 108, 255, 0.3) !important;
 }
 
-/* Chart controls section - ADD THIS FOR CONTROLS */
+/* Hover state for inactive segments */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+    background: rgba(54, 54, 80, 0.3) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Controls container */
 .chart-controls {
     display: flex;
     justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    padding: 1rem 0;
+    align-items: center;
+    gap: 3rem;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(15, 20, 25, 0.3);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .control-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .control-label {
     color: #9CA3AF;
-    font-size: 0.75rem;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    text-align: center;
-    margin-bottom: 0.25rem;
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
 }
 
 /* Metrics cards */
 .metrics-container {
     display: flex;
     gap: 1.5rem;
-    margin-bottom: 0;
+    margin-bottom: 3rem;
     flex-wrap: wrap;
 }
 
@@ -274,8 +291,14 @@ st.markdown("""
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .gradient-title {
-        font-size: 2.5rem;
+    .chart-controls {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+    
+    .control-group {
+        width: 100%;
     }
     
     .analysis-section {
@@ -284,15 +307,6 @@ st.markdown("""
     
     .metrics-container {
         flex-direction: column;
-    }
-    
-    .hero-section {
-        padding: 2rem 1rem;
-    }
-    
-    .chart-controls {
-        flex-direction: column;
-        gap: 1rem;
     }
 }
 
@@ -312,29 +326,53 @@ header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ADD CHART CONTROLS SECTION
+# BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
-    y_scale = st.selectbox("", ["Linear", "Log"], index=1, label_visibility="collapsed", key="hashrate_y_scale_select")
+    y_scale = st.segmented_control(
+        label="",
+        options=["Linear", "Log"],
+        default="Log",
+        label_visibility="collapsed",
+        key="hashrate_y_scale_segment"
+    )
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
     st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
-    x_scale_type = st.selectbox("", ["Linear", "Log"], index=0, label_visibility="collapsed", key="hashrate_x_scale_select")
+    x_scale_type = st.segmented_control(
+        label="",
+        options=["Linear", "Log"],
+        default="Linear",
+        label_visibility="collapsed",
+        key="hashrate_x_scale_segment"
+    )
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col3:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
-    time_range = st.selectbox("", ["1W", "1M", "3M", "6M", "1Y", "All"], index=5, label_visibility="collapsed", key="hashrate_time_range_select")
+    time_range = st.segmented_control(
+        label="",
+        options=["1W", "1M", "3M", "6M", "1Y", "All"],
+        default="All",
+        label_visibility="collapsed",
+        key="hashrate_time_range_segment"
+    )
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
-    show_power_law = st.selectbox("", ["Hide", "Show"], index=1, label_visibility="collapsed", key="hashrate_power_law_select")
+    show_power_law = st.segmented_control(
+        label="",
+        options=["Hide", "Show"],
+        default="Show",
+        label_visibility="collapsed",
+        key="hashrate_power_law_segment"
+    )
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
