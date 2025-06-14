@@ -111,31 +111,30 @@ st.markdown("""
     backdrop-filter: blur(12px) !important;
     padding: 2px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    width: fit-content !important;
     display: inline-flex !important;
 }
 
-/* Individual segmented control widths */
+/* Individual segmented control widths using unique keys */
 /* Hashrate Scale control */
-[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Hashrate Scale")) div[data-baseweb="segmented-control"] {
+div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_y_scale_segment"]) div[data-baseweb="segmented-control"] {
     max-width: 110px !important;
     width: 110px !important;
 }
 
 /* Time Scale control */
-[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Time Scale")) div[data-baseweb="segmented-control"] {
-    max-width: 25px !important;
-    width: 25px !important;
+div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_x_scale_segment"]) div[data-baseweb="segmented-control"] {
+    max-width: 110px !important;
+    width: 110px !important;
 }
 
 /* Power Law control */
-[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Power Law")) div[data-baseweb="segmented-control"] {
+div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_power_law_segment"]) div[data-baseweb="segmented-control"] {
     max-width: 100px !important;
     width: 100px !important;
 }
 
 /* Time Period control */
-[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Time Period")) div[data-baseweb="segmented-control"] {
+div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_time_range_segment"]) div[data-baseweb="segmented-control"] {
     max-width: 180px !important;
     width: 180px !important;
 }
