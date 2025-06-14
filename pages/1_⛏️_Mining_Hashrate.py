@@ -31,23 +31,6 @@ def init_handlers():
 
 db, auth_handler, payment_handler = init_handlers()
 
-st.markdown("""
-<style>
-.big-font {
-    font-size: 60px !important;
-    font-weight: bold;
-    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0;
-    padding: 0;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-}
-</style>
-<div class='big-font'>Kaspa Network Hashrate</div>
-""", unsafe_allow_html=True)
-
 # Custom CSS for Betterstack-inspired dark theme
 st.markdown("""
 <style>
@@ -71,38 +54,48 @@ st.markdown("""
     max-width: 1200px;
 }
 
-/* Main gradient title */
-.hero-section {
-    padding: 0.5rem 0;
-    margin-bottom: 1rem;
-}
-
-.gradient-title {
+/* Main gradient title - reduced margins */
+.big-font {
+    font-size: 60px !important;
+    font-weight: bold;
     background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-size: 3.5rem;
-    font-weight: 800;
+    margin: 0 0 1rem 0 !important;  /* Reduced bottom margin */
+    padding: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
     text-align: center;
-    margin-bottom: 1rem;
-    margin-top: 0;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
 }
 
-.hero-subtitle {
-    color: #9CA3AF;
-    font-size: 1.25rem;
-    text-align: center;
-    margin-bottom: 0;
-    font-weight: 400;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+/* Chart container with reduced top margin */
+.chart-container {
+    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    border: 1px solid #363650;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 0.5rem !important;  /* Minimal top margin */
+    margin-bottom: 3rem;
+}
+
+/* Move Plotly toolbar inside chart area */
+.js-plotly-plot .plotly .modebar {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    background: rgba(22, 22, 41, 0.9) !important;
+    border: 1px solid #363650 !important;
+    border-radius: 8px !important;
+    padding: 4px !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn {
+    color: #9CA3AF !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn:hover {
+    background: rgba(91, 108, 255, 0.2) !important;
+    color: #FFFFFF !important;
 }
 
 /* Metrics cards */
@@ -157,15 +150,6 @@ st.markdown("""
     font-weight: 600;
 }
 
-/* Chart container */
-.chart-container {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 3rem;
-}
-
 /* Analysis section */
 .analysis-section {
     display: grid;
@@ -213,8 +197,8 @@ st.markdown("""
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .gradient-title {
-        font-size: 2.5rem;
+    .big-font {
+        font-size: 2.5rem !important;
     }
     
     .analysis-section {
@@ -223,10 +207,6 @@ st.markdown("""
     
     .metrics-container {
         flex-direction: column;
-    }
-    
-    .hero-section {
-        padding: 2rem 1rem;
     }
 }
 
@@ -243,13 +223,24 @@ st.markdown("""
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Remove extra spacing from Streamlit elements */
+.element-container {
+    margin-bottom: 0.5rem !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
+# Title with minimal spacing
+st.markdown("""
+<div class='big-font'>Kaspa Network Hashrate</div>
+""", unsafe_allow_html=True)
+
+# Generate data
 dates = pd.date_range(start='2024-01-01', end='2024-06-01', freq='D')
 hashrate_data = np.random.normal(1.2, 0.1, len(dates))  # EH/s
 
-# Hashrate chart with dark theme immediately after metrics
+# Hashrate chart with toolbar positioned inside
 fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=dates,
@@ -278,10 +269,25 @@ fig.update_layout(
         gridwidth=1,
         color='#9CA3AF'
     ),
-    showlegend=False
+    showlegend=False,
+    margin=dict(l=50, r=50, t=30, b=50)  # Reduced top margin
 )
 
-st.plotly_chart(fig, use_container_width=True)
+# Display chart with custom container
+st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+st.plotly_chart(fig, use_container_width=True, config={
+    'displayModeBar': True,
+    'displaylogo': False,
+    'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d'],
+    'toImageButtonOptions': {
+        'format': 'png',
+        'filename': 'kaspa_hashrate',
+        'height': 450,
+        'width': 1200,
+        'scale': 2
+    }
+})
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Analysis section
 st.markdown("""
@@ -335,7 +341,11 @@ mini_fig.update_layout(
     margin=dict(l=0, r=0, t=20, b=0)
 )
 
-st.plotly_chart(mini_fig, use_container_width=True)
+st.plotly_chart(mini_fig, use_container_width=True, config={
+    'displayModeBar': True,
+    'displaylogo': False,
+    'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d']
+})
 
 st.markdown("""
     </div>
