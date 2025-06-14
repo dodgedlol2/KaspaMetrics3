@@ -123,7 +123,7 @@ st.markdown("""
     color: #9CA3AF !important;
     font-weight: 500 !important;
     font-size: 13px !important;
-    padding: 1px 1px !important;
+    padding: 6px 8px !important;
     margin: 0 1px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
@@ -329,7 +329,7 @@ header {visibility: hidden;}
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
 # Create the layout with proper spacing
-col1, col2, col3, spacer, col4 = st.columns([0.5, 0.5, 0.5, 4, 1.5])
+col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
