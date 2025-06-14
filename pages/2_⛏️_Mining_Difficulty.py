@@ -123,7 +123,7 @@ st.markdown("""
     color: #9CA3AF !important;
     font-weight: 500 !important;
     font-size: 13px !important;
-    padding: 6px 8px !important;
+    padding: 6px 1px !important;
     margin: 0 1px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
