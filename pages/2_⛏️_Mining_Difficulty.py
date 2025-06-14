@@ -124,8 +124,8 @@ st.markdown("""
 
 /* Time Scale control */
 [data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Time Scale")) div[data-baseweb="segmented-control"] {
-    max-width: 110px !important;
-    width: 110px !important;
+    max-width: 25px !important;
+    width: 25px !important;
 }
 
 /* Power Law control */
