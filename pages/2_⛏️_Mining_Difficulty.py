@@ -62,24 +62,7 @@ if not hashrate_df.empty:
 else:
     a_hashrate, b_hashrate, r2_hashrate = 1, 1, 0
 
-st.markdown("""
-<style>
-.big-font {
-    font-size: 60px !important;
-    font-weight: bold;
-    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 0.5rem 0;
-    padding: 0;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-}
-</style>
-<div class='big-font'>Kaspa Network Hashrate</div>
-""", unsafe_allow_html=True)
-
-# Custom CSS for BetterStack-inspired dark theme with segmented controls
+# Custom CSS for BetterStack-inspired dark theme with compact header
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -98,12 +81,45 @@ st.markdown("""
 
 .stApp > .main .block-container {
     padding-top: 0.5rem;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
     max-width: 1200px;
 }
 
+/* COMPACT HEADER LAYOUT */
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 2rem;
+}
+
+.title-section {
+    flex-shrink: 0;
+}
+
+.big-font {
+    font-size: 48px !important;
+    font-weight: bold;
+    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    padding: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    line-height: 1.1;
+}
+
+.controls-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 /* BETTERSTACK-STYLE SEGMENTED CONTROLS */
-/* Target all segmented controls */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
     background: rgba(26, 26, 46, 0.6) !important;
     border: 1px solid rgba(54, 54, 80, 0.4) !important;
@@ -114,7 +130,7 @@ st.markdown("""
     display: inline-flex !important;
 }
 
-/* PROVEN SOLUTION: Make columns fit their content */
+/* Make columns fit their content */
 div[data-testid="stColumn"] {
     width: fit-content !important;
     flex: unset !important;
@@ -124,10 +140,6 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-</style>
-
-<style>
-
 /* Individual segments - inactive state */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
     background: transparent !important;
@@ -135,12 +147,12 @@ div[data-testid="stColumn"] * {
     border-radius: 6px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 6px 8px !important;
+    font-size: 12px !important;
+    padding: 5px 10px !important;
     margin: 0 1px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
-    min-height: 28px !important;
+    min-height: 26px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -166,22 +178,17 @@ div[data-testid="stColumn"] * {
     color: #e2e8f0 !important;
 }
 
-/* Controls container */
-.chart-controls {
-    margin: 0;
-    padding: 0;
-}
-
+/* Control group styling */
 .control-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
 }
 
 .control-label {
     color: #9CA3AF;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -191,21 +198,21 @@ div[data-testid="stColumn"] * {
     white-space: nowrap;
 }
 
-/* Metrics cards */
+/* Metrics cards - more compact */
 .metrics-container {
     display: flex;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
 }
 
 .metric-card {
     background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
     border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 1rem;
     flex: 1;
-    min-width: 250px;
+    min-width: 200px;
     position: relative;
     overflow: hidden;
 }
@@ -221,25 +228,26 @@ div[data-testid="stColumn"] * {
 }
 
 .metric-value {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #FFFFFF;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     font-family: 'Inter', sans-serif;
+    line-height: 1.1;
 }
 
 .metric-label {
     color: #9CA3AF;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .metric-change {
     color: #10B981;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
 }
 
@@ -247,35 +255,35 @@ div[data-testid="stColumn"] * {
     color: #ef4444;
 }
 
-/* Chart container */
+/* Chart container - more compact */
 .chart-container {
     background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
     border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 3rem;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
 }
 
-/* Analysis section */
+/* Analysis section - more compact */
 .analysis-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 3rem;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .analysis-card {
     background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
     border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: 12px;
+    padding: 1.5rem;
 }
 
 .section-title {
     color: #FFFFFF;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     font-family: 'Inter', sans-serif;
 }
 
@@ -287,10 +295,11 @@ div[data-testid="stColumn"] * {
 
 .insights-list li {
     color: #9CA3AF;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     padding-left: 1.5rem;
     position: relative;
-    line-height: 1.6;
+    line-height: 1.5;
+    font-size: 0.9rem;
 }
 
 .insights-list li::before {
@@ -302,11 +311,28 @@ div[data-testid="stColumn"] * {
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
-    .chart-controls {
+@media (max-width: 1024px) {
+    .header-container {
         flex-direction: column;
-        gap: 1.5rem;
-        padding: 1rem;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .controls-section {
+        justify-content: flex-start;
+        gap: 1rem;
+    }
+    
+    .big-font {
+        font-size: 36px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .controls-section {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
     }
     
     .control-group {
@@ -335,14 +361,33 @@ div[data-testid="stColumn"] * {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Reduce space between elements */
+.element-container {
+    margin-bottom: 0 !important;
+}
+
+.stVerticalBlock > .element-container {
+    margin-bottom: 0.5rem !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
-st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
+# COMPACT HEADER WITH TITLE AND CONTROLS
+st.markdown('<div class="header-container">', unsafe_allow_html=True)
 
-# Create the layout with proper spacing
-col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
+# Title section
+st.markdown("""
+<div class="title-section">
+    <div class='big-font'>Kaspa Network Hashrate</div>
+</div>
+""", unsafe_allow_html=True)
+
+# Controls section
+st.markdown('<div class="controls-section">', unsafe_allow_html=True)
+
+# Create compact control layout
+col1, col2, col3, col4, col5 = st.columns([0.8, 0.8, 0.8, 0.8, 1])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
@@ -377,9 +422,6 @@ with col3:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-with spacer:
-    st.empty()  # Creates the space between left and right groups
-
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
@@ -391,7 +433,8 @@ with col4:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)  # Close controls-section
+st.markdown('</div>', unsafe_allow_html=True)  # Close header-container
 
 # Data filtering based on time range
 if not hashrate_df.empty:
@@ -479,7 +522,7 @@ if not filtered_df.empty:
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Hashrate (PH/s)",
-    height=450,
+    height=400,  # Reduced height
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
@@ -505,9 +548,9 @@ fig.update_layout(
         bgcolor='rgba(0,0,0,0)',
         bordercolor='rgba(0,0,0,0)',
         borderwidth=0,
-        font=dict(size=11)
+        font=dict(size=10)
     ),
-    margin=dict(l=50, r=20, t=20, b=50),
+    margin=dict(l=40, r=20, t=15, b=40),  # Reduced margins
     modebar=dict(
         orientation="v",
         bgcolor="rgba(26, 26, 46, 0.8)",
@@ -569,7 +612,7 @@ else:
     change_7d = 2.1
     change_30d = 5.2
 
-# Custom metrics cards with real data
+# Custom metrics cards with real data - more compact
 st.markdown(f"""
 <div class="metrics-container">
     <div class="metric-card">
@@ -590,7 +633,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Analysis section with real insights
+# Analysis section with real insights - more compact
 current_growth = "15%" if change_30d > 10 else f"{change_30d:.1f}%"
 
 st.markdown(f"""
@@ -608,7 +651,7 @@ st.markdown(f"""
         <h3 class="section-title">30-Day Trend</h3>
 """, unsafe_allow_html=True)
 
-# Mini chart for recent trends using real data
+# Mini chart for recent trends using real data - more compact
 if not hashrate_df.empty:
     recent_30_days = hashrate_df.tail(30)
     recent_dates = recent_30_days['Date']
@@ -631,10 +674,10 @@ mini_fig.add_trace(go.Scatter(
 ))
 
 mini_fig.update_layout(
-    height=250,
+    height=200,  # Reduced height
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
-    font=dict(color='#9CA3AF', family='Inter', size=12),
+    font=dict(color='#9CA3AF', family='Inter', size=11),
     xaxis=dict(
         gridcolor='#363650',
         gridwidth=1,
@@ -647,7 +690,7 @@ mini_fig.update_layout(
         color='#9CA3AF'
     ),
     showlegend=False,
-    margin=dict(l=0, r=0, t=20, b=0)
+    margin=dict(l=0, r=0, t=10, b=0)  # Reduced margins
 )
 
 st.plotly_chart(mini_fig, use_container_width=True)
