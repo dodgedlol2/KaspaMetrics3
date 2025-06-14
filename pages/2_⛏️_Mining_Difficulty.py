@@ -114,60 +114,17 @@ st.markdown("""
     display: inline-flex !important;
 }
 
-</style>
+/* PROVEN SOLUTION: Make columns fit their content */
+div[data-testid="stColumn"] {
+    width: fit-content !important;
+    flex: unset !important;
+}
 
-<script>
-// JavaScript to set individual segmented control widths
-setTimeout(function() {
-    function setSegmentedControlWidths() {
-        // Find all segmented controls
-        const segmentedControls = document.querySelectorAll('[data-baseweb="segmented-control"]');
-        
-        segmentedControls.forEach((control, index) => {
-            // Set widths based on position/index
-            if (index === 0) {
-                // First control (Hashrate Scale)
-                control.style.width = '5px';
-                control.style.maxWidth = '5px';
-                control.style.minWidth = '5px';
-            } else if (index === 1) {
-                // Second control (Time Scale) 
-                control.style.width = '110px';
-                control.style.maxWidth = '110px';
-                control.style.minWidth = '110px';
-            } else if (index === 2) {
-                // Third control (Power Law)
-                control.style.width = '100px';
-                control.style.maxWidth = '100px';
-                control.style.minWidth = '100px';
-            } else if (index === 3) {
-                // Fourth control (Time Period)
-                control.style.width = '180px';
-                control.style.maxWidth = '180px';
-                control.style.minWidth = '180px';
-            }
-            
-            // Force the style update
-            control.style.display = 'inline-flex';
-            control.style.flexShrink = '0';
-        });
-    }
-    
-    // Run immediately
-    setSegmentedControlWidths();
-    
-    // Also run when DOM changes (for dynamic updates)
-    const observer = new MutationObserver(function() {
-        setSegmentedControlWidths();
-    });
-    
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-    
-}, 1000);
-</script>
+div[data-testid="stColumn"] * {
+    width: fit-content !important;
+}
+
+</style>
 
 <style>
 
