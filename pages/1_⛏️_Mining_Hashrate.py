@@ -102,7 +102,7 @@ st.markdown("""
 .metrics-container {
     display: flex;
     gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0;
     flex-wrap: wrap;
 }
 
@@ -268,9 +268,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Hashrate chart with dark theme
-st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-
+# Hashrate chart with dark theme immediately after metrics
 fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=dates,
@@ -303,7 +301,6 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Analysis section
 st.markdown("""
