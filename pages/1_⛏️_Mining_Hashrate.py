@@ -234,10 +234,7 @@ st.markdown("""
 <div class="hero-section">
 """, unsafe_allow_html=True)
 
-# Header with user info - using columns like your other page
-col1, col2 = st.columns([3, 1])
-with col1:
-    st.markdown("**⚡ Kaspa Network Hashrate**")
+st.markdown("**Kaspa Network Hashrate**")
 
 st.markdown("""
     <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
