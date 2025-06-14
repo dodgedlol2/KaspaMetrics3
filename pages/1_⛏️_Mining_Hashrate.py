@@ -31,7 +31,7 @@ def init_handlers():
 
 db, auth_handler, payment_handler = init_handlers()
 
-st.markdown("# Kaspa Network Hashrate")  # Largest header
+st.title("Kaspa Network Hashrate")  # Largest
 
 # Custom CSS for Betterstack-inspired dark theme
 st.markdown("""
