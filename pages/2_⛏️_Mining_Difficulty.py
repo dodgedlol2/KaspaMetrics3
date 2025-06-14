@@ -102,16 +102,17 @@ st.markdown("""
     max-width: 1200px;
 }
 
-/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
+/* BETTERSTACK-STYLE SEGMENTED CONTROLS - REDUCED SIZE */
 /* Target all segmented controls */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
     background: rgba(26, 26, 46, 0.6) !important;
     border: 1px solid rgba(54, 54, 80, 0.4) !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     backdrop-filter: blur(12px) !important;
-    padding: 2px !important;
+    padding: 1.5px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     display: inline-flex !important;
+    transform: scale(0.9) !important;
 }
 
 /* PROVEN SOLUTION: Make columns fit their content */
@@ -132,21 +133,22 @@ div[data-testid="stColumn"] * {
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
     background: transparent !important;
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 4.5px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 6px 8px !important;
-    margin: 0 1px !important;
+    font-size: 10px !important;
+    padding: 4px 6px !important;
+    margin: 0 0.75px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
-    min-height: 28px !important;
+    min-height: 21px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: fit-content !important;
     width: auto !important;
     flex-shrink: 0 !important;
+    line-height: 1.2 !important;
 }
 
 /* Active segment - BetterStack style */
@@ -176,15 +178,15 @@ div[data-testid="stColumn"] * {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .control-label {
     color: #9CA3AF;
-    font-size: 11px;
+    font-size: 9px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     margin: 0;
     font-family: 'Inter', sans-serif;
     text-align: center;
