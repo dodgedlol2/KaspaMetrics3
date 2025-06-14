@@ -71,7 +71,7 @@ st.markdown("""
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0;
+    margin: 0 0 0.5rem 0;
     padding: 0;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
@@ -154,7 +154,7 @@ st.markdown("""
     justify-content: center;
     align-items: center;
     gap: 3rem;
-    margin: 2rem 0;
+    margin: 0;
     padding: 0;
 }
 
