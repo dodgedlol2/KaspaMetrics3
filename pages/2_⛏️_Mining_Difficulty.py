@@ -342,7 +342,7 @@ header {visibility: hidden;}
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
 # Use columns but with a much larger spacer to push Time Period further right
-col1, col2, col3, spacer, col4 = st.columns([0.6, 0.6, 0.6, 10, 0.8])
+col1, col2, col3, spacer, col4 = st.columns([0.6, 0.6, 0.6, 25, 0.8])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
