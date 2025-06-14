@@ -36,6 +36,12 @@ st.markdown("""
 .big-font {
     font-size: 60px !important;
     font-weight: bold;
+    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    padding: 0;
 }
 </style>
 <div class='big-font'>Kaspa Network Hashrate</div>
