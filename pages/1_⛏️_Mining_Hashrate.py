@@ -56,34 +56,12 @@ st.markdown("""
 
 /* Main gradient title */
 .hero-section {
-    background: linear-gradient(135deg, #1F1F3A 0%, #2D2D45 50%, #1A1A2E 100%);
-    border-radius: 24px;
-    padding: 3rem 2rem;
+    padding: 2rem 0;
     margin-bottom: 3rem;
-    border: 1px solid #363650;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(91, 108, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
-    pointer-events: none;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 1;
 }
 
 .gradient-title {
-    background: linear-gradient(135deg, #FFFFFF 0%, #5B6CFF 50%, #A0A0B8 100%);
+    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -94,6 +72,8 @@ st.markdown("""
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.03em;
     line-height: 1.1;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
 }
 
 .hero-subtitle {
@@ -251,10 +231,8 @@ header {visibility: hidden;}
 # Hero Section
 st.markdown("""
 <div class="hero-section">
-    <div class="hero-content">
-        <h1 class="gradient-title">Kaspa Network Hashrate</h1>
-        <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
-    </div>
+    <h1 class="gradient-title">Kaspa Network Hashrate</h1>
+    <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
 </div>
 """, unsafe_allow_html=True)
 
