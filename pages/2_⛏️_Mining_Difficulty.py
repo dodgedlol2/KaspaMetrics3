@@ -113,7 +113,31 @@ st.markdown("""
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     width: fit-content !important;
     display: inline-flex !important;
-    max-width: 120px !important;
+}
+
+/* Individual segmented control widths */
+/* Hashrate Scale control */
+[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Hashrate Scale")) div[data-baseweb="segmented-control"] {
+    max-width: 110px !important;
+    width: 110px !important;
+}
+
+/* Time Scale control */
+[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Time Scale")) div[data-baseweb="segmented-control"] {
+    max-width: 110px !important;
+    width: 110px !important;
+}
+
+/* Power Law control */
+[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Power Law")) div[data-baseweb="segmented-control"] {
+    max-width: 100px !important;
+    width: 100px !important;
+}
+
+/* Time Period control */
+[data-testid="stVerticalBlock"]:has(div[data-testid="stMarkdown"] div:contains("Time Period")) div[data-baseweb="segmented-control"] {
+    max-width: 180px !important;
+    width: 180px !important;
 }
 
 /* Individual segments - inactive state */
