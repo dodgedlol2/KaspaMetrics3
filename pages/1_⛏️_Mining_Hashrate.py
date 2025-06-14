@@ -232,7 +232,7 @@ header {visibility: hidden;}
 # Hero Section
 st.markdown("""
 <div class="hero-section">
-    <h1 class="gradient-title">### Kaspa Network Hashrate</h1>
+    <h1 class="gradient-title">Kaspa Network Hashrate</h1>
     <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
 </div>
 """, unsafe_allow_html=True)
