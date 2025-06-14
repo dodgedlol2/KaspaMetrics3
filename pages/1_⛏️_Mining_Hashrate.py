@@ -229,11 +229,6 @@ header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# Hero Section
-st.markdown("""
-<div class="hero-section">
-""", unsafe_allow_html=True)
-
 st.markdown("**Kaspa Network Hashrate**")
 
 st.markdown("""
