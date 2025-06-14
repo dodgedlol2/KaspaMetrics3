@@ -102,18 +102,16 @@ st.markdown("""
     max-width: 1200px;
 }
 
-/* BETTERSTACK-STYLE SEGMENTED CONTROLS - AGGRESSIVE SIZE REDUCTION */
-/* Target all segmented controls with higher specificity */
-.stApp [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
+/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
+/* Target all segmented controls */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
     background: rgba(26, 26, 46, 0.6) !important;
     border: 1px solid rgba(54, 54, 80, 0.4) !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     backdrop-filter: blur(12px) !important;
-    padding: 1px !important;
+    padding: 2px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     display: inline-flex !important;
-    transform: scale(0.75) !important;
-    transform-origin: center !important;
 }
 
 /* PROVEN SOLUTION: Make columns fit their content */
@@ -130,56 +128,42 @@ div[data-testid="stColumn"] * {
 
 <style>
 
-/* Individual segments - more aggressive targeting */
-.stApp [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button,
-.stApp div[data-baseweb="segmented-control"] [role="button"],
-.stApp div[data-baseweb="segmented-control"] button {
+/* Individual segments - inactive state */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
     background: transparent !important;
     border: none !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
-    font-size: 9px !important;
-    padding: 3px 5px !important;
-    margin: 0 0.5px !important;
+    font-size: 13px !important;
+    padding: 6px 8px !important;
+    margin: 0 1px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
-    min-height: 18px !important;
-    max-height: 18px !important;
-    height: 18px !important;
+    min-height: 28px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    min-width: auto !important;
+    min-width: fit-content !important;
     width: auto !important;
     flex-shrink: 0 !important;
-    line-height: 1 !important;
-    box-sizing: border-box !important;
 }
 
-/* Active segment - BetterStack style - more aggressive */
-.stApp [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"],
-.stApp div[data-baseweb="segmented-control"] [role="button"][aria-pressed="true"],
-.stApp div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
+/* Active segment - BetterStack style */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
     background: rgba(91, 108, 255, 0.15) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
-    font-size: 9px !important;
-    height: 18px !important;
     box-shadow: 
         0 1px 3px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(91, 108, 255, 0.3) !important;
 }
 
-/* Hover state for inactive segments - more aggressive */
-.stApp [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]),
-.stApp div[data-baseweb="segmented-control"] [role="button"]:hover:not([aria-pressed="true"]),
-.stApp div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+/* Hover state for inactive segments */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
     background: rgba(54, 54, 80, 0.3) !important;
     color: #e2e8f0 !important;
-    font-size: 9px !important;
-    height: 18px !important;
 }
 
 /* Controls container */
@@ -192,15 +176,15 @@ div[data-testid="stColumn"] * {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .control-label {
     color: #9CA3AF;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
     margin: 0;
     font-family: 'Inter', sans-serif;
     text-align: center;
