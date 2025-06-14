@@ -151,9 +151,8 @@ st.markdown("""
 /* Controls container */
 .chart-controls {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 3rem;
+    justify-content: space-between;
+    align-items: flex-start;
     margin: 0;
     padding: 0;
 }
@@ -162,6 +161,14 @@ st.markdown("""
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.control-group-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
     gap: 8px;
     width: 100%;
 }
@@ -328,43 +335,49 @@ header {visibility: hidden;}
 # BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
-col1, col2, col3, col4 = st.columns(4)
+# Split into two groups: left group (3 controls) and right group (1 control)
+left_col, right_col = st.columns([3, 1])
 
-with col1:
-    st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
-    y_scale = st.segmented_control(
-        label="",
-        options=["Linear", "Log"],
-        default="Log",
-        label_visibility="collapsed",
-        key="hashrate_y_scale_segment"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+with left_col:
+    # Left side - 3 controls in a row
+    subcol1, subcol2, subcol3 = st.columns(3)
+    
+    with subcol1:
+        st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
+        y_scale = st.segmented_control(
+            label="",
+            options=["Linear", "Log"],
+            default="Log",
+            label_visibility="collapsed",
+            key="hashrate_y_scale_segment"
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
 
-with col2:
-    st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
-    x_scale_type = st.segmented_control(
-        label="",
-        options=["Linear", "Log"],
-        default="Linear",
-        label_visibility="collapsed",
-        key="hashrate_x_scale_segment"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+    with subcol2:
+        st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
+        x_scale_type = st.segmented_control(
+            label="",
+            options=["Linear", "Log"],
+            default="Linear",
+            label_visibility="collapsed",
+            key="hashrate_x_scale_segment"
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
 
-with col3:
-    st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
-    show_power_law = st.segmented_control(
-        label="",
-        options=["Hide", "Show"],
-        default="Show",
-        label_visibility="collapsed",
-        key="hashrate_power_law_segment"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+    with subcol3:
+        st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
+        show_power_law = st.segmented_control(
+            label="",
+            options=["Hide", "Show"],
+            default="Show",
+            label_visibility="collapsed",
+            key="hashrate_power_law_segment"
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
 
-with col4:
-    st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
+with right_col:
+    # Right side - Time Period control aligned to the right
+    st.markdown('<div class="control-group control-group-right"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
         label="",
         options=["1W", "1M", "3M", "6M", "1Y", "All"],
