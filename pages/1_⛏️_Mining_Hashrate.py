@@ -31,7 +31,7 @@ def init_handlers():
 
 db, auth_handler, payment_handler = init_handlers()
 
-st.markdown("**Kaspa Network Hashrate**")
+st.markdown("<h1 style='font-size: 48px;'>Kaspa Network Hashrate</h1>", unsafe_allow_html=True)
 
 # Custom CSS for Betterstack-inspired dark theme
 st.markdown("""
