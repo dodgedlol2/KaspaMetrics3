@@ -249,81 +249,7 @@ header {visibility: hidden;}
 dates = pd.date_range(start='2024-01-01', end='2024-06-01', freq='D')
 hashrate_data = np.random.normal(1.2, 0.1, len(dates))  # EH/s
 
-# Custom metrics cards moved to top (after title and CSS)
-st.markdown("""
-<div class="metrics-container">
-    <div class="metric-card">
-        <div class="metric-label">Current Hashrate</div>
-        <div class="metric-value">1.24 EH/s</div>
-        <div class="metric-change">+2.1%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">7d Average</div>
-        <div class="metric-value">1.18 EH/s</div>
-        <div class="metric-change">+0.8%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">30d Average</div>
-        <div class="metric-value">1.15 EH/s</div>
-        <div class="metric-change">+5.2%</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# Add some spacing
-st.markdown("<br>", unsafe_allow_html=True)
-
-# Main hashrate chart (was at top, now moved to after metrics)
-fig = go.Figure()
-fig.add_trace(go.Scatter(
-    x=dates,
-    y=hashrate_data,
-    mode='lines',
-    name='Hashrate (EH/s)',
-    line=dict(color='#5B6CFF', width=3),
-    fill='tonexty',
-    fillcolor='rgba(91, 108, 255, 0.1)'
-))
-
-fig.update_layout(
-    xaxis_title="Date",
-    yaxis_title="Hashrate (EH/s)",
-    height=450,
-    plot_bgcolor='rgba(0,0,0,0)',
-    paper_bgcolor='rgba(0,0,0,0)',
-    font=dict(color='#9CA3AF', family='Inter'),
-    xaxis=dict(
-        gridcolor='#363650',
-        gridwidth=1,
-        color='#9CA3AF'
-    ),
-    yaxis=dict(
-        gridcolor='#363650',
-        gridwidth=1,
-        color='#9CA3AF'
-    ),
-    showlegend=False
-)
-
-st.plotly_chart(fig, use_container_width=True)
-
-# Analysis section
-st.markdown("""
-<div class="analysis-section">
-    <div class="analysis-card">
-        <h3 class="section-title">Key Insights</h3>
-        <ul class="insights-list">
-            <li>Network hashrate has grown 15% over the past month</li>
-            <li>Mining difficulty adjustment maintains ~1 block per second</li>
-            <li>Increased hashrate indicates growing miner confidence</li>
-            <li>Current hashrate suggests strong network security</li>
-        </ul>
-    </div>
-    <div class="analysis-card">
-        <h3 class="section-title">30-Day Trend</h3>
-""", unsafe_allow_html=True)
-
-# Mini chart for recent trends (was at bottom, now moved to analysis section)
+# Mini chart for recent trends (moved to right under title)
 recent_dates = dates[-30:]
 recent_data = hashrate_data[-30:]
 
@@ -360,6 +286,77 @@ mini_fig.update_layout(
 )
 
 st.plotly_chart(mini_fig, use_container_width=True)
+
+# Custom metrics cards 
+st.markdown("""
+<div class="metrics-container">
+    <div class="metric-card">
+        <div class="metric-label">Current Hashrate</div>
+        <div class="metric-value">1.24 EH/s</div>
+        <div class="metric-change">+2.1%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">7d Average</div>
+        <div class="metric-value">1.18 EH/s</div>
+        <div class="metric-change">+0.8%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">30d Average</div>
+        <div class="metric-value">1.15 EH/s</div>
+        <div class="metric-change">+5.2%</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Analysis section
+st.markdown("""
+<div class="analysis-section">
+    <div class="analysis-card">
+        <h3 class="section-title">Key Insights</h3>
+        <ul class="insights-list">
+            <li>Network hashrate has grown 15% over the past month</li>
+            <li>Mining difficulty adjustment maintains ~1 block per second</li>
+            <li>Increased hashrate indicates growing miner confidence</li>
+            <li>Current hashrate suggests strong network security</li>
+        </ul>
+    </div>
+    <div class="analysis-card">
+        <h3 class="section-title">Main Hashrate Chart</h3>
+""", unsafe_allow_html=True)
+
+# Main hashrate chart (moved to analysis section)
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+    x=dates,
+    y=hashrate_data,
+    mode='lines',
+    name='Hashrate (EH/s)',
+    line=dict(color='#5B6CFF', width=3),
+    fill='tonexty',
+    fillcolor='rgba(91, 108, 255, 0.1)'
+))
+
+fig.update_layout(
+    xaxis_title="Date",
+    yaxis_title="Hashrate (EH/s)",
+    height=350,
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='#9CA3AF', family='Inter'),
+    xaxis=dict(
+        gridcolor='#363650',
+        gridwidth=1,
+        color='#9CA3AF'
+    ),
+    yaxis=dict(
+        gridcolor='#363650',
+        gridwidth=1,
+        color='#9CA3AF'
+    ),
+    showlegend=False
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("""
     </div>
