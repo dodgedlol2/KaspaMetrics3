@@ -42,6 +42,8 @@ st.markdown("""
     background-clip: text;
     margin: 0;
     padding: 0;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 </style>
 <div class='big-font'>Kaspa Network Hashrate</div>
