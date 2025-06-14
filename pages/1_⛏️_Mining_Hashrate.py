@@ -31,6 +31,8 @@ def init_handlers():
 
 db, auth_handler, payment_handler = init_handlers()
 
+st.markdown("Kaspa Title Text")
+
 # Custom CSS for Betterstack-inspired dark theme
 st.markdown("""
 <style>
