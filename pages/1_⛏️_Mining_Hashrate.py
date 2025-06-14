@@ -249,7 +249,31 @@ header {visibility: hidden;}
 dates = pd.date_range(start='2024-01-01', end='2024-06-01', freq='D')
 hashrate_data = np.random.normal(1.2, 0.1, len(dates))  # EH/s
 
-# Hashrate chart with dark theme immediately after metrics
+# Custom metrics cards moved to top (after title and CSS)
+st.markdown("""
+<div class="metrics-container">
+    <div class="metric-card">
+        <div class="metric-label">Current Hashrate</div>
+        <div class="metric-value">1.24 EH/s</div>
+        <div class="metric-change">+2.1%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">7d Average</div>
+        <div class="metric-value">1.18 EH/s</div>
+        <div class="metric-change">+0.8%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">30d Average</div>
+        <div class="metric-value">1.15 EH/s</div>
+        <div class="metric-change">+5.2%</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Add some spacing
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Main hashrate chart (was at top, now moved to after metrics)
 fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=dates,
@@ -299,7 +323,7 @@ st.markdown("""
         <h3 class="section-title">30-Day Trend</h3>
 """, unsafe_allow_html=True)
 
-# Mini chart for recent trends
+# Mini chart for recent trends (was at bottom, now moved to analysis section)
 recent_dates = dates[-30:]
 recent_data = hashrate_data[-30:]
 
@@ -338,27 +362,6 @@ mini_fig.update_layout(
 st.plotly_chart(mini_fig, use_container_width=True)
 
 st.markdown("""
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# Custom metrics cards moved to bottom
-st.markdown("""
-<div class="metrics-container">
-    <div class="metric-card">
-        <div class="metric-label">Current Hashrate</div>
-        <div class="metric-value">1.24 EH/s</div>
-        <div class="metric-change">+2.1%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">7d Average</div>
-        <div class="metric-value">1.18 EH/s</div>
-        <div class="metric-change">+0.8%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">30d Average</div>
-        <div class="metric-value">1.15 EH/s</div>
-        <div class="metric-change">+5.2%</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
