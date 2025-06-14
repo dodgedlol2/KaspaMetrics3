@@ -33,7 +33,7 @@ db, auth_handler, payment_handler = init_handlers()
 # Header with user info
 col1, col2 = st.columns([3, 1])
 with col1:
-    st.markdown("### ⚡ Kaspa Analytics")
+    st.markdown("Kaspa Analytics")
 with col2:
     if st.session_state.get('authentication_status'):
         welcome_msg = f"👋 {st.session_state.get('name', 'User')}"
