@@ -155,11 +155,7 @@ st.markdown("""
     align-items: center;
     gap: 3rem;
     margin: 2rem 0;
-    padding: 1.5rem;
-    background: rgba(15, 20, 25, 0.3);
-    backdrop-filter: blur(20px);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0;
 }
 
 .control-group {
