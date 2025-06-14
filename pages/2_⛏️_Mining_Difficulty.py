@@ -324,7 +324,7 @@ header {visibility: hidden;}
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
 # Create the layout with proper spacing
-col1, col2, col3, spacer, col4 = st.columns([1, 1, 1, 5, 2])
+col1, col2, col3, spacer, col4 = st.columns([1, 1, 1, 2, 1.5])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
@@ -366,7 +366,7 @@ with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
         label="",
-        options=["1W", "1M", "3M", "6M", "1Y", "All"],
+        options=["1M", "3M", "6M", "1Y", "All"],
         default="All",
         label_visibility="collapsed",
         key="hashrate_time_range_segment"
@@ -378,9 +378,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 # Data filtering based on time range
 if not hashrate_df.empty:
     last_date = hashrate_df['Date'].iloc[-1]
-    if time_range == "1W":
-        start_date = last_date - timedelta(days=7)
-    elif time_range == "1M":
+    if time_range == "1M":
         start_date = last_date - timedelta(days=30)
     elif time_range == "3M":
         start_date = last_date - timedelta(days=90)
@@ -388,7 +386,7 @@ if not hashrate_df.empty:
         start_date = last_date - timedelta(days=180)
     elif time_range == "1Y":
         start_date = last_date - timedelta(days=365)
-    else:
+    else:  # "All"
         start_date = hashrate_df['Date'].iloc[0]
 
     filtered_df = hashrate_df[hashrate_df['Date'] >= start_date]
