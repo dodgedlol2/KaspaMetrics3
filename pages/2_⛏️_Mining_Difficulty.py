@@ -113,6 +113,7 @@ st.markdown("""
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     width: fit-content !important;
     display: inline-flex !important;
+    max-width: 120px !important;
 }
 
 /* Individual segments - inactive state */
@@ -329,7 +330,7 @@ header {visibility: hidden;}
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
 # Create the layout with proper spacing
-col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.4])
+col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
