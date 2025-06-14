@@ -172,26 +172,14 @@ div[data-testid="stColumn"] * {
     padding: 0;
     position: relative;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
 }
 
-/* Override fit-content ONLY for the controls container */
-.chart-controls div[data-testid="stColumn"] {
-    width: auto !important;
-    flex: unset !important;
-}
-
-/* Make the spacer column actually take space */
-.chart-controls div[data-testid="stColumn"]:nth-child(4) {
-    flex-grow: 1 !important;
-    width: 100% !important;
-}
-
-/* Force right column to stay right */
-.chart-controls div[data-testid="stColumn"]:nth-child(5) {
-    width: fit-content !important;
-    margin-left: auto !important;
+/* Time Period positioned to the far right */
+.time-period-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
 }
 
 .control-group {
@@ -363,8 +351,8 @@ header {visibility: hidden;}
 # BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
-# Use columns but with a much larger spacer to push Time Period further right
-col1, col2, col3, spacer, col4 = st.columns([0.6, 0.6, 0.6, 10, 0.8])
+# Left side - 3 controls in normal columns
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
@@ -399,21 +387,19 @@ with col3:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-with spacer:
-    st.empty()  # Creates maximum space between left and right groups
-
-with col4:
-    st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
-    time_range = st.segmented_control(
-        label="",
-        options=["1M", "3M", "6M", "1Y", "All"],
-        default="All",
-        label_visibility="collapsed",
-        key="hashrate_time_range_segment"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
 st.markdown('</div>', unsafe_allow_html=True)
+
+# Right side - Time Period positioned absolutely
+st.markdown('<div class="time-period-right">', unsafe_allow_html=True)
+st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
+time_range = st.segmented_control(
+    label="",
+    options=["1M", "3M", "6M", "1Y", "All"],
+    default="All",
+    label_visibility="collapsed",
+    key="hashrate_time_range_segment"
+)
+st.markdown('</div></div>', unsafe_allow_html=True)
 
 # Data filtering based on time range
 if not hashrate_df.empty:
