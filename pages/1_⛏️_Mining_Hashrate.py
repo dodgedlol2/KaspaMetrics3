@@ -67,7 +67,7 @@ st.markdown("""
 /* Main gradient title */
 .hero-section {
     padding: 0.5rem 0;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .gradient-title {
@@ -102,7 +102,7 @@ st.markdown("""
 .metrics-container {
     display: flex;
     gap: 1.5rem;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
     flex-wrap: wrap;
 }
 
@@ -241,7 +241,6 @@ header {visibility: hidden;}
 
 st.markdown("""
     <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
-</div>
 """, unsafe_allow_html=True)
 
 # Sample data - replace with real Kaspa API data later
@@ -284,11 +283,6 @@ fig.add_trace(go.Scatter(
 ))
 
 fig.update_layout(
-    title={
-        'text': "Network Hashrate Trends",
-        'font': {'size': 24, 'color': '#FFFFFF', 'family': 'Inter'},
-        'x': 0.02
-    },
     xaxis_title="Date",
     yaxis_title="Hashrate (EH/s)",
     height=450,
