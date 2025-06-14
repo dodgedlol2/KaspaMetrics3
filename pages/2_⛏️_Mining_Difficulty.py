@@ -170,6 +170,28 @@ div[data-testid="stColumn"] * {
 .chart-controls {
     margin: 0;
     padding: 0;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Override fit-content ONLY for the controls container */
+.chart-controls div[data-testid="stColumn"] {
+    width: auto !important;
+    flex: unset !important;
+}
+
+/* Make the spacer column actually take space */
+.chart-controls div[data-testid="stColumn"]:nth-child(4) {
+    flex-grow: 1 !important;
+    width: 100% !important;
+}
+
+/* Force right column to stay right */
+.chart-controls div[data-testid="stColumn"]:nth-child(5) {
+    width: fit-content !important;
+    margin-left: auto !important;
 }
 
 .control-group {
@@ -342,7 +364,7 @@ header {visibility: hidden;}
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
 # Use columns but with a much larger spacer to push Time Period further right
-col1, col2, col3, spacer, col4 = st.columns([0.6, 0.6, 0.6, 125, 0.8])
+col1, col2, col3, spacer, col4 = st.columns([0.6, 0.6, 0.6, 10, 0.8])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
