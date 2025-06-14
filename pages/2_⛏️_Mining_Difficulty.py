@@ -135,8 +135,8 @@ div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_power_law_segment"
 
 /* Time Period control */
 div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_time_range_segment"]) div[data-baseweb="segmented-control"] {
-    max-width: 180px !important;
-    width: 180px !important;
+    max-width: 35px !important;
+    width: 35px !important;
 }
 
 /* Individual segments - inactive state */
