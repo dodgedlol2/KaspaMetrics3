@@ -114,30 +114,62 @@ st.markdown("""
     display: inline-flex !important;
 }
 
-/* Individual segmented control widths using unique keys */
-/* Hashrate Scale control */
-div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_y_scale_segment"]) div[data-baseweb="segmented-control"] {
-    max-width: 110px !important;
-    width: 110px !important;
-}
+</style>
 
-/* Time Scale control */
-div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_x_scale_segment"]) div[data-baseweb="segmented-control"] {
-    max-width: 110px !important;
-    width: 110px !important;
-}
+<script>
+// JavaScript to set individual segmented control widths
+setTimeout(function() {
+    function setSegmentedControlWidths() {
+        // Find all segmented controls
+        const segmentedControls = document.querySelectorAll('[data-baseweb="segmented-control"]');
+        
+        segmentedControls.forEach((control, index) => {
+            // Set widths based on position/index
+            if (index === 0) {
+                // First control (Hashrate Scale)
+                control.style.width = '110px';
+                control.style.maxWidth = '110px';
+                control.style.minWidth = '110px';
+            } else if (index === 1) {
+                // Second control (Time Scale) 
+                control.style.width = '110px';
+                control.style.maxWidth = '110px';
+                control.style.minWidth = '110px';
+            } else if (index === 2) {
+                // Third control (Power Law)
+                control.style.width = '100px';
+                control.style.maxWidth = '100px';
+                control.style.minWidth = '100px';
+            } else if (index === 3) {
+                // Fourth control (Time Period)
+                control.style.width = '180px';
+                control.style.maxWidth = '180px';
+                control.style.minWidth = '180px';
+            }
+            
+            // Force the style update
+            control.style.display = 'inline-flex';
+            control.style.flexShrink = '0';
+        });
+    }
+    
+    // Run immediately
+    setSegmentedControlWidths();
+    
+    // Also run when DOM changes (for dynamic updates)
+    const observer = new MutationObserver(function() {
+        setSegmentedControlWidths();
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+}, 1000);
+</script>
 
-/* Power Law control */
-div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_power_law_segment"]) div[data-baseweb="segmented-control"] {
-    max-width: 100px !important;
-    width: 100px !important;
-}
-
-/* Time Period control */
-div[data-testid="stVerticalBlock"]:has([data-testid="hashrate_time_range_segment"]) div[data-baseweb="segmented-control"] {
-    max-width: 35px !important;
-    width: 35px !important;
-}
+<style>
 
 /* Individual segments - inactive state */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
