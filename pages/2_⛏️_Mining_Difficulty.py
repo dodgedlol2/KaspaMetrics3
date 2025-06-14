@@ -31,21 +31,7 @@ def init_handlers():
 db, auth_handler, payment_handler = init_handlers()
 
 # Header with user info
-col1, col2 = st.columns([3, 1])
-with col1:
-    st.markdown("Kaspa Analytics")
-with col2:
-    if st.session_state.get('authentication_status'):
-        welcome_msg = f"👋 {st.session_state.get('name', 'User')}"
-        if st.session_state.get('is_premium'):
-            welcome_msg += " 👑"
-        st.write(welcome_msg)
-        if st.button("Logout", key="logout_difficulty"):
-            st.session_state.clear()
-            st.switch_page("Home.py")
-    else:
-        if st.button("Login", key="login_difficulty"):
-            st.switch_page("Home.py")
+st.markdown("Kaspa Analytics")
 
 # Main content
 st.title("⚙️ Mining Difficulty")
