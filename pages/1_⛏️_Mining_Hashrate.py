@@ -246,8 +246,6 @@ header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-    <p class="hero-subtitle">Real-time network hashrate metrics and comprehensive mining analytics</p>
 """, unsafe_allow_html=True)
 dates = pd.date_range(start='2024-01-01', end='2024-06-01', freq='D')
 hashrate_data = np.random.normal(1.2, 0.1, len(dates))  # EH/s
