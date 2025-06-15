@@ -115,6 +115,66 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
+/* DEBUG MODE - Colorful highlights to identify elements */
+/* Remove this section once we identify the correct selectors */
+
+/* Test 1: Chart controls container */
+.chart-controls {
+    border: 3px solid #FF0000 !important; /* RED BORDER for chart-controls div */
+    background: rgba(255, 0, 0, 0.1) !important; /* Light red background */
+}
+
+/* Test 2: Any segmented control containers */
+[data-baseweb="segmented-control"] {
+    border: 3px solid #00FF00 !important; /* GREEN BORDER for segmented control containers */
+    background: rgba(0, 255, 0, 0.1) !important; /* Light green background */
+}
+
+/* Test 3: All buttons in chart controls area */
+.chart-controls button {
+    border: 2px solid #0000FF !important; /* BLUE BORDER for buttons in chart-controls */
+    background: rgba(0, 0, 255, 0.2) !important; /* Light blue background */
+}
+
+/* Test 4: All buttons with aria-pressed */
+button[aria-pressed] {
+    border: 2px solid #FFFF00 !important; /* YELLOW BORDER for buttons with aria-pressed */
+    background: rgba(255, 255, 0, 0.2) !important; /* Light yellow background */
+}
+
+/* Test 5: Active buttons (aria-pressed="true") */
+button[aria-pressed="true"] {
+    border: 2px solid #FF00FF !important; /* MAGENTA BORDER for active buttons */
+    background: rgba(255, 0, 255, 0.3) !important; /* Light magenta background */
+}
+
+/* Test 6: Streamlit vertical blocks */
+div[data-testid="stVerticalBlock"] {
+    outline: 1px dashed #00FFFF !important; /* CYAN DASHED outline for vertical blocks */
+}
+
+/* Test 7: All divs containing buttons */
+div:has(button) {
+    outline: 1px dotted #FFA500 !important; /* ORANGE DOTTED outline for divs with buttons */
+}
+
+/* Test 8: Control groups */
+.control-group {
+    border: 2px solid #800080 !important; /* PURPLE BORDER for control groups */
+    background: rgba(128, 0, 128, 0.1) !important; /* Light purple background */
+}
+
+/* Test 9: Any element with 'segment' in class name */
+[class*="segment" i] {
+    border: 3px solid #008000 !important; /* DARK GREEN for elements with 'segment' in class */
+    background: rgba(0, 128, 0, 0.2) !important;
+}
+
+/* Test 10: BaseWeb elements */
+[data-baseweb] {
+    outline: 2px solid #FF69B4 !important; /* HOT PINK outline for any BaseWeb elements */
+}
+
 /* ENHANCED SEGMENTED CONTROLS - ONLY target chart controls area */
 
 /* Container styling - ONLY for chart controls */
