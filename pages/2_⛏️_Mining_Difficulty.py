@@ -62,9 +62,6 @@ if not hashrate_df.empty:
 else:
     a_hashrate, b_hashrate, r2_hashrate = 1, 1, 0
 
-# DEBUG: Show content is loading
-st.write("DEBUG: Page is loading...")
-
 st.markdown("""
 <style>
 .big-font {
@@ -77,93 +74,140 @@ st.markdown("""
     margin: 0 0 0.5rem 0;
     padding: 0;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-    z-index: 1000;
-    position: relative;
 }
 </style>
 <div class='big-font'>Kaspa Network Hashrate</div>
 """, unsafe_allow_html=True)
 
-# Simplified but beautiful CSS - ensuring content visibility
+# Custom CSS for BetterStack-inspired dark theme with segmented controls
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Simplified background that won't interfere */
+/* Global dark theme */
 .stApp {
-    background: linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 50%, #16213E 100%);
+    background: linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 100%);
     color: #FFFFFF;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Hide default streamlit styling */
+.stApp > header {
+    background-color: transparent;
+}
+
+.stApp > .main .block-container {
+    padding-top: 0.5rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
+/* Target all segmented controls */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
+    background: rgba(26, 26, 46, 0.6) !important;
+    border: 1px solid rgba(54, 54, 80, 0.4) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(12px) !important;
+    padding: 2px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    display: inline-flex !important;
+}
+
+/* PROVEN SOLUTION: Make columns fit their content */
+div[data-testid="stColumn"] {
+    width: fit-content !important;
+    flex: unset !important;
+}
+
+div[data-testid="stColumn"] * {
+    width: fit-content !important;
+}
+
+</style>
+
+<style>
+
+/* Individual segments - inactive state */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: #9CA3AF !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding: 6px 8px !important;
+    margin: 0 1px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-family: 'Inter', sans-serif !important;
+    min-height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: fit-content !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* Active segment - BetterStack style */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
+    background: rgba(91, 108, 255, 0.15) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(91, 108, 255, 0.3) !important;
+}
+
+/* Hover state for inactive segments */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+    background: rgba(54, 54, 80, 0.3) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Controls container */
+.chart-controls {
+    margin: 0;
+    padding: 0;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-label {
+    color: #9CA3AF;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
     font-family: 'Inter', sans-serif;
-    position: relative;
+    text-align: center;
+    white-space: nowrap;
 }
 
-/* Add subtle animated background overlay */
-body {
-    background: 
-        radial-gradient(ellipse 800px 600px at 20% 40%, rgba(91, 108, 255, 0.1) 0%, transparent 70%),
-        radial-gradient(ellipse 600px 800px at 80% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
-        linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 50%, #16213E 100%);
-    animation: subtleShift 15s ease-in-out infinite;
-}
-
-@keyframes subtleShift {
-    0%, 100% {
-        background: 
-            radial-gradient(ellipse 800px 600px at 20% 40%, rgba(91, 108, 255, 0.1) 0%, transparent 70%),
-            radial-gradient(ellipse 600px 800px at 80% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
-            linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 50%, #16213E 100%);
-    }
-    50% {
-        background: 
-            radial-gradient(ellipse 600px 800px at 25% 60%, rgba(91, 108, 255, 0.12) 0%, transparent 70%),
-            radial-gradient(ellipse 800px 600px at 75% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 70%),
-            linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 50%, #16213E 100%);
-    }
-}
-
-/* Ensure all Streamlit content is visible */
-.main .block-container {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    padding: 2rem;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(91, 108, 255, 0.1);
-    position: relative;
-    z-index: 100 !important;
-}
-
-/* Sidebar styling */
-.stSidebar {
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 22, 41, 0.95)) !important;
-    backdrop-filter: blur(12px);
-    border-right: 1px solid rgba(91, 108, 255, 0.2);
-}
-
-/* BEAUTIFUL METRIC CARDS */
+/* Metrics cards */
 .metrics-container {
     display: flex;
     gap: 1.5rem;
-    margin: 2rem 0;
+    margin-bottom: 3rem;
     flex-wrap: wrap;
 }
 
 .metric-card {
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 22, 41, 0.8));
-    border: 1px solid rgba(91, 108, 255, 0.3);
+    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    border: 1px solid #363650;
     border-radius: 16px;
     padding: 1.5rem;
     flex: 1;
     min-width: 250px;
     position: relative;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(91, 108, 255, 0.1);
-    transition: all 0.3s ease;
-}
-
-.metric-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(91, 108, 255, 0.5);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(91, 108, 255, 0.2);
+    overflow: hidden;
 }
 
 .metric-card::before {
@@ -173,8 +217,7 @@ body {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #5B6CFF, #6366F1, #8B5CF6);
-    border-radius: 16px 16px 0 0;
+    background: linear-gradient(90deg, #5B6CFF, #6366F1);
 }
 
 .metric-value {
@@ -182,7 +225,7 @@ body {
     font-weight: 700;
     color: #FFFFFF;
     margin-bottom: 0.5rem;
-    text-shadow: 0 2px 8px rgba(91, 108, 255, 0.3);
+    font-family: 'Inter', sans-serif;
 }
 
 .metric-label {
@@ -204,83 +247,28 @@ body {
     color: #ef4444;
 }
 
-/* ENHANCED CHART CONTAINER */
+/* Chart container */
 .chart-container {
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 22, 41, 0.8));
-    border: 1px solid rgba(91, 108, 255, 0.2);
+    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    border: 1px solid #363650;
     border-radius: 16px;
     padding: 2rem;
-    margin: 2rem 0;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 16px 64px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(91, 108, 255, 0.1);
+    margin-bottom: 3rem;
 }
 
-/* SEGMENTED CONTROLS */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
-    background: rgba(26, 26, 46, 0.8) !important;
-    border: 1px solid rgba(91, 108, 255, 0.3) !important;
-    border-radius: 8px !important;
-    backdrop-filter: blur(12px) !important;
-    padding: 2px !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
-}
-
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
-    background: transparent !important;
-    border: none !important;
-    border-radius: 6px !important;
-    color: #9CA3AF !important;
-    font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 6px 8px !important;
-    transition: all 0.3s ease !important;
-}
-
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: rgba(91, 108, 255, 0.2) !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    box-shadow: 0 2px 8px rgba(91, 108, 255, 0.3) !important;
-    border: 1px solid rgba(91, 108, 255, 0.4) !important;
-}
-
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
-    background: rgba(91, 108, 255, 0.1) !important;
-    color: #e2e8f0 !important;
-}
-
-.control-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.control-label {
-    color: #9CA3AF;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-family: 'Inter', sans-serif;
-    text-align: center;
-}
-
-/* ANALYSIS SECTION */
+/* Analysis section */
 .analysis-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-    margin: 2rem 0;
+    margin-bottom: 3rem;
 }
 
 .analysis-card {
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 22, 41, 0.8));
-    border: 1px solid rgba(91, 108, 255, 0.2);
+    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    border: 1px solid #363650;
     border-radius: 16px;
     padding: 2rem;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .section-title {
@@ -288,9 +276,10 @@ body {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    text-shadow: 0 2px 8px rgba(91, 108, 255, 0.3);
+    font-family: 'Inter', sans-serif;
 }
 
+/* Custom bullet points */
 .insights-list {
     list-style: none;
     padding: 0;
@@ -312,46 +301,53 @@ body {
     font-weight: 600;
 }
 
-/* Make columns fit content */
-div[data-testid="stColumn"] {
-    width: fit-content !important;
-    flex: unset !important;
-}
-
-/* Responsive */
+/* Responsive design */
 @media (max-width: 768px) {
+    .chart-controls {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+    
+    .control-group {
+        width: 100%;
+    }
+    
     .analysis-section {
         grid-template-columns: 1fr;
     }
+    
     .metrics-container {
         flex-direction: column;
     }
 }
 
-/* Hide Streamlit branding but keep functionality */
+/* Override Streamlit's default styling */
+.stMetric {
+    background: none !important;
+}
+
+.stMetric > div {
+    background: none !important;
+}
+
+/* Hide Streamlit branding */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-
-/* Ensure everything is visible */
-.stApp > div {
-    position: relative;
-    z-index: 10;
-}
+header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# DEBUG: Show that we're past CSS
-st.write("DEBUG: CSS loaded, creating controls...")
+# BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
+st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
-# CHART CONTROLS
-st.markdown("### Controls")
-
+# Create the layout with proper spacing
 col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
     y_scale = st.segmented_control(
-        label="Hashrate Scale",
+        label="",
         options=["Linear", "Log"],
         default="Log",
         label_visibility="collapsed",
@@ -362,7 +358,7 @@ with col1:
 with col2:
     st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
     x_scale_type = st.segmented_control(
-        label="Time Scale",
+        label="",
         options=["Linear", "Log"],
         default="Linear",
         label_visibility="collapsed",
@@ -373,7 +369,7 @@ with col2:
 with col3:
     st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
     show_power_law = st.segmented_control(
-        label="Power Law",
+        label="",
         options=["Hide", "Show"],
         default="Show",
         label_visibility="collapsed",
@@ -381,10 +377,13 @@ with col3:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
+with spacer:
+    st.empty()  # Creates the space between left and right groups
+
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
-        label="Time Period",
+        label="",
         options=["1M", "3M", "6M", "1Y", "All"],
         default="All",
         label_visibility="collapsed",
@@ -392,8 +391,7 @@ with col4:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-# DEBUG: Show controls are created
-st.write(f"DEBUG: Controls created. y_scale={y_scale}, time_range={time_range}")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Data filtering based on time range
 if not hashrate_df.empty:
@@ -413,10 +411,7 @@ if not hashrate_df.empty:
 else:
     filtered_df = hashrate_df
 
-# DEBUG: Show data filtering
-st.write(f"DEBUG: Data filtered. Original: {len(hashrate_df)}, Filtered: {len(filtered_df)}")
-
-# CREATE CHART
+# Enhanced chart with power law functionality but keeping your purple theme
 fig = go.Figure()
 
 if not filtered_df.empty:
@@ -427,7 +422,7 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add hashrate trace
+    # Add hashrate trace with your purple color scheme
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Hashrate_PH'],
@@ -435,7 +430,7 @@ if not filtered_df.empty:
         name='Hashrate (PH/s)',
         line=dict(color='#5B6CFF', width=3),
         fill='tonexty',
-        fillcolor='rgba(91, 108, 255, 0.15)',
+        fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>Kaspa Hashrate</b><br>Date: %{text}<br>Hashrate: %{y:.2f} PH/s<br><extra></extra>',
         text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
     ))
@@ -457,22 +452,45 @@ if not filtered_df.empty:
             customdata=[r2_hashrate] * len(fit_x)
         ))
 
-# Chart layout
+        # Support and resistance bands
+        fig.add_trace(go.Scatter(
+            x=fit_x,
+            y=y_fit * 0.4,
+            mode='lines',
+            name='Support (-60%)',
+            line=dict(color='rgba(255, 255, 255, 0.7)', width=1.5, dash='dot'),
+            showlegend=True,
+            hoverinfo='skip'
+        ))
+        
+        fig.add_trace(go.Scatter(
+            x=fit_x,
+            y=y_fit * 2.2,
+            mode='lines',
+            name='Resistance (+120%)',
+            line=dict(color='rgba(255, 255, 255, 0.7)', width=1.5, dash='dot'),
+            fill='tonexty',
+            fillcolor='rgba(100, 100, 100, 0.05)',
+            showlegend=True,
+            hoverinfo='skip'
+        ))
+
+# Enhanced chart layout matching your theme - INCREASED HEIGHT
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Hashrate (PH/s)",
-    height=650,
+    height=650,  # Increased from 450 to 650
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
     xaxis=dict(
-        gridcolor='rgba(91, 108, 255, 0.1)',
+        gridcolor='#363650',
         gridwidth=1,
         color='#9CA3AF',
         type="log" if x_scale_type == "Log" else None
     ),
     yaxis=dict(
-        gridcolor='rgba(91, 108, 255, 0.1)',
+        gridcolor='#363650',
         gridwidth=1,
         color='#9CA3AF',
         type="log" if y_scale == "Log" else "linear"
@@ -485,29 +503,54 @@ fig.update_layout(
         xanchor="left",
         x=0,
         bgcolor='rgba(0,0,0,0)',
-        font=dict(size=11, color='#9CA3AF')
+        bordercolor='rgba(0,0,0,0)',
+        borderwidth=0,
+        font=dict(size=11)
     ),
-    margin=dict(l=50, r=20, t=20, b=50)
+    margin=dict(l=50, r=20, t=20, b=50),
+    modebar=dict(
+        orientation="v",
+        bgcolor="rgba(26, 26, 46, 0.8)",
+        color="#9CA3AF",
+        activecolor="#5B6CFF"
+    ),
+    hoverlabel=dict(
+        bgcolor='rgba(15, 20, 25, 0.95)',
+        bordercolor='rgba(91, 108, 255, 0.5)',
+        font=dict(color='#e2e8f0', size=11),
+        align='left'
+    )
 )
 
-# Display chart in container
-st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-st.plotly_chart(fig, use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+st.plotly_chart(fig, use_container_width=True, config={
+    'displayModeBar': True,
+    'displaylogo': False,
+    'modeBarButtonsToRemove': ['lasso2d', 'select2d'],
+    'modeBarButtonsToAdd': ['hoverclosest', 'hovercompare'],
+    'toImageButtonOptions': {
+        'format': 'png',
+        'filename': f'kaspa_hashrate_analysis_{datetime.now().strftime("%Y%m%d_%H%M")}',
+        'height': 650,
+        'width': 1400,
+        'scale': 2
+    }
+})
 
-# DEBUG: Show chart is created
-st.write("DEBUG: Chart displayed")
-
-# Calculate metrics
+# Calculate real metrics from data
 if not hashrate_df.empty:
     current_hashrate = hashrate_df['Hashrate_PH'].iloc[-1]
+    
+    # 7-day average
     seven_days_ago = hashrate_df['Date'].iloc[-1] - timedelta(days=7)
     df_7_days = hashrate_df[hashrate_df['Date'] >= seven_days_ago]
     avg_7d = df_7_days['Hashrate_PH'].mean() if len(df_7_days) > 0 else current_hashrate
+    
+    # 30-day average  
     thirty_days_ago = hashrate_df['Date'].iloc[-1] - timedelta(days=30)
     df_30_days = hashrate_df[hashrate_df['Date'] >= thirty_days_ago]
     avg_30d = df_30_days['Hashrate_PH'].mean() if len(df_30_days) > 0 else current_hashrate
     
+    # Calculate percentage changes
     if len(df_7_days) > 1:
         hashrate_7d_ago = df_7_days['Hashrate_PH'].iloc[0]
         change_7d = ((current_hashrate - hashrate_7d_ago) / hashrate_7d_ago) * 100
@@ -526,13 +569,13 @@ else:
     change_7d = 2.1
     change_30d = 5.2
 
-# Metrics cards
+# Custom metrics cards with real data
 st.markdown(f"""
 <div class="metrics-container">
     <div class="metric-card">
         <div class="metric-label">Current Hashrate</div>
         <div class="metric-value">{current_hashrate:.2f} PH/s</div>
-        <div class="metric-change">+{change_7d:.1f}%</div>
+        <div class="metric-change {'positive' if change_7d >= 0 else 'negative'}">+{change_7d:.1f}%</div>
     </div>
     <div class="metric-card">
         <div class="metric-label">7d Average</div>
@@ -542,12 +585,12 @@ st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">30d Average</div>
         <div class="metric-value">{avg_30d:.2f} PH/s</div>
-        <div class="metric-change">+{change_30d:.1f}%</div>
+        <div class="metric-change {'positive' if change_30d >= 0 else 'negative'}">+{change_30d:.1f}%</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Analysis section
+# Analysis section with real insights
 current_growth = "15%" if change_30d > 10 else f"{change_30d:.1f}%"
 
 st.markdown(f"""
@@ -563,17 +606,57 @@ st.markdown(f"""
     </div>
     <div class="analysis-card">
         <h3 class="section-title">30-Day Trend</h3>
-        <p style="color: #9CA3AF;">Trend analysis shows consistent growth pattern with periodic adjustments based on network conditions.</p>
+""", unsafe_allow_html=True)
+
+# Mini chart for recent trends using real data
+if not hashrate_df.empty:
+    recent_30_days = hashrate_df.tail(30)
+    recent_dates = recent_30_days['Date']
+    recent_data = recent_30_days['Hashrate_PH']
+else:
+    # Fallback dummy data
+    recent_dates = pd.date_range(start='2024-01-01', end='2024-01-30', freq='D')
+    recent_data = np.random.normal(1.2, 0.1, len(recent_dates))
+
+mini_fig = go.Figure()
+mini_fig.add_trace(go.Scatter(
+    x=recent_dates,
+    y=recent_data,
+    mode='lines+markers',
+    name='30-Day Trend',
+    line=dict(color='#6366F1', width=3),
+    marker=dict(color='#5B6CFF', size=4),
+    fill='tonexty',
+    fillcolor='rgba(99, 102, 241, 0.1)'
+))
+
+mini_fig.update_layout(
+    height=250,
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='#9CA3AF', family='Inter', size=12),
+    xaxis=dict(
+        gridcolor='#363650',
+        gridwidth=1,
+        color='#9CA3AF',
+        showticklabels=True
+    ),
+    yaxis=dict(
+        gridcolor='#363650',
+        gridwidth=1,
+        color='#9CA3AF'
+    ),
+    showlegend=False,
+    margin=dict(l=0, r=0, t=20, b=0)
+)
+
+st.plotly_chart(mini_fig, use_container_width=True)
+
+st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# DEBUG: Final message
-st.write("DEBUG: Page fully loaded!")
-
-# Footer
-try:
-    from footer import add_footer
-    add_footer()
-except ImportError:
-    st.write("Footer module not found")
+# At the end of each page:
+from footer import add_footer
+add_footer()
