@@ -679,41 +679,73 @@ if x_scale_type == "Log" and not filtered_df.empty:
     log_min = max(0, np.floor(np.log10(max(x_min, 1))))  # Ensure we don't go below 1 day
     log_max = np.ceil(np.log10(x_max))
     
-    # Major ticks (powers of 10: 1, 10, 100, 1000 days)
+    # Major ticks (powers of 10: 1, 10, 100, 1000 days) - THICK LINES
     major_ticks = []
     for i in range(int(log_min), int(log_max) + 1):
         tick_val = 10**i
         if x_min <= tick_val <= x_max:
             major_ticks.append(tick_val)
     
-    # Minor ticks (2 and 5 times each power of 10: 2, 5, 20, 50, 200, 500 days etc.)
+    # Minor ticks (2-9 multiples of each power of 10) - THIN LINES
     minor_ticks = []
+    all_visible_ticks = []  # For axis labels
+    
     for i in range(int(log_min), int(log_max) + 1):
         base = 10**i
-        for multiplier in [2, 5]:  # Only 2 and 5 as requested
-            tick_val = base * multiplier
+        # Add all multiples 1-9 of each power of 10
+        for multiplier in range(1, 10):
+            tick_val = multiplier * base
             if x_min <= tick_val <= x_max:
-                minor_ticks.append(tick_val)
+                all_visible_ticks.append(tick_val)
+                if multiplier != 1:  # Don't duplicate major ticks
+                    minor_ticks.append(tick_val)
     
-    # Combine all tick values
-    all_major_ticks = sorted(major_ticks)
-    all_minor_ticks = sorted(minor_ticks)
+    # Sort all ticks
+    all_visible_ticks = sorted(list(set(all_visible_ticks)))
+    major_ticks = sorted(major_ticks)
+    minor_ticks = sorted(minor_ticks)
     
     x_axis_config.update({
         'type': 'log',
-        'tickvals': all_major_ticks + all_minor_ticks,
-        'ticktext': [f'{int(tick)}' for tick in all_major_ticks + all_minor_ticks],
-        'minor': dict(
-            dtick=1,
-            showgrid=True,
-            gridcolor='rgba(54, 54, 80, 0.3)',  # Less pronounced minor grid
-            gridwidth=0.5
-        ),
-        'dtick': 1,
+        'dtick': 1,  # This creates the base logarithmic spacing
         'showgrid': True,
-        'gridcolor': '#363650',  # Major grid lines
-        'gridwidth': 1.2
+        'gridcolor': '#4A5568',  # Thicker major grid lines
+        'gridwidth': 2,  # Thicker for major lines
+        # Show ALL ticks on the axis
+        'tickmode': 'array',
+        'tickvals': all_visible_ticks,
+        'ticktext': [f'{int(tick)}' for tick in all_visible_ticks],
+        'tickfont': dict(size=10),
+        'minor': dict(
+            showgrid=True,
+            gridcolor='rgba(54, 54, 80, 0.4)',  # Thinner minor grid lines
+            gridwidth=0.8,  # Thinner for minor lines
+            dtick=1
+        )
     })
+    
+    # Add custom shapes for better visual distinction
+    # This will add the major grid lines as thicker lines
+    for tick in major_ticks:
+        fig.add_shape(
+            type="line",
+            x0=tick, x1=tick,
+            y0=0, y1=1,
+            yref="paper",
+            line=dict(color="#4A5568", width=2.5),  # Thick major lines
+            layer="below"
+        )
+    
+    # Add minor grid lines as thinner lines
+    for tick in minor_ticks:
+        fig.add_shape(
+            type="line",
+            x0=tick, x1=tick,
+            y0=0, y1=1,
+            yref="paper",
+            line=dict(color="rgba(54, 54, 80, 0.5)", width=1),  # Thin minor lines
+            layer="below"
+        )
             
 elif x_scale_type == "Log":
     x_axis_config['type'] = 'log'
