@@ -4,12 +4,20 @@ import streamlit as st
 
 class PaymentHandler:
     def __init__(self):
-        # Load Stripe keys from Streamlit secrets
+        # Load Stripe keys from environment variables (Heroku) or Streamlit secrets (local)
         try:
-            default_secrets = st.secrets["default"]
-            self.stripe_secret_key = default_secrets["STRIPE_SECRET_KEY"]
-            self.stripe_publishable_key = default_secrets["STRIPE_PUBLISHABLE_KEY"] 
-            self.domain = default_secrets["DOMAIN"]
+            # Try environment variables first (Heroku)
+            self.stripe_secret_key = os.environ.get("STRIPE_SECRET_KEY")
+            self.stripe_publishable_key = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+            self.domain = os.environ.get("DOMAIN")
+            
+            # If not found in environment, try Streamlit secrets (local development)
+            if not self.stripe_secret_key:
+                default_secrets = st.secrets["default"]
+                self.stripe_secret_key = default_secrets["STRIPE_SECRET_KEY"]
+                self.stripe_publishable_key = default_secrets["STRIPE_PUBLISHABLE_KEY"] 
+                self.domain = default_secrets["DOMAIN"]
+                
         except Exception as e:
             st.error(f"Error loading Stripe configuration: {str(e)}")
             self.stripe_secret_key = None
@@ -18,6 +26,8 @@ class PaymentHandler:
         
         if self.stripe_secret_key:
             stripe.api_key = self.stripe_secret_key
+        else:
+            st.error("❌ Stripe Secret Key not found in environment variables or secrets!")
 
     def create_checkout_session(self, username):
         """Create a Stripe checkout session for premium upgrade"""
