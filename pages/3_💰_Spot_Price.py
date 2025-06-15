@@ -693,23 +693,38 @@ fig.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
-    xaxis=x_axis_config,
+    xaxis=dict(
+        type="log" if x_scale_type == "Log" else None,
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(255, 255, 255, 0.1)',
+        minor=dict(
+            ticklen=6,
+            gridcolor='rgba(255, 255, 255, 0.05)',
+            gridwidth=0.5
+        ),
+        tickformat="%b %Y" if x_scale_type == "Linear" else None,
+        linecolor='#3A3C4A',
+        zerolinecolor='#3A3C4A',
+        color='#9CA3AF'
+    ),
     yaxis=dict(
         gridcolor='#363650',
         gridwidth=1,
         color='#9CA3AF',
         type="log" if y_scale == "Log" else "linear",
+        showgrid=True,
+        minor=dict(
+            ticklen=6,
+            gridcolor='rgba(255, 255, 255, 0.05)',
+            gridwidth=0.5
+        ),
         # Custom currency formatting for Y-axis
         tickmode='array' if y_scale == "Log" and y_tick_vals else 'auto',
         tickvals=y_tick_vals,
         ticktext=y_tick_text,
-        minor=dict(
-            showgrid=True,
-            gridwidth=0.5,
-            gridcolor='rgba(54, 54, 80, 0.3)',
-            tickmode='array',
-            tickvals=y_minor_ticks if y_scale == "Log" else []
-        ) if y_scale == "Log" else dict()
+        linecolor='#3A3C4A',
+        zerolinecolor='#3A3C4A'
     ),
     showlegend=True,
     legend=dict(
