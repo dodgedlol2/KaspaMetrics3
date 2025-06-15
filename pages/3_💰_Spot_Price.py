@@ -614,13 +614,13 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with purple color scheme (same as hashrate)
+    # Add price trace with thinner line (reduced from width=3 to width=2)
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Price'],
         mode='lines',
         name='Kaspa Price',
-        line=dict(color='#5B6CFF', width=3),
+        line=dict(color='#5B6CFF', width=2),  # Changed from 3 to 2
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
@@ -628,7 +628,7 @@ if not filtered_df.empty:
         customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
     ))
 
-    # Add power law if enabled
+    # Add power law if enabled with thinner line (reduced from width=3 to width=2)
     if show_power_law == "Show" and not filtered_df.empty:
         x_fit = filtered_df['days_from_genesis']
         y_fit = a_price * np.power(x_fit, b_price)
@@ -639,7 +639,7 @@ if not filtered_df.empty:
             y=y_fit,
             mode='lines',
             name='Power Law',
-            line=dict(color='#ff8c00', width=3, dash='solid'),
+            line=dict(color='#ff8c00', width=2, dash='solid'),  # Changed from 3 to 2
             showlegend=True,
             hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>',
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
@@ -871,7 +871,7 @@ mini_fig.add_trace(go.Scatter(
     y=recent_data,
     mode='lines+markers',
     name='30-Day Trend',
-    line=dict(color='#5B6CFF', width=3),
+    line=dict(color='#5B6CFF', width=2),  # Also made mini chart line thinner (from 3 to 2)
     marker=dict(color='#5B6CFF', size=4),
     fill='tonexty',
     fillcolor='rgba(91, 108, 255, 0.1)'
