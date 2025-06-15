@@ -616,14 +616,6 @@ if not filtered_df.empty:
         y_fit = a_price * np.power(x_fit, b_price)
         fit_x = x_fit if x_scale_type == "Log" else filtered_df['Date']
 
-        # Calculate standard deviation of residuals for proper confidence bands
-        residuals = np.log(filtered_df['Price']) - np.log(y_fit)
-        std_dev = np.std(residuals)
-        
-        # Standard deviation bands in log space
-        y_fit_upper = y_fit * np.exp(std_dev)   # +1 std dev
-        y_fit_lower = y_fit * np.exp(-std_dev)  # -1 std dev
-
         fig.add_trace(go.Scatter(
             x=fit_x,
             y=y_fit,
@@ -633,28 +625,6 @@ if not filtered_df.empty:
             showlegend=True,
             hovertemplate='<b>Power Law Fit</b><br>R² = %{customdata:.3f}<br>Value: $%{y:.6f}<br><extra></extra>',
             customdata=[r2_price] * len(fit_x)
-        ))
-
-        fig.add_trace(go.Scatter(
-            x=fit_x,
-            y=y_fit_lower,
-            mode='lines',
-            name='-1σ Support',
-            line=dict(color='rgba(255, 255, 255, 0.7)', width=1.5, dash='dot'),
-            showlegend=True,
-            hoverinfo='skip'
-        ))
-        
-        fig.add_trace(go.Scatter(
-            x=fit_x,
-            y=y_fit_upper,
-            mode='lines',
-            name='+1σ Resistance',
-            line=dict(color='rgba(255, 255, 255, 0.7)', width=1.5, dash='dot'),
-            fill='tonexty',
-            fillcolor='rgba(100, 100, 100, 0.05)',
-            showlegend=True,
-            hoverinfo='skip'
         ))
 
 # Enhanced chart layout with custom logarithmic grid lines
