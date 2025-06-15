@@ -115,6 +115,65 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
+/* DETECTIVE MODE - Let's find the exact selectors that work */
+
+/* Test: Style ALL buttons first to see what works, then narrow it down */
+.stApp button {
+    outline: 2px solid #FF0000 !important; /* RED outline on ALL buttons */
+}
+
+/* Test: Style buttons in main content area only */
+.stApp .main button {
+    background: rgba(255, 255, 0, 0.3) !important; /* YELLOW background for main area buttons */
+}
+
+/* Test: Style buttons in chart controls specifically */
+.chart-controls button {
+    background: rgba(0, 255, 0, 0.5) !important; /* GREEN background for chart control buttons */
+    color: black !important;
+}
+
+/* Test: Style any button with aria-pressed in main area */
+.stApp .main button[aria-pressed] {
+    background: rgba(255, 0, 255, 0.7) !important; /* MAGENTA for aria-pressed buttons in main */
+    color: white !important;
+}
+
+/* Test: Style active buttons specifically */
+.stApp .main button[aria-pressed="true"] {
+    background: #6366F1 !important; /* BLUE for active buttons in main */
+    color: white !important;
+    border: 2px solid #00FFFF !important; /* CYAN border for identification */
+}
+
+/* Test: Nuclear option - style everything in chart-controls */
+.chart-controls * {
+    border: 1px dotted #FFA500 !important; /* ORANGE dotted border on everything */
+}
+
+/* Test: BaseWeb elements in main area */
+.stApp .main [data-baseweb] {
+    background: rgba(128, 0, 128, 0.3) !important; /* PURPLE for BaseWeb in main */
+}
+
+/* Test: Specific BaseWeb buttons in main */
+.stApp .main [data-baseweb][role="button"] {
+    background: rgba(0, 128, 128, 0.5) !important; /* TEAL for BaseWeb buttons in main */
+}
+
+/* Test: Segmented control specific */
+.stApp .main [data-baseweb="segmented-control"] [data-baseweb] {
+    background: rgba(255, 192, 203, 0.8) !important; /* PINK for segmented control items */
+    color: black !important;
+}
+
+/* Test: Active segmented control items */
+.stApp .main [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"] {
+    background: #6366F1 !important; /* Our target BLUE */
+    color: white !important;
+    border: 3px solid #FFD700 !important; /* GOLD border for easy identification */
+}
+
 /* ENHANCED SEGMENTED CONTROLS - MAXIMUM SPECIFICITY APPROACH */
 
 /* Container styling - Multiple selectors with high specificity */
