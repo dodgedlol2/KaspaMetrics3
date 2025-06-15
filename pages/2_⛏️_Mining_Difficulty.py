@@ -601,61 +601,84 @@ if not filtered_df.empty:
             hoverinfo='skip'
         ))
 
-# Enhanced chart layout with custom logarithmic grid lines
-y_axis_config = dict(
+# Enhanced chart layout with custom logarithmic grid lines for X-axis (time scale)
+x_axis_config = dict(
     gridcolor='#363650',
     gridwidth=1,
     color='#9CA3AF'
 )
 
-# Custom logarithmic grid lines when Y-axis is in log scale
-if y_scale == "Log":
-    # Get the data range to determine appropriate tick values
-    if not filtered_df.empty:
-        y_min = filtered_df['Hashrate_PH'].min()
-        y_max = filtered_df['Hashrate_PH'].max()
-        
-        # Create logarithmic tick values
-        log_min = np.floor(np.log10(y_min))
-        log_max = np.ceil(np.log10(y_max))
-        
-        # Major ticks (powers of 10)
-        major_ticks = [10**i for i in range(int(log_min), int(log_max) + 1)]
-        
-        # Minor ticks (2, 3, 4, 5, 6, 7, 8, 9 times each power of 10)
-        minor_ticks = []
-        for i in range(int(log_min), int(log_max) + 1):
-            base = 10**i
-            for multiplier in [2, 3, 4, 5, 6, 7, 8, 9]:
-                tick_val = base * multiplier
-                if y_min <= tick_val <= y_max * 1.1:  # Include ticks slightly above max for better visualization
-                    minor_ticks.append(tick_val)
-        
-        # Combine and sort all tick values
-        all_ticks = sorted(major_ticks + minor_ticks)
-        
-        # Filter ticks within reasonable range
-        valid_ticks = [tick for tick in all_ticks if y_min * 0.8 <= tick <= y_max * 1.2]
-        
-        y_axis_config.update({
-            'type': 'log',
-            'tickvals': valid_ticks,
-            'ticktext': [f'{tick:.3f}' if tick < 1 else f'{tick:.2f}' if tick < 10 else f'{tick:.1f}' if tick < 100 else f'{tick:.0f}' for tick in valid_ticks],
-            'minor': dict(
-                dtick=1,
-                showgrid=True,
-                gridcolor='rgba(54, 54, 80, 0.3)',
-                gridwidth=0.5
-            ),
-            'dtick': 1,  # This controls the major grid spacing in log scale
-            'showgrid': True,
-            'gridcolor': '#363650',
-            'gridwidth': 1.2
-        })
-    else:
-        y_axis_config['type'] = 'log'
-else:
-    y_axis_config['type'] = 'linear'
+# Custom logarithmic grid lines when X-axis (Time Scale) is in log scale
+if x_scale_type == "Log" and not filtered_df.empty:
+    # Get the days_from_genesis range to determine appropriate tick values
+    x_min = filtered_df['days_from_genesis'].min()
+    x_max = filtered_df['days_from_genesis'].max()
+    
+    # Create logarithmic tick values for days
+    log_min = max(0, np.floor(np.log10(max(x_min, 1))))  # Ensure we don't go below 1 day
+    log_max = np.ceil(np.log10(x_max))
+    
+    # Major ticks (powers of 10: 1, 10, 100, 1000 days)
+    major_ticks = []
+    for i in range(int(log_min), int(log_max) + 1):
+        tick_val = 10**i
+        if x_min <= tick_val <= x_max:
+            major_ticks.append(tick_val)
+    
+    # Minor ticks (2 and 5 times each power of 10: 2, 5, 20, 50, 200, 500 days etc.)
+    minor_ticks = []
+    for i in range(int(log_min), int(log_max) + 1):
+        base = 10**i
+        for multiplier in [2, 5]:  # Only 2 and 5 as requested
+            tick_val = base * multiplier
+            if x_min <= tick_val <= x_max:
+                minor_ticks.append(tick_val)
+    
+    # Combine all tick values
+    all_major_ticks = sorted(major_ticks)
+    all_minor_ticks = sorted(minor_ticks)
+    
+    x_axis_config.update({
+        'type': 'log',
+        'tickvals': all_major_ticks + all_minor_ticks,
+        'ticktext': [f'{int(tick)}' for tick in all_major_ticks + all_minor_ticks],
+        'minor': dict(
+            dtick=1,
+            showgrid=True,
+            gridcolor='rgba(54, 54, 80, 0.3)',  # Less pronounced minor grid
+            gridwidth=0.5
+        ),
+        'dtick': 1,
+        'showgrid': True,
+        'gridcolor': '#363650',  # Major grid lines
+        'gridwidth': 1.2
+    })
+    
+    # Add custom grid lines for better visual separation
+    # Major grid lines (1, 10, 100, 1000 days) - more prominent
+    for tick in all_major_ticks:
+        fig.add_shape(
+            type="line",
+            x0=tick, x1=tick,
+            y0=0, y1=1,
+            yref="paper",
+            line=dict(color="#363650", width=1.2),
+            layer="below"
+        )
+    
+    # Minor grid lines (2, 5 multiples) - less pronounced
+    for tick in all_minor_ticks:
+        fig.add_shape(
+            type="line",
+            x0=tick, x1=tick,
+            y0=0, y1=1,
+            yref="paper",
+            line=dict(color="rgba(54, 54, 80, 0.4)", width=0.8, dash="dot"),
+            layer="below"
+        )
+            
+elif x_scale_type == "Log":
+    x_axis_config['type'] = 'log'
 
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
@@ -664,13 +687,13 @@ fig.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
-    xaxis=dict(
+    xaxis=x_axis_config,
+    yaxis=dict(
         gridcolor='#363650',
         gridwidth=1,
         color='#9CA3AF',
-        type="log" if x_scale_type == "Log" else None
+        type="log" if y_scale == "Log" else "linear"
     ),
-    yaxis=y_axis_config,
     showlegend=True,
     legend=dict(
         orientation="h",
