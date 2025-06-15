@@ -105,11 +105,23 @@ st.markdown("""
     max-width: 1200px;
 }
 
-/* ENHANCED BETTERSTACK-STYLE SEGMENTED CONTROLS */
-/* Target all segmented controls with enhanced styling */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
-    background: 
-        linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
+/* PROVEN SOLUTION: Make columns fit their content */
+div[data-testid="stColumn"] {
+    width: fit-content !important;
+    flex: unset !important;
+}
+
+div[data-testid="stColumn"] * {
+    width: fit-content !important;
+}
+
+/* ENHANCED SEGMENTED CONTROLS - Multiple selector approach for reliability */
+
+/* Container styling - try multiple selectors */
+.stApp div[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"],
+.stApp div[data-baseweb="segmented-control"],
+.stApp [data-baseweb="segmented-control"] {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
     border: 1px solid rgba(99, 102, 241, 0.2) !important;
     border-radius: 12px !important;
     backdrop-filter: blur(16px) !important;
@@ -123,33 +135,12 @@ st.markdown("""
     overflow: hidden !important;
 }
 
-/* Subtle inner glow effect */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
-        radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
-    pointer-events: none;
-    border-radius: 11px;
-}
-
-/* PROVEN SOLUTION: Make columns fit their content */
-div[data-testid="stColumn"] {
-    width: fit-content !important;
-    flex: unset !important;
-}
-
-div[data-testid="stColumn"] * {
-    width: fit-content !important;
-}
-
-/* Individual segments - inactive state with enhanced styling */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
+/* Individual buttons - multiple selectors for maximum compatibility */
+.stApp div[data-testid="stVerticalBlock"] button,
+.stApp div[data-baseweb="segmented-control"] button,
+.stApp [data-baseweb="segmented-control"] button,
+.stApp button[role="button"][aria-pressed],
+.stApp div[data-testid="stVerticalBlock"] button[aria-pressed] {
     background: transparent !important;
     border: none !important;
     border-radius: 9px !important;
@@ -172,10 +163,12 @@ div[data-testid="stColumn"] * {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Active segment - Enhanced professional styling with #6366F1 */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: 
-        linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
+/* Active button state - Enhanced with #6366F1 */
+.stApp div[data-testid="stVerticalBlock"] button[aria-pressed="true"],
+.stApp div[data-baseweb="segmented-control"] button[aria-pressed="true"],
+.stApp [data-baseweb="segmented-control"] button[aria-pressed="true"],
+.stApp button[role="button"][aria-pressed="true"] {
+    background: linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     box-shadow: 
@@ -188,8 +181,34 @@ div[data-testid="stColumn"] * {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Subtle shimmer effect for active buttons */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"]::before {
+/* Hover states for inactive buttons */
+.stApp div[data-testid="stVerticalBlock"] button:hover:not([aria-pressed="true"]),
+.stApp div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]),
+.stApp [data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
+    color: #e2e8f0 !important;
+    transform: translateY(-0.5px) !important;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Hover states for active buttons */
+.stApp div[data-testid="stVerticalBlock"] button[aria-pressed="true"]:hover,
+.stApp div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover,
+.stApp [data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
+    background: linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: 
+        0 4px 12px rgba(99, 102, 241, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Shimmer effect for active buttons */
+.stApp button[aria-pressed="true"]::before {
     content: '';
     position: absolute;
     top: 0;
@@ -204,6 +223,7 @@ div[data-testid="stColumn"] * {
     );
     animation: shimmer 2s infinite;
     pointer-events: none;
+    z-index: 1;
 }
 
 @keyframes shimmer {
@@ -212,32 +232,8 @@ div[data-testid="stColumn"] * {
     100% { left: 100%; }
 }
 
-/* Hover state for inactive segments - Enhanced */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
-    background: 
-        linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
-    color: #e2e8f0 !important;
-    transform: translateY(-0.5px) !important;
-    box-shadow: 
-        0 2px 6px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(99, 102, 241, 0.2) !important;
-}
-
-/* Hover state for active segments */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
-    background: 
-        linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
-    transform: translateY(-1.5px) !important;
-    box-shadow: 
-        0 4px 12px rgba(99, 102, 241, 0.5),
-        0 2px 8px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
-}
-
 /* Focus states for accessibility */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:focus-visible {
+.stApp button:focus-visible {
     outline: 2px solid #6366F1 !important;
     outline-offset: 2px !important;
 }
