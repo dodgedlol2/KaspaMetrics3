@@ -115,70 +115,27 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-/* DEBUG MODE - Colorful highlights to identify elements */
-/* Remove this section once we identify the correct selectors */
-
-/* Test 1: Chart controls container */
+/* DEBUG MODE - Remove after testing */
+/* 
 .chart-controls {
-    border: 3px solid #FF0000 !important; /* RED BORDER for chart-controls div */
-    background: rgba(255, 0, 0, 0.1) !important; /* Light red background */
+    border: 3px solid #FF0000 !important;
+    background: rgba(255, 0, 0, 0.1) !important;
 }
 
-/* Test 2: Any segmented control containers */
 [data-baseweb="segmented-control"] {
-    border: 3px solid #00FF00 !important; /* GREEN BORDER for segmented control containers */
-    background: rgba(0, 255, 0, 0.1) !important; /* Light green background */
+    border: 3px solid #00FF00 !important;
+    background: rgba(0, 255, 0, 0.1) !important;
 }
 
-/* Test 3: All buttons in chart controls area */
-.chart-controls button {
-    border: 2px solid #0000FF !important; /* BLUE BORDER for buttons in chart-controls */
-    background: rgba(0, 0, 255, 0.2) !important; /* Light blue background */
-}
-
-/* Test 4: All buttons with aria-pressed */
-button[aria-pressed] {
-    border: 2px solid #FFFF00 !important; /* YELLOW BORDER for buttons with aria-pressed */
-    background: rgba(255, 255, 0, 0.2) !important; /* Light yellow background */
-}
-
-/* Test 5: Active buttons (aria-pressed="true") */
-button[aria-pressed="true"] {
-    border: 2px solid #FF00FF !important; /* MAGENTA BORDER for active buttons */
-    background: rgba(255, 0, 255, 0.3) !important; /* Light magenta background */
-}
-
-/* Test 6: Streamlit vertical blocks */
-div[data-testid="stVerticalBlock"] {
-    outline: 1px dashed #00FFFF !important; /* CYAN DASHED outline for vertical blocks */
-}
-
-/* Test 7: All divs containing buttons */
-div:has(button) {
-    outline: 1px dotted #FFA500 !important; /* ORANGE DOTTED outline for divs with buttons */
-}
-
-/* Test 8: Control groups */
-.control-group {
-    border: 2px solid #800080 !important; /* PURPLE BORDER for control groups */
-    background: rgba(128, 0, 128, 0.1) !important; /* Light purple background */
-}
-
-/* Test 9: Any element with 'segment' in class name */
-[class*="segment" i] {
-    border: 3px solid #008000 !important; /* DARK GREEN for elements with 'segment' in class */
-    background: rgba(0, 128, 0, 0.2) !important;
-}
-
-/* Test 10: BaseWeb elements */
 [data-baseweb] {
-    outline: 2px solid #FF69B4 !important; /* HOT PINK outline for any BaseWeb elements */
+    outline: 2px solid #FF69B4 !important;
 }
+*/
 
-/* ENHANCED SEGMENTED CONTROLS - ONLY target chart controls area */
+/* ENHANCED SEGMENTED CONTROLS - CORRECT SELECTORS */
 
-/* Container styling - ONLY for chart controls */
-.chart-controls div[data-baseweb="segmented-control"] {
+/* Container styling - Target segmented control containers in chart controls */
+.chart-controls [data-baseweb="segmented-control"] {
     background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
     border: 1px solid rgba(99, 102, 241, 0.2) !important;
     border-radius: 12px !important;
@@ -193,8 +150,8 @@ div:has(button) {
     overflow: hidden !important;
 }
 
-/* Individual buttons - ONLY in chart controls */
-.chart-controls div[data-baseweb="segmented-control"] button {
+/* Individual buttons - Target BaseWeb buttons in chart controls segmented controls */
+.chart-controls [data-baseweb="segmented-control"] [data-baseweb] {
     background: transparent !important;
     border: none !important;
     border-radius: 9px !important;
@@ -217,8 +174,8 @@ div:has(button) {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Active button state - Enhanced with #6366F1 - ONLY in chart controls */
-.chart-controls div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
+/* Active button state - Enhanced with #6366F1 */
+.chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"] {
     background: linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
@@ -232,8 +189,8 @@ div:has(button) {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Hover states for inactive buttons - ONLY in chart controls */
-.chart-controls div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+/* Hover states for inactive buttons */
+.chart-controls [data-baseweb="segmented-control"] [data-baseweb]:hover:not([aria-pressed="true"]) {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
     color: #e2e8f0 !important;
     transform: translateY(-0.5px) !important;
@@ -243,8 +200,8 @@ div:has(button) {
     border: 1px solid rgba(99, 102, 241, 0.2) !important;
 }
 
-/* Hover states for active buttons - ONLY in chart controls */
-.chart-controls div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
+/* Hover states for active buttons */
+.chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"]:hover {
     background: linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
     transform: translateY(-1.5px) !important;
     box-shadow: 
@@ -254,8 +211,8 @@ div:has(button) {
         inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Shimmer effect for active buttons - ONLY in chart controls */
-.chart-controls button[aria-pressed="true"]::before {
+/* Shimmer effect for active buttons */
+.chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"]::before {
     content: '';
     position: absolute;
     top: 0;
@@ -279,8 +236,8 @@ div:has(button) {
     100% { left: 100%; }
 }
 
-/* Focus states for accessibility - ONLY in chart controls */
-.chart-controls button:focus-visible {
+/* Focus states for accessibility */
+.chart-controls [data-baseweb="segmented-control"] [data-baseweb]:focus-visible {
     outline: 2px solid #6366F1 !important;
     outline-offset: 2px !important;
 }
