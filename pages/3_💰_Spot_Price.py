@@ -624,7 +624,7 @@ if not filtered_df.empty:
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+        text=[f"{int(days)} Days since genesis" for days in filtered_df['days_from_genesis']] if not filtered_df.empty else [],
         customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
     ))
 
