@@ -623,8 +623,9 @@ if not filtered_df.empty:
         line=dict(color='#5B6CFF', width=3),
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
-        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>%{text}<br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else []
+        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else [],
+        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
     ))
 
     # Add power law if enabled
@@ -688,6 +689,20 @@ fig.update_layout(
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
     hovermode='x unified',  # Always show unified hover for all traces at the same x-value
+    hoverlabel=dict(
+        bgcolor='rgba(15, 20, 25, 0.95)',
+        bordercolor='rgba(91, 108, 255, 0.5)',
+        font=dict(color='#e2e8f0', size=11),
+        align='left',
+        namelength=-1  # Show full trace names
+    ),
+    # Custom hover label formatting for unified mode
+    annotations=[
+        dict(
+            x=0.5, y=1.15, xref='paper', yref='paper',
+            text='', showarrow=False, font=dict(size=12)
+        ) if x_scale_type == "Log" and not filtered_df.empty else dict()
+    ] if x_scale_type == "Log" and not filtered_df.empty else [],
     xaxis=dict(
         type="log" if x_scale_type == "Log" else None,
         showgrid=True,
@@ -734,18 +749,12 @@ fig.update_layout(
         borderwidth=0,
         font=dict(size=11)
     ),
-    margin=dict(l=50, r=20, t=20, b=50),
+    margin=dict(l=50, r=20, t=20, b=50    ),
     modebar=dict(
         orientation="h",  # Changed from "v" to "h" for horizontal
         bgcolor="rgba(0,0,0,0)",  # Transparent background
         color="#9CA3AF",
         activecolor="#5B6CFF"
-    ),
-    hoverlabel=dict(
-        bgcolor='rgba(15, 20, 25, 0.95)',
-        bordercolor='rgba(91, 108, 255, 0.5)',
-        font=dict(color='#e2e8f0', size=11),
-        align='left'
     )
 )
 
