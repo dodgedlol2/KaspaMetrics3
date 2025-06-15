@@ -87,14 +87,21 @@ st.markdown("""
 /* Enhanced global background with rich textures */
 .stApp {
     background: 
-        /* Primary deep gradient with Kaspa colors */
+        /* Primary deep gradient with top-left accent */
         linear-gradient(135deg, 
-            #0A0A18 0%, 
-            #0F0F22 15%, 
-            #1A1A35 35%, 
-            #0F0F28 55%, 
-            #0A0A1E 75%, 
-            #060612 100%
+            #1A1A35 0%, 
+            #0F0F28 15%, 
+            #0A0A1E 30%, 
+            #0F0F22 45%, 
+            #0A0A18 60%, 
+            #060612 80%, 
+            #040408 100%
+        ),
+        /* Top-left corner accent gradient */
+        radial-gradient(ellipse at 0% 0%, 
+            rgba(91, 108, 255, 0.15) 0%, 
+            rgba(99, 102, 241, 0.08) 25%, 
+            transparent 50%
         ),
         /* Secondary diagonal overlay */
         linear-gradient(45deg, 
@@ -112,65 +119,84 @@ st.markdown("""
         radial-gradient(circle at 80% 85%, rgba(91, 108, 255, 0.035) 0%, transparent 42%),
         radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.025) 0%, transparent 45%),
         radial-gradient(circle at 70% 60%, rgba(147, 51, 234, 0.03) 0%, transparent 40%),
-        /* Fine crosshatch texture patterns */
+        /* Heavy grain texture patterns */
         repeating-linear-gradient(
             0deg,
-            rgba(255, 255, 255, 0.012) 0px,
-            rgba(255, 255, 255, 0.012) 1px,
+            rgba(255, 255, 255, 0.025) 0px,
+            rgba(255, 255, 255, 0.025) 1px,
             transparent 1px,
-            transparent 18px
+            transparent 8px
         ),
         repeating-linear-gradient(
             90deg,
-            rgba(91, 108, 255, 0.015) 0px,
-            rgba(91, 108, 255, 0.015) 1px,
+            rgba(91, 108, 255, 0.03) 0px,
+            rgba(91, 108, 255, 0.03) 1px,
             transparent 1px,
-            transparent 22px
+            transparent 10px
         ),
         repeating-linear-gradient(
             45deg,
-            rgba(147, 51, 234, 0.01) 0px,
-            rgba(147, 51, 234, 0.01) 1px,
+            rgba(147, 51, 234, 0.02) 0px,
+            rgba(147, 51, 234, 0.02) 1px,
             transparent 1px,
-            transparent 28px
+            transparent 12px
         ),
         repeating-linear-gradient(
             -45deg,
-            rgba(99, 102, 241, 0.008) 0px,
-            rgba(99, 102, 241, 0.008) 1px,
+            rgba(99, 102, 241, 0.018) 0px,
+            rgba(99, 102, 241, 0.018) 1px,
             transparent 1px,
-            transparent 32px
+            transparent 14px
         ),
-        /* Additional fine grain texture */
+        /* Fine grain noise texture */
         repeating-linear-gradient(
             30deg,
-            rgba(255, 255, 255, 0.006) 0px,
-            rgba(255, 255, 255, 0.006) 1px,
+            rgba(255, 255, 255, 0.015) 0px,
+            rgba(255, 255, 255, 0.015) 1px,
             transparent 1px,
-            transparent 15px
+            transparent 6px
         ),
         repeating-linear-gradient(
             -30deg,
-            rgba(91, 108, 255, 0.008) 0px,
-            rgba(91, 108, 255, 0.008) 1px,
+            rgba(91, 108, 255, 0.02) 0px,
+            rgba(91, 108, 255, 0.02) 1px,
             transparent 1px,
-            transparent 20px
+            transparent 7px
+        ),
+        /* Additional gritty crosshatch */
+        repeating-linear-gradient(
+            60deg,
+            rgba(147, 51, 234, 0.012) 0px,
+            rgba(147, 51, 234, 0.012) 1px,
+            transparent 1px,
+            transparent 9px
+        ),
+        repeating-linear-gradient(
+            -60deg,
+            rgba(99, 102, 241, 0.015) 0px,
+            rgba(99, 102, 241, 0.015) 1px,
+            transparent 1px,
+            transparent 11px
         );
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
     position: relative;
+    background-attachment: fixed;
 }
 
-/* Subtle animated background effect */
+/* Fixed position animated background effect */
 .stApp::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background: 
+        /* Top-left corner emphasis */
+        radial-gradient(ellipse at 5% 5%, rgba(91, 108, 255, 0.08) 0%, transparent 40%),
+        /* Floating gradients that stay in place */
         radial-gradient(circle at 25% 25%, rgba(91, 108, 255, 0.02) 0%, transparent 50%),
         radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.018) 0%, transparent 50%),
         radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.015) 0%, transparent 60%);
