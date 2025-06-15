@@ -115,70 +115,46 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-/* REFINED DETECTIVE MODE - Target segmented controls without sidebar */
+/* PRECISION TEST - Find the exact difference between sidebar and segmented controls */
 
-/* Test 1: Exclude sidebar specifically */
-.stApp button:not([data-testid*="sidebar"]):not([class*="sidebar"]) {
-    outline: 2px solid #00FF00 !important; /* GREEN outline for non-sidebar buttons */
-}
-
-/* Test 2: Target only main content area, exclude sidebar */
-.stApp .main button {
-    background: rgba(255, 255, 0, 0.5) !important; /* YELLOW for main area buttons */
-}
-
-/* Test 3: Target buttons inside chart-controls specifically */
+/* Test A: Only style buttons that are specifically in chart-controls */
 .chart-controls button {
-    background: rgba(255, 0, 255, 0.7) !important; /* MAGENTA for chart control buttons */
+    background: #FF00FF !important; /* MAGENTA for chart control buttons */
     color: white !important;
+    border: 3px solid #00FFFF !important; /* CYAN border */
 }
 
-/* Test 4: Target segmented control buttons by container */
+/* Test B: Only style active buttons in chart-controls */
+.chart-controls button[aria-pressed="true"] {
+    background: #6366F1 !important; /* BLUE for active chart control buttons */
+    color: white !important;
+    border: 5px solid #FFD700 !important; /* THICK GOLD border for easy spotting */
+    box-shadow: 0 0 0 3px #FF1493 !important; /* HOT PINK glow */
+}
+
+/* Test C: Alternative - target by segmented control container */
 [data-baseweb="segmented-control"] button {
-    background: rgba(0, 255, 255, 0.8) !important; /* CYAN for segmented control buttons */
+    background: #00FF00 !important; /* GREEN for segmented control buttons */
     color: black !important;
+    border: 3px solid #000000 !important; /* BLACK border */
 }
 
-/* Test 5: Target active segmented control buttons */
+/* Test D: Active segmented control buttons */
 [data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: #6366F1 !important; /* BLUE for active segmented buttons */
+    background: #FF8C00 !important; /* ORANGE for active segmented buttons */
     color: white !important;
-    border: 3px solid #FFD700 !important; /* GOLD border for identification */
+    border: 4px solid #8A2BE2 !important; /* PURPLE border */
 }
 
-/* Test 6: Alternative - target by column structure */
-div[data-testid="stColumn"] button {
-    background: rgba(255, 165, 0, 0.6) !important; /* ORANGE for column buttons */
+/* Test E: Try to target by column structure */
+div[data-testid="stColumn"] button[aria-pressed="true"] {
+    outline: 5px dashed #DC143C !important; /* CRIMSON dashed outline */
 }
 
-/* Test 7: Target chart controls area more specifically */
-.chart-controls div[data-testid="stColumn"] button {
-    background: rgba(128, 0, 128, 0.8) !important; /* PURPLE for chart control column buttons */
-}
+/* WORKING SOLUTION - Once we identify the right selector */
+/* This will be our final implementation */
 
-/* Test 8: Target by vertical block in main area only */
-.stApp .main div[data-testid="stVerticalBlock"] button {
-    background: rgba(0, 128, 0, 0.7) !important; /* DARK GREEN for vertical block buttons in main */
-}
-
-/* Test 9: Exclude elements that might be sidebar-related */
-.stApp button:not([class*="st-emotion-cache"]):not([data-testid*="stSidebar"]) {
-    border: 3px dashed #FF1493 !important; /* HOT PINK dashed border for non-sidebar buttons */
-}
-
-/* Test 10: Target everything except what's in sidebar-like containers */
-.stApp .main .chart-controls button[aria-pressed="true"] {
-    background: #6366F1 !important; /* Final target: blue active buttons in chart controls */
-    color: white !important;
-    box-shadow: 0 0 0 4px #00FFFF !important; /* CYAN glow for easy identification */
-}
-
-/* WORKING SELECTORS - Based on our findings */
-
-/* If the above tests show that these selectors work, uncomment and refine: */
-
-/*
-.stApp .main [data-baseweb="segmented-control"] button {
+.chart-controls button {
     background: transparent !important;
     border: 1px solid rgba(156, 163, 175, 0.2) !important;
     border-radius: 9px !important;
@@ -189,21 +165,68 @@ div[data-testid="stColumn"] button {
     margin: 0 1px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: fit-content !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    box-sizing: border-box !important;
 }
 
-.stApp .main [data-baseweb="segmented-control"] button[aria-pressed="true"] {
+.chart-controls button[aria-pressed="true"] {
     background: linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     box-shadow: 
         0 2px 8px rgba(99, 102, 241, 0.4),
         0 1px 4px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
     transform: translateY(-1px) !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
-*/
+
+.chart-controls button:hover:not([aria-pressed="true"]) {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.12) 100%) !important;
+    color: #e2e8f0 !important;
+    transform: translateY(-0.5px) !important;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+.chart-controls button[aria-pressed="true"]:hover {
+    background: linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: 
+        0 4px 12px rgba(99, 102, 241, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Container styling */
+.chart-controls [data-baseweb="segmented-control"] {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(16px) !important;
+    padding: 3px !important;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    display: inline-flex !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
 
 /* ENHANCED SEGMENTED CONTROLS - MAXIMUM SPECIFICITY APPROACH */
 
