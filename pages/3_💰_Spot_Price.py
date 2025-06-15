@@ -84,10 +84,9 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Simplified but visible background design for Kaspa */
+/* Simple, clean background for Kaspa */
 .stApp {
     background: 
-        /* Main gradient foundation */
         linear-gradient(135deg, 
             #0B0B1F 0%, 
             #1A1A3E 25%, 
@@ -95,71 +94,19 @@ st.markdown("""
             #1E1E4A 75%, 
             #0A0A1D 100%
         ),
-        /* Top corner glow - MUCH MORE VISIBLE */
-        radial-gradient(ellipse 800px 600px at 0% 0%, 
-            rgba(91, 108, 255, 0.4) 0%, 
-            rgba(147, 51, 234, 0.25) 30%, 
+        radial-gradient(ellipse at 0% 0%, 
+            rgba(91, 108, 255, 0.3) 0%, 
+            rgba(147, 51, 234, 0.15) 40%, 
             transparent 70%
         ),
-        /* Bottom right accent - MORE VISIBLE */
-        radial-gradient(ellipse 600px 400px at 100% 100%, 
-            rgba(99, 102, 241, 0.3) 0%, 
-            rgba(91, 108, 255, 0.15) 40%, 
-            transparent 70%
-        ),
-        /* Large visible light orbs */
-        radial-gradient(circle 200px at 25% 70%, rgba(91, 108, 255, 0.2) 0%, transparent 100%),
-        radial-gradient(circle 150px at 75% 30%, rgba(147, 51, 234, 0.18) 0%, transparent 100%),
-        radial-gradient(circle 100px at 60% 85%, rgba(99, 102, 241, 0.15) 0%, transparent 100%),
-        radial-gradient(circle 120px at 15% 15%, rgba(91, 108, 255, 0.12) 0%, transparent 100%),
-        /* Simple but visible grain pattern */
-        repeating-linear-gradient(
-            45deg,
-            transparent 0px,
-            transparent 2px,
-            rgba(255, 255, 255, 0.02) 2px,
-            rgba(255, 255, 255, 0.02) 4px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            transparent 0px,
-            transparent 2px,
-            rgba(91, 108, 255, 0.03) 2px,
-            rgba(91, 108, 255, 0.03) 4px
+        radial-gradient(ellipse at 100% 100%, 
+            rgba(99, 102, 241, 0.2) 0%, 
+            transparent 60%
         );
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
-    position: relative;
     background-attachment: fixed;
-}
-
-/* Simplified animated overlay */
-.stApp::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: 
-        radial-gradient(circle 300px at 30% 30%, rgba(91, 108, 255, 0.1) 0%, transparent 100%),
-        radial-gradient(circle 250px at 70% 70%, rgba(147, 51, 234, 0.08) 0%, transparent 100%),
-        radial-gradient(circle 200px at 50% 10%, rgba(99, 102, 241, 0.06) 0%, transparent 100%);
-    animation: slowPulse 30s ease-in-out infinite;
-    pointer-events: none;
-    z-index: -1;
-}
-
-@keyframes slowPulse {
-    0%, 100% { 
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.7;
-        transform: scale(1.1);
-    }
 }
 
 /* Fixed position animated background effect */
