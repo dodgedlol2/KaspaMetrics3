@@ -65,7 +65,7 @@ else:
 st.markdown("""
 <style>
 .big-font {
-    font-size: 60px !important;
+    font-size: 50px !important;
     font-weight: bold;
     background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
     -webkit-background-clip: text;
