@@ -479,7 +479,7 @@ if not filtered_df.empty:
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Hashrate (PH/s)",
-    height=650,  # Increased from 450 to 650
+    height=1150,  # Increased from 450 to 650
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
