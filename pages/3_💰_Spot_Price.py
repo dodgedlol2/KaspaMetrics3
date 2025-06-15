@@ -453,9 +453,10 @@ div[data-testid="stColumn"] * {
     background: none !important;
 }
 
-/* Custom modebar positioning - lower by 10px */
+/* Custom modebar positioning - lower by 10px and left by 10px */
 .js-plotly-plot .plotly .modebar {
     top: 10px !important;
+    right: 10px !important;
 }
 
 /* Hide Streamlit branding */
