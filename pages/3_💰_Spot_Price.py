@@ -444,13 +444,18 @@ div[data-testid="stColumn"] * {
     }
 }
 
-/* Override Streamlit's default styling */
+# Override Streamlit's default styling */
 .stMetric {
     background: none !important;
 }
 
 .stMetric > div {
     background: none !important;
+}
+
+/* Custom modebar positioning - lower by 10px */
+.js-plotly-plot .plotly .modebar {
+    top: 10px !important;
 }
 
 /* Hide Streamlit branding */
@@ -717,7 +722,7 @@ fig.update_layout(
     margin=dict(l=50, r=20, t=20, b=50),
     modebar=dict(
         orientation="h",  # Changed from "v" to "h" for horizontal
-        bgcolor="rgba(26, 26, 46, 0.8)",
+        bgcolor="rgba(0,0,0,0)",  # Transparent background
         color="#9CA3AF",
         activecolor="#5B6CFF"
     ),
