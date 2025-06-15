@@ -64,19 +64,113 @@ else:
 
 st.markdown("""
 <style>
+.title-section {
+    position: relative;
+    padding: 3rem 0 2rem 0;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border-radius: 20px;
+    background: 
+        /* Main title background gradient */
+        linear-gradient(135deg, 
+            rgba(15, 15, 26, 0.95) 0%, 
+            rgba(26, 26, 46, 0.9) 25%,
+            rgba(91, 108, 255, 0.1) 50%,
+            rgba(26, 26, 46, 0.9) 75%,
+            rgba(15, 15, 26, 0.95) 100%
+        ),
+        /* Animated gradient overlay */
+        linear-gradient(45deg, 
+            transparent 30%, 
+            rgba(91, 108, 255, 0.05) 50%, 
+            transparent 70%
+        ),
+        /* Subtle texture pattern */
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.01) 0px,
+            rgba(255, 255, 255, 0.01) 1px,
+            transparent 1px,
+            transparent 20px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(91, 108, 255, 0.02) 0px,
+            rgba(91, 108, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 25px
+        );
+    border: 1px solid rgba(91, 108, 255, 0.2);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.title-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle at 30% 40%, rgba(91, 108, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(147, 51, 234, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
+    animation: float 20s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes float {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(1deg) scale(1.02); }
+    50% { transform: rotate(0deg) scale(1.01); }
+    75% { transform: rotate(-1deg) scale(1.02); }
+}
+
 .big-font {
     font-size: 50px !important;
-    font-weight: bold;
-    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, 
+        #FFFFFF 0%, 
+        #E2E8F0 25%, 
+        #5B6CFF 50%, 
+        #E2E8F0 75%, 
+        #FFFFFF 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     padding: 0;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+    text-shadow: 0 0 30px rgba(91, 108, 255, 0.3);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.big-font::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        transparent 0%, 
+        rgba(91, 108, 255, 0.1) 50%, 
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: -1;
 }
 </style>
-<div class='big-font'>Kaspa Spot Price</div>
+<div class='title-section'>
+    <div class='big-font'>Kaspa Spot Price</div>
+</div>
 """, unsafe_allow_html=True)
 
 # Custom CSS for BetterStack-inspired dark theme with segmented controls
@@ -84,14 +178,103 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Global dark theme with subtle textured background */
+/* Global dark theme with enhanced textured background */
 .stApp {
     background: 
-        linear-gradient(135deg, #0F0F1A 0%, #0D0D1A 100%),
-        radial-gradient(circle at 20% 20%, rgba(91, 108, 255, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.02) 0%, transparent 50%);
+        /* Primary deep gradient */
+        linear-gradient(135deg, 
+            #0A0A15 0%, 
+            #0F0F1A 25%, 
+            #1A1A2E 50%, 
+            #0F0F1A 75%, 
+            #0A0A15 100%
+        ),
+        /* Secondary overlay gradient */
+        linear-gradient(45deg, 
+            rgba(91, 108, 255, 0.03) 0%, 
+            transparent 30%, 
+            rgba(99, 102, 241, 0.02) 50%, 
+            transparent 70%, 
+            rgba(147, 51, 234, 0.025) 100%
+        ),
+        /* Radial light sources */
+        radial-gradient(circle at 15% 15%, rgba(91, 108, 255, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 25% 85%, rgba(147, 51, 234, 0.035) 0%, transparent 40%),
+        radial-gradient(circle at 75% 75%, rgba(91, 108, 255, 0.025) 0%, transparent 40%),
+        /* Fine grain texture */
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.008) 0px,
+            rgba(255, 255, 255, 0.008) 1px,
+            transparent 1px,
+            transparent 15px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(91, 108, 255, 0.012) 0px,
+            rgba(91, 108, 255, 0.012) 1px,
+            transparent 1px,
+            transparent 20px
+        ),
+        repeating-linear-gradient(
+            45deg,
+            rgba(147, 51, 234, 0.008) 0px,
+            rgba(147, 51, 234, 0.008) 1px,
+            transparent 1px,
+            transparent 25px
+        ),
+        /* Diagonal texture overlay */
+        repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.005) 0px,
+            rgba(255, 255, 255, 0.005) 1px,
+            transparent 1px,
+            transparent 30px
+        );
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Add a subtle animated background effect */
+.stApp::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.015) 0%, transparent 50%);
+    animation: backgroundShift 30s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes backgroundShift {
+    0%, 100% { 
+        background: 
+            radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.015) 0%, transparent 50%);
+    }
+    25% { 
+        background: 
+            radial-gradient(circle at 40% 25%, rgba(99, 102, 241, 0.025) 0%, transparent 50%),
+            radial-gradient(circle at 60% 75%, rgba(91, 108, 255, 0.02) 0%, transparent 50%);
+    }
+    50% { 
+        background: 
+            radial-gradient(circle at 35% 70%, rgba(147, 51, 234, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 65% 30%, rgba(99, 102, 241, 0.018) 0%, transparent 50%);
+    }
+    75% { 
+        background: 
+            radial-gradient(circle at 25% 60%, rgba(91, 108, 255, 0.022) 0%, transparent 50%),
+            radial-gradient(circle at 75% 40%, rgba(147, 51, 234, 0.018) 0%, transparent 50%);
+    }
 }
 
 /* Hide default streamlit styling */
