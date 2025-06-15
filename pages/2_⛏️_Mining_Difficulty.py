@@ -79,16 +79,75 @@ st.markdown("""
 <div class='big-font'>Kaspa Network Hashrate</div>
 """, unsafe_allow_html=True)
 
-# Custom CSS for BetterStack-inspired dark theme with segmented controls
+# Enhanced CSS with Beautiful Background Textures and Glow Effects
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Global dark theme */
+/* BEAUTIFUL ANIMATED BACKGROUND WITH MULTIPLE LAYERS */
 .stApp {
-    background: linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 100%);
+    position: relative;
+    background: #0A0A0F;
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Main background with animated gradients */
+.stApp::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: 
+        /* Primary gradient layer */
+        radial-gradient(ellipse 800px 600px at 20% 40%, rgba(91, 108, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 600px 800px at 80% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 1000px 400px at 50% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        /* Secondary glow effects */
+        radial-gradient(circle 400px at 10% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 70%),
+        radial-gradient(circle 300px at 90% 10%, rgba(245, 158, 11, 0.04) 0%, transparent 70%),
+        /* Base gradients */
+        linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 30%, #16213E 60%, #1A1A2E 100%);
+    animation: backgroundShift 20s ease-in-out infinite;
+}
+
+/* Animated noise texture overlay */
+.stApp::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+}
+
+@keyframes backgroundShift {
+    0%, 100% {
+        background: 
+            radial-gradient(ellipse 800px 600px at 20% 40%, rgba(91, 108, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse 600px 800px at 80% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+            radial-gradient(ellipse 1000px 400px at 50% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+            radial-gradient(circle 400px at 10% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 70%),
+            radial-gradient(circle 300px at 90% 10%, rgba(245, 158, 11, 0.04) 0%, transparent 70%),
+            linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 30%, #16213E 60%, #1A1A2E 100%);
+    }
+    50% {
+        background: 
+            radial-gradient(ellipse 600px 800px at 25% 60%, rgba(91, 108, 255, 0.18) 0%, transparent 50%),
+            radial-gradient(ellipse 800px 600px at 75% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse 800px 500px at 40% 70%, rgba(139, 92, 246, 0.10) 0%, transparent 50%),
+            radial-gradient(circle 350px at 15% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 70%),
+            radial-gradient(circle 250px at 85% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 70%),
+            linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 30%, #16213E 60%, #1A1A2E 100%);
+    }
 }
 
 /* Hide default streamlit styling */
@@ -100,21 +159,192 @@ st.markdown("""
     padding-top: 0.5rem;
     padding-bottom: 2rem;
     max-width: 1200px;
+    position: relative;
 }
 
-/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
-/* Target all segmented controls */
+/* GLOWING CARDS WITH ENHANCED EFFECTS */
+.metrics-container {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.metric-card {
+    background: linear-gradient(135deg, 
+        rgba(26, 26, 46, 0.9) 0%, 
+        rgba(22, 22, 41, 0.9) 100%);
+    border: 1px solid rgba(91, 108, 255, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(91, 108, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(91, 108, 255, 0.4);
+    box-shadow: 
+        0 12px 48px rgba(0, 0, 0, 0.6),
+        0 4px 16px rgba(91, 108, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        rgba(91, 108, 255, 0.8), 
+        rgba(99, 102, 241, 0.8), 
+        rgba(139, 92, 246, 0.8));
+    border-radius: 16px 16px 0 0;
+}
+
+.metric-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(91, 108, 255, 0.03) 0%, transparent 70%);
+    animation: cardGlow 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes cardGlow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.1; transform: scale(1.1); }
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    text-shadow: 0 2px 8px rgba(91, 108, 255, 0.3);
+}
+
+.metric-label {
+    color: #9CA3AF;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.metric-change {
+    color: #10B981;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-shadow: 0 1px 4px rgba(16, 185, 129, 0.3);
+}
+
+.metric-change.negative {
+    color: #ef4444;
+    text-shadow: 0 1px 4px rgba(239, 68, 68, 0.3);
+}
+
+/* ENHANCED CHART CONTAINER */
+.chart-container {
+    background: linear-gradient(135deg, 
+        rgba(26, 26, 46, 0.85) 0%, 
+        rgba(22, 22, 41, 0.85) 100%);
+    border: 1px solid rgba(91, 108, 255, 0.15);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+    backdrop-filter: blur(16px);
+    box-shadow: 
+        0 16px 64px rgba(0, 0, 0, 0.4),
+        0 4px 16px rgba(91, 108, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.chart-container::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(45deg, 
+        rgba(91, 108, 255, 0.2), 
+        rgba(99, 102, 241, 0.1), 
+        rgba(139, 92, 246, 0.1),
+        rgba(91, 108, 255, 0.2));
+    border-radius: 16px;
+    z-index: -1;
+    animation: borderGlow 6s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+}
+
+/* ENHANCED ANALYSIS SECTION */
+.analysis-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.analysis-card {
+    background: linear-gradient(135deg, 
+        rgba(26, 26, 46, 0.8) 0%, 
+        rgba(22, 22, 41, 0.8) 100%);
+    border: 1px solid rgba(91, 108, 255, 0.15);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    backdrop-filter: blur(12px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(91, 108, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.analysis-card:hover {
+    border-color: rgba(91, 108, 255, 0.25);
+    box-shadow: 
+        0 12px 48px rgba(0, 0, 0, 0.5),
+        0 4px 16px rgba(91, 108, 255, 0.1);
+}
+
+/* BETTERSTACK-STYLE SEGMENTED CONTROLS WITH GLOW */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
-    background: rgba(26, 26, 46, 0.6) !important;
-    border: 1px solid rgba(54, 54, 80, 0.4) !important;
+    background: linear-gradient(135deg, 
+        rgba(26, 26, 46, 0.9) 0%, 
+        rgba(22, 22, 41, 0.9) 100%) !important;
+    border: 1px solid rgba(91, 108, 255, 0.3) !important;
     border-radius: 8px !important;
-    backdrop-filter: blur(12px) !important;
+    backdrop-filter: blur(16px) !important;
     padding: 2px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        0 1px 4px rgba(91, 108, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     display: inline-flex !important;
 }
 
-/* PROVEN SOLUTION: Make columns fit their content */
+/* Make columns fit their content */
 div[data-testid="stColumn"] {
     width: fit-content !important;
     flex: unset !important;
@@ -124,11 +354,7 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-</style>
-
-<style>
-
-/* Individual segments - inactive state */
+/* Individual segments with enhanced glow */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
     background: transparent !important;
     border: none !important;
@@ -138,7 +364,7 @@ div[data-testid="stColumn"] * {
     font-size: 13px !important;
     padding: 6px 8px !important;
     margin: 0 1px !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
     min-height: 28px !important;
     display: flex !important;
@@ -149,24 +375,31 @@ div[data-testid="stColumn"] * {
     flex-shrink: 0 !important;
 }
 
-/* Active segment - BetterStack style */
+/* Active segment with beautiful glow */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: rgba(91, 108, 255, 0.15) !important;
+    background: linear-gradient(135deg, 
+        rgba(91, 108, 255, 0.25) 0%, 
+        rgba(99, 102, 241, 0.15) 100%) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     box-shadow: 
-        0 1px 3px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(91, 108, 255, 0.3) !important;
+        0 2px 8px rgba(91, 108, 255, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(91, 108, 255, 0.4) !important;
+    text-shadow: 0 1px 2px rgba(91, 108, 255, 0.5);
 }
 
-/* Hover state for inactive segments */
+/* Hover state with subtle glow */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
-    background: rgba(54, 54, 80, 0.3) !important;
+    background: linear-gradient(135deg, 
+        rgba(91, 108, 255, 0.08) 0%, 
+        rgba(54, 54, 80, 0.15) 100%) !important;
     color: #e2e8f0 !important;
+    box-shadow: 0 1px 4px rgba(91, 108, 255, 0.1);
 }
 
-/* Controls container */
+/* Controls styling */
 .chart-controls {
     margin: 0;
     padding: 0;
@@ -189,86 +422,7 @@ div[data-testid="stColumn"] * {
     font-family: 'Inter', sans-serif;
     text-align: center;
     white-space: nowrap;
-}
-
-/* Metrics cards */
-.metrics-container {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-    flex-wrap: wrap;
-}
-
-.metric-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 1.5rem;
-    flex: 1;
-    min-width: 250px;
-    position: relative;
-    overflow: hidden;
-}
-
-.metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #5B6CFF, #6366F1);
-}
-
-.metric-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin-bottom: 0.5rem;
-    font-family: 'Inter', sans-serif;
-}
-
-.metric-label {
-    color: #9CA3AF;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
-}
-
-.metric-change {
-    color: #10B981;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.metric-change.negative {
-    color: #ef4444;
-}
-
-/* Chart container */
-.chart-container {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 3rem;
-}
-
-/* Analysis section */
-.analysis-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.analysis-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .section-title {
@@ -277,9 +431,10 @@ div[data-testid="stColumn"] * {
     font-weight: 600;
     margin-bottom: 1.5rem;
     font-family: 'Inter', sans-serif;
+    text-shadow: 0 2px 8px rgba(91, 108, 255, 0.3);
 }
 
-/* Custom bullet points */
+/* Custom bullet points with glow */
 .insights-list {
     list-style: none;
     padding: 0;
@@ -299,6 +454,7 @@ div[data-testid="stColumn"] * {
     left: 0;
     color: #5B6CFF;
     font-weight: 600;
+    text-shadow: 0 1px 4px rgba(91, 108, 255, 0.5);
 }
 
 /* Responsive design */
@@ -320,6 +476,10 @@ div[data-testid="stColumn"] * {
     .metrics-container {
         flex-direction: column;
     }
+    
+    .stApp::before {
+        animation: none; /* Disable animation on mobile for performance */
+    }
 }
 
 /* Override Streamlit's default styling */
@@ -335,7 +495,50 @@ div[data-testid="stColumn"] * {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Additional floating particle effect for extra magic */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(120deg); }
+    66% { transform: translateY(5px) rotate(240deg); }
+}
+
+.floating-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.floating-particles::before,
+.floating-particles::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, rgba(91, 108, 255, 0.6) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite;
+}
+
+.floating-particles::before {
+    top: 20%;
+    left: 10%;
+    animation-delay: -2s;
+}
+
+.floating-particles::after {
+    top: 80%;
+    right: 10%;
+    animation-delay: -4s;
+}
 </style>
+
+<!-- Add floating particles -->
+<div class="floating-particles"></div>
 """, unsafe_allow_html=True)
 
 # BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
@@ -422,15 +625,20 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add hashrate trace with your purple color scheme
+    # Add hashrate trace with enhanced glow effects
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Hashrate_PH'],
         mode='lines',
         name='Hashrate (PH/s)',
-        line=dict(color='#5B6CFF', width=3),
+        line=dict(
+            color='#5B6CFF', 
+            width=3,
+            # Adding glow effect via multiple overlapping lines would be complex in Plotly
+            # We'll rely on the CSS backdrop effects instead
+        ),
         fill='tonexty',
-        fillcolor='rgba(91, 108, 255, 0.1)',
+        fillcolor='rgba(91, 108, 255, 0.15)',
         hovertemplate='<b>Kaspa Hashrate</b><br>Date: %{text}<br>Hashrate: %{y:.2f} PH/s<br><extra></extra>',
         text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
     ))
@@ -475,7 +683,7 @@ if not filtered_df.empty:
             hoverinfo='skip'
         ))
 
-# Enhanced chart layout matching your theme - INCREASED HEIGHT
+# Enhanced chart layout with beautiful styling - INCREASED HEIGHT
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Hashrate (PH/s)",
@@ -484,16 +692,20 @@ fig.update_layout(
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
     xaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(91, 108, 255, 0.1)',
         gridwidth=1,
         color='#9CA3AF',
-        type="log" if x_scale_type == "Log" else None
+        type="log" if x_scale_type == "Log" else None,
+        showgrid=True,
+        zeroline=False
     ),
     yaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(91, 108, 255, 0.1)',
         gridwidth=1,
         color='#9CA3AF',
-        type="log" if y_scale == "Log" else "linear"
+        type="log" if y_scale == "Log" else "linear",
+        showgrid=True,
+        zeroline=False
     ),
     showlegend=True,
     legend=dict(
@@ -505,7 +717,7 @@ fig.update_layout(
         bgcolor='rgba(0,0,0,0)',
         bordercolor='rgba(0,0,0,0)',
         borderwidth=0,
-        font=dict(size=11)
+        font=dict(size=11, color='#9CA3AF')
     ),
     margin=dict(l=50, r=20, t=20, b=50),
     modebar=dict(
@@ -522,6 +734,9 @@ fig.update_layout(
     )
 )
 
+# Wrap chart in container div for enhanced styling
+st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+
 st.plotly_chart(fig, use_container_width=True, config={
     'displayModeBar': True,
     'displaylogo': False,
@@ -535,6 +750,8 @@ st.plotly_chart(fig, use_container_width=True, config={
         'scale': 2
     }
 })
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Calculate real metrics from data
 if not hashrate_df.empty:
@@ -569,7 +786,7 @@ else:
     change_7d = 2.1
     change_30d = 5.2
 
-# Custom metrics cards with real data
+# Enhanced metrics cards with beautiful glow effects
 st.markdown(f"""
 <div class="metrics-container">
     <div class="metric-card">
@@ -590,7 +807,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Analysis section with real insights
+# Enhanced analysis section with beautiful styling
 current_growth = "15%" if change_30d > 10 else f"{change_30d:.1f}%"
 
 st.markdown(f"""
@@ -627,7 +844,7 @@ mini_fig.add_trace(go.Scatter(
     line=dict(color='#6366F1', width=3),
     marker=dict(color='#5B6CFF', size=4),
     fill='tonexty',
-    fillcolor='rgba(99, 102, 241, 0.1)'
+    fillcolor='rgba(99, 102, 241, 0.15)'
 ))
 
 mini_fig.update_layout(
@@ -636,15 +853,19 @@ mini_fig.update_layout(
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter', size=12),
     xaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(91, 108, 255, 0.1)',
         gridwidth=1,
         color='#9CA3AF',
-        showticklabels=True
+        showticklabels=True,
+        showgrid=True,
+        zeroline=False
     ),
     yaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(91, 108, 255, 0.1)',
         gridwidth=1,
-        color='#9CA3AF'
+        color='#9CA3AF',
+        showgrid=True,
+        zeroline=False
     ),
     showlegend=False,
     margin=dict(l=0, r=0, t=20, b=0)
