@@ -719,12 +719,7 @@ fig.update_layout(
         orientation="h",  # Changed from "v" to "h" for horizontal
         bgcolor="rgba(26, 26, 46, 0.8)",
         color="#9CA3AF",
-        activecolor="#5B6CFF",
-        # Position the modebar at top-right corner
-        x=1.0,  # Right edge
-        y=1.0,  # Top edge
-        xanchor='right',
-        yanchor='top'
+        activecolor="#5B6CFF"
     ),
     hoverlabel=dict(
         bgcolor='rgba(15, 20, 25, 0.95)',
