@@ -624,8 +624,7 @@ if not filtered_df.empty:
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else [],
-        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else []
     ))
 
     # Add power law if enabled
@@ -688,7 +687,7 @@ fig.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
-    hovermode='x unified',  # Always show unified hover for all traces at the same x-value
+    hovermode='closest' if x_scale_type == "Log" else 'x unified',  # Use closest for log scale to avoid x-value header
     hoverlabel=dict(
         bgcolor='rgba(15, 20, 25, 0.95)',
         bordercolor='rgba(91, 108, 255, 0.5)',
@@ -696,13 +695,6 @@ fig.update_layout(
         align='left',
         namelength=-1  # Show full trace names
     ),
-    # Custom hover label formatting for unified mode
-    annotations=[
-        dict(
-            x=0.5, y=1.15, xref='paper', yref='paper',
-            text='', showarrow=False, font=dict(size=12)
-        ) if x_scale_type == "Log" and not filtered_df.empty else dict()
-    ] if x_scale_type == "Log" and not filtered_df.empty else [],
     xaxis=dict(
         type="log" if x_scale_type == "Log" else None,
         showgrid=True,
