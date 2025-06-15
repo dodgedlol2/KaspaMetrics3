@@ -79,7 +79,7 @@ st.markdown("""
 <div class='big-font'>Kaspa Network Hashrate</div>
 """, unsafe_allow_html=True)
 
-# Custom CSS for BetterStack-inspired dark theme with segmented controls
+# Custom CSS for BetterStack-inspired dark theme with enhanced segmented controls
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -105,16 +105,37 @@ st.markdown("""
     max-width: 1200px;
 }
 
-/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
-/* Target all segmented controls */
+/* ENHANCED BETTERSTACK-STYLE SEGMENTED CONTROLS */
+/* Target all segmented controls with enhanced styling */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
-    background: rgba(26, 26, 46, 0.6) !important;
-    border: 1px solid rgba(54, 54, 80, 0.4) !important;
-    border-radius: 8px !important;
-    backdrop-filter: blur(12px) !important;
-    padding: 2px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    background: 
+        linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(16px) !important;
+    padding: 3px !important;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     display: inline-flex !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Subtle inner glow effect */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
+        radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    border-radius: 11px;
 }
 
 /* PROVEN SOLUTION: Make columns fit their content */
@@ -127,46 +148,98 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-</style>
-
-<style>
-
-/* Individual segments - inactive state */
+/* Individual segments - inactive state with enhanced styling */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
     background: transparent !important;
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 9px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
     font-size: 13px !important;
-    padding: 6px 8px !important;
+    padding: 8px 12px !important;
     margin: 0 1px !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
-    min-height: 28px !important;
+    min-height: 32px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: fit-content !important;
     width: auto !important;
     flex-shrink: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Active segment - BetterStack style */
+/* Active segment - Enhanced professional styling with #6366F1 */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: rgba(91, 108, 255, 0.15) !important;
+    background: 
+        linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     box-shadow: 
-        0 1px 3px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(91, 108, 255, 0.3) !important;
+        0 2px 8px rgba(99, 102, 241, 0.4),
+        0 1px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-1px) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Hover state for inactive segments */
+/* Subtle shimmer effect for active buttons */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    50% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Hover state for inactive segments - Enhanced */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
-    background: rgba(54, 54, 80, 0.3) !important;
+    background: 
+        linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
     color: #e2e8f0 !important;
+    transform: translateY(-0.5px) !important;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Hover state for active segments */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
+    background: 
+        linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: 
+        0 4px 12px rgba(99, 102, 241, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Focus states for accessibility */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:focus-visible {
+    outline: 2px solid #6366F1 !important;
+    outline-offset: 2px !important;
 }
 
 /* Controls container */
@@ -192,6 +265,7 @@ div[data-testid="stColumn"] * {
     font-family: 'Inter', sans-serif;
     text-align: center;
     white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Enhanced metrics cards with gritty texture and animations */
