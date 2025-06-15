@@ -797,7 +797,7 @@ col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
     y_scale = st.segmented_control(
-        label="",
+        label="Hashrate Scale",  # Fix empty label warning
         options=["Linear", "Log"],
         default="Log",
         label_visibility="collapsed",
@@ -808,7 +808,7 @@ with col1:
 with col2:
     st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
     x_scale_type = st.segmented_control(
-        label="",
+        label="Time Scale",  # Fix empty label warning
         options=["Linear", "Log"],
         default="Linear",
         label_visibility="collapsed",
@@ -819,7 +819,7 @@ with col2:
 with col3:
     st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
     show_power_law = st.segmented_control(
-        label="",
+        label="Power Law",  # Fix empty label warning
         options=["Hide", "Show"],
         default="Show",
         label_visibility="collapsed",
@@ -833,7 +833,7 @@ with spacer:
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
-        label="",
+        label="Time Period",  # Fix empty label warning
         options=["1M", "3M", "6M", "1Y", "All"],
         default="All",
         label_visibility="collapsed",
@@ -843,108 +843,68 @@ with col4:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# FINAL ATTEMPT - Use JavaScript to force the styling after page load
+# LAST RESORT - Super simple approach with maximum force
 st.markdown("""
 <style>
-/* Base styling that we know works */
-.chart-controls div[data-testid="stColumn"] button {
-    background: transparent !important;
-    border: 1px solid rgba(156, 163, 175, 0.3) !important;
-    border-radius: 8px !important;
-    color: #9CA3AF !important;
-    font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 6px 12px !important;
-    margin: 0 2px !important;
-    transition: all 0.2s ease !important;
-    font-family: 'Inter', sans-serif !important;
+/* Force blue color on active buttons - MAXIMUM FORCE */
+.chart-controls button[aria-pressed="true"] {
+    background-color: #6366F1 !important;
+    background: #6366F1 !important;
+    color: white !important;
+    border: 1px solid #5B5FED !important;
 }
 
-.chart-controls div[data-testid="stColumn"] button[aria-pressed="true"] {
+/* Alternative - target all possible button selectors */
+div[data-testid="stColumn"] button[aria-pressed="true"] {
+    background-color: #6366F1 !important;
     background: #6366F1 !important;
-    background-image: linear-gradient(135deg, #6366F1 0%, #5B5FED 100%) !important;
     color: white !important;
-    font-weight: 600 !important;
     border: 1px solid #5B5FED !important;
-    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3) !important;
+}
+
+[data-baseweb] button[aria-pressed="true"] {
+    background-color: #6366F1 !important;
+    background: #6366F1 !important;
+    color: white !important;
+    border: 1px solid #5B5FED !important;
+}
+
+/* Nuclear option - ANY active button anywhere */
+button[aria-pressed="true"] {
+    background-color: #6366F1 !important;
+    background: #6366F1 !important;
+    color: white !important;
+}
+
+/* Style inactive buttons too for contrast */
+.chart-controls button:not([aria-pressed="true"]) {
+    background-color: transparent !important;
+    background: transparent !important;
+    color: #9CA3AF !important;
+    border: 1px solid rgba(156, 163, 175, 0.3) !important;
+}
+
+div[data-testid="stColumn"] button:not([aria-pressed="true"]) {
+    background-color: transparent !important;
+    background: transparent !important;
+    color: #9CA3AF !important;
+    border: 1px solid rgba(156, 163, 175, 0.3) !important;
 }
 </style>
+""", unsafe_allow_html=True)
 
-<script>
-// JavaScript fallback to force styling
-setTimeout(function() {
-    // Find all buttons in chart-controls
-    const chartControls = document.querySelector('.chart-controls');
-    if (chartControls) {
-        const buttons = chartControls.querySelectorAll('button');
-        buttons.forEach(button => {
-            // Apply base styles
-            button.style.setProperty('background', 'transparent', 'important');
-            button.style.setProperty('border', '1px solid rgba(156, 163, 175, 0.3)', 'important');
-            button.style.setProperty('border-radius', '8px', 'important');
-            button.style.setProperty('color', '#9CA3AF', 'important');
-            button.style.setProperty('font-weight', '500', 'important');
-            button.style.setProperty('font-size', '13px', 'important');
-            button.style.setProperty('padding', '6px 12px', 'important');
-            button.style.setProperty('margin', '0 2px', 'important');
-            button.style.setProperty('transition', 'all 0.2s ease', 'important');
-            button.style.setProperty('font-family', 'Inter, sans-serif', 'important');
-            
-            // Check if button is active
-            if (button.getAttribute('aria-pressed') === 'true') {
-                button.style.setProperty('background', '#6366F1', 'important');
-                button.style.setProperty('color', 'white', 'important');
-                button.style.setProperty('font-weight', '600', 'important');
-                button.style.setProperty('border', '1px solid #5B5FED', 'important');
-                button.style.setProperty('box-shadow', '0 2px 4px rgba(99, 102, 241, 0.3)', 'important');
-            }
-            
-            // Add click event listener to maintain styling
-            button.addEventListener('click', function() {
-                setTimeout(() => {
-                    const allButtons = chartControls.querySelectorAll('button');
-                    allButtons.forEach(btn => {
-                        if (btn.getAttribute('aria-pressed') === 'true') {
-                            btn.style.setProperty('background', '#6366F1', 'important');
-                            btn.style.setProperty('color', 'white', 'important');
-                            btn.style.setProperty('font-weight', '600', 'important');
-                            btn.style.setProperty('border', '1px solid #5B5FED', 'important');
-                            btn.style.setProperty('box-shadow', '0 2px 4px rgba(99, 102, 241, 0.3)', 'important');
-                        } else {
-                            btn.style.setProperty('background', 'transparent', 'important');
-                            btn.style.setProperty('color', '#9CA3AF', 'important');
-                            btn.style.setProperty('font-weight', '500', 'important');
-                            btn.style.setProperty('border', '1px solid rgba(156, 163, 175, 0.3)', 'important');
-                            btn.style.setProperty('box-shadow', 'none', 'important');
-                        }
-                    });
-                }, 50);
-            });
-        });
-    }
-}, 1000); // Wait 1 second for everything to load
+# Also try putting CSS at the very end to ensure it loads last
+import time
+time.sleep(0.1)  # Small delay
 
-// Also run immediately and on interval
-function styleSegmentedControls() {
-    const chartControls = document.querySelector('.chart-controls');
-    if (chartControls) {
-        const buttons = chartControls.querySelectorAll('button');
-        buttons.forEach(button => {
-            if (button.getAttribute('aria-pressed') === 'true') {
-                button.style.setProperty('background', '#6366F1', 'important');
-                button.style.setProperty('color', 'white', 'important');
-                button.style.setProperty('border', '1px solid #5B5FED', 'important');
-            }
-        });
-    }
+st.markdown("""
+<style>
+/* FINAL ATTEMPT - Simplest possible approach */
+button[aria-pressed="true"] {
+    background: #6366F1 !important;
+    color: white !important;
 }
-
-// Run styling function multiple times to catch dynamic updates
-setTimeout(styleSegmentedControls, 100);
-setTimeout(styleSegmentedControls, 500);
-setTimeout(styleSegmentedControls, 1500);
-setInterval(styleSegmentedControls, 2000);
-</script>
+</style>
 """, unsafe_allow_html=True)
 
 # Data filtering based on time range
