@@ -5,13 +5,29 @@ import os
 class EmailHandler:
     def __init__(self):
         try:
-            self.api_key = st.secrets["default"]["MAILJET_API_KEY"]
-            self.api_secret = st.secrets["default"]["MAILJET_API_SECRET"]
-            self.from_email = st.secrets["default"]["RESET_EMAIL_FROM"]
-            self.from_name = st.secrets["default"].get("RESET_EMAIL_FROM_NAME", "Kaspa Analytics")
-            self.domain = st.secrets["default"]["DOMAIN"]
-            self.mailjet = Client(auth=(self.api_key, self.api_secret), version='v3.1')
-            st.write("Debug: Mailjet email handler initialized successfully!")
+            # Try environment variables first (Heroku)
+            self.api_key = os.environ.get("MAILJET_API_KEY")
+            self.api_secret = os.environ.get("MAILJET_API_SECRET")
+            self.from_email = os.environ.get("RESET_EMAIL_FROM")
+            self.from_name = os.environ.get("RESET_EMAIL_FROM_NAME", "Kaspa Analytics")
+            self.domain = os.environ.get("DOMAIN")
+            
+            # If not found in environment, try Streamlit secrets (local development)
+            if not self.api_key:
+                default_secrets = st.secrets["default"]
+                self.api_key = default_secrets["MAILJET_API_KEY"]
+                self.api_secret = default_secrets["MAILJET_API_SECRET"]
+                self.from_email = default_secrets["RESET_EMAIL_FROM"]
+                self.from_name = default_secrets.get("RESET_EMAIL_FROM_NAME", "Kaspa Analytics")
+                self.domain = default_secrets["DOMAIN"]
+            
+            if self.api_key and self.api_secret:
+                self.mailjet = Client(auth=(self.api_key, self.api_secret), version='v3.1')
+                st.write("Debug: Mailjet email handler initialized successfully!")
+            else:
+                st.write("Debug: Mailjet credentials not found, emails will be simulated")
+                self.mailjet = None
+                
         except Exception as e:
             st.write(f"Debug: Error initializing Mailjet handler: {e}")
             self.mailjet = None
