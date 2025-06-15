@@ -67,28 +67,62 @@ st.markdown("""
 .big-font {
     font-size: 50px !important;
     font-weight: bold;
-    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
+    background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 50%, #CBD5E1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin: 0 0 0.5rem 0;
-    padding: 0;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    padding: 2rem 0 1rem 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+    position: relative;
+    z-index: 2;
+}
+
+/* Background highlight for header */
+.header-container {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.header-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2rem;
+    right: -2rem;
+    height: 120px;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(91, 108, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
+        linear-gradient(135deg, rgba(91, 108, 255, 0.02) 0%, rgba(99, 102, 241, 0.03) 100%);
+    border-radius: 20px;
+    backdrop-filter: blur(40px);
+    z-index: 1;
 }
 </style>
-<div class='big-font'>Kaspa Network Hashrate</div>
+<div class='header-container'>
+    <div class='big-font'>Kaspa Network Hashrate</div>
+</div>
 """, unsafe_allow_html=True)
 
-# Custom CSS for BetterStack-inspired dark theme with segmented controls
+# Enhanced Custom CSS for BetterStack-inspired dark theme with texture and gradients
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Global dark theme */
+/* Global dark theme with enhanced background */
 .stApp {
-    background: linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 100%);
+    background: 
+        /* Noise texture overlay */
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E"),
+        /* Subtle dot pattern */
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.015) 1px, transparent 0),
+        /* Main gradient background */
+        linear-gradient(135deg, #0F0F1A 0%, #0D0D1A 50%, #0A0A14 100%);
+    background-size: 100% 100%, 20px 20px, 100% 100%;
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
 }
 
 /* Hide default streamlit styling */
@@ -105,13 +139,33 @@ st.markdown("""
 /* BETTERSTACK-STYLE SEGMENTED CONTROLS */
 /* Target all segmented controls */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
-    background: rgba(26, 26, 46, 0.6) !important;
-    border: 1px solid rgba(54, 54, 80, 0.4) !important;
-    border-radius: 8px !important;
-    backdrop-filter: blur(12px) !important;
-    padding: 2px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    background: 
+        linear-gradient(135deg, rgba(15, 15, 26, 0.8) 0%, rgba(13, 13, 26, 0.9) 100%) !important;
+    border: 1px solid rgba(54, 54, 80, 0.6) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(20px) !important;
+    padding: 3px !important;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     display: inline-flex !important;
+    position: relative;
+}
+
+/* Subtle glow effect for segmented controls */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"]::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, rgba(91, 108, 255, 0.1), rgba(99, 102, 241, 0.05));
+    border-radius: 11px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"]:hover::before {
+    opacity: 1;
 }
 
 /* PROVEN SOLUTION: Make columns fit their content */
@@ -124,59 +178,70 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-</style>
-
-<style>
-
 /* Individual segments - inactive state */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
     background: transparent !important;
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 7px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
     font-size: 13px !important;
-    padding: 6px 8px !important;
+    padding: 8px 12px !important;
     margin: 0 1px !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
-    min-height: 28px !important;
+    min-height: 32px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: fit-content !important;
     width: auto !important;
     flex-shrink: 0 !important;
+    position: relative;
 }
 
-/* Active segment - BetterStack style */
+/* Active segment - Enhanced BetterStack style */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: rgba(91, 108, 255, 0.15) !important;
+    background: 
+        linear-gradient(135deg, rgba(91, 108, 255, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     box-shadow: 
-        0 1px 3px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(91, 108, 255, 0.3) !important;
+        0 2px 8px rgba(91, 108, 255, 0.2),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(91, 108, 255, 0.4) !important;
 }
 
 /* Hover state for inactive segments */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
-    background: rgba(54, 54, 80, 0.3) !important;
+    background: 
+        linear-gradient(135deg, rgba(54, 54, 80, 0.4) 0%, rgba(64, 64, 90, 0.3) 100%) !important;
     color: #e2e8f0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Controls container */
 .chart-controls {
-    margin: 0;
-    padding: 0;
+    margin: 0 0 2rem 0;
+    padding: 1.5rem;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(91, 108, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(15, 15, 26, 0.6) 0%, rgba(13, 13, 26, 0.8) 100%);
+    border: 1px solid rgba(54, 54, 80, 0.3);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .control-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .control-label {
@@ -191,7 +256,7 @@ div[data-testid="stColumn"] * {
     white-space: nowrap;
 }
 
-/* Metrics cards */
+/* Enhanced Metrics cards with texture and glow */
 .metrics-container {
     display: flex;
     gap: 1.5rem;
@@ -200,14 +265,32 @@ div[data-testid="stColumn"] * {
 }
 
 .metric-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 1.5rem;
+    background: 
+        /* Subtle noise texture */
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E"),
+        /* Gradient background */
+        linear-gradient(135deg, rgba(15, 15, 26, 0.8) 0%, rgba(13, 13, 26, 0.9) 50%, rgba(10, 10, 20, 0.95) 100%);
+    border: 1px solid rgba(54, 54, 80, 0.4);
+    border-radius: 18px;
+    padding: 2rem 1.5rem;
     flex: 1;
     min-width: 250px;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.3),
+        0 4px 16px rgba(91, 108, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-color: rgba(91, 108, 255, 0.3);
 }
 
 .metric-card::before {
@@ -216,8 +299,27 @@ div[data-testid="stColumn"] * {
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #5B6CFF, #6366F1);
+    height: 3px;
+    background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 50%, #8B5CF6 100%);
+    border-radius: 18px 18px 0 0;
+}
+
+/* Subtle inner glow */
+.metric-card::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(91, 108, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+    border-radius: 17px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.metric-value, .metric-label, .metric-change {
+    position: relative;
+    z-index: 2;
 }
 
 .metric-value {
@@ -226,6 +328,7 @@ div[data-testid="stColumn"] * {
     color: #FFFFFF;
     margin-bottom: 0.5rem;
     font-family: 'Inter', sans-serif;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .metric-label {
@@ -247,16 +350,37 @@ div[data-testid="stColumn"] * {
     color: #ef4444;
 }
 
-/* Chart container */
+/* Enhanced Chart container */
 .chart-container {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
+    background: 
+        /* Subtle texture */
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E"),
+        /* Enhanced gradient */
+        linear-gradient(135deg, rgba(15, 15, 26, 0.7) 0%, rgba(13, 13, 26, 0.85) 50%, rgba(10, 10, 20, 0.9) 100%);
+    border: 1px solid rgba(54, 54, 80, 0.4);
+    border-radius: 20px;
     padding: 2rem;
     margin-bottom: 3rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        0 16px 64px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
 }
 
-/* Analysis section */
+/* Chart container glow effect */
+.chart-container::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, rgba(91, 108, 255, 0.1), rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.08));
+    border-radius: 21px;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+/* Enhanced Analysis section */
 .analysis-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -265,10 +389,27 @@ div[data-testid="stColumn"] * {
 }
 
 .analysis-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
+    background: 
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, rgba(15, 15, 26, 0.8) 0%, rgba(13, 13, 26, 0.9) 50%, rgba(10, 10, 20, 0.95) 100%);
+    border: 1px solid rgba(54, 54, 80, 0.4);
+    border-radius: 18px;
     padding: 2rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.analysis-card:hover {
+    border-color: rgba(91, 108, 255, 0.3);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.3),
+        0 4px 16px rgba(91, 108, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .section-title {
@@ -277,16 +418,20 @@ div[data-testid="stColumn"] * {
     font-weight: 600;
     margin-bottom: 1.5rem;
     font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 2;
 }
 
-/* Custom bullet points */
+/* Custom bullet points with enhanced styling */
 .insights-list {
     list-style: none;
     padding: 0;
+    position: relative;
+    z-index: 2;
 }
 
 .insights-list li {
-    color: #9CA3AF;
+    color: #CBD5E1;
     margin-bottom: 0.75rem;
     padding-left: 1.5rem;
     position: relative;
@@ -299,6 +444,7 @@ div[data-testid="stColumn"] * {
     left: 0;
     color: #5B6CFF;
     font-weight: 600;
+    text-shadow: 0 0 8px rgba(91, 108, 255, 0.4);
 }
 
 /* Responsive design */
@@ -335,6 +481,23 @@ div[data-testid="stColumn"] * {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Enhanced plotly chart styling */
+.js-plotly-plot .plotly .modebar {
+    background: rgba(15, 15, 26, 0.9) !important;
+    border: 1px solid rgba(54, 54, 80, 0.4) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn {
+    color: #9CA3AF !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn:hover {
+    background: rgba(91, 108, 255, 0.2) !important;
+    color: #FFFFFF !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -484,13 +647,13 @@ fig.update_layout(
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
     xaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(54, 54, 80, 0.3)',
         gridwidth=1,
         color='#9CA3AF',
         type="log" if x_scale_type == "Log" else None
     ),
     yaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(54, 54, 80, 0.3)',
         gridwidth=1,
         color='#9CA3AF',
         type="log" if y_scale == "Log" else "linear"
@@ -510,18 +673,19 @@ fig.update_layout(
     margin=dict(l=50, r=20, t=20, b=50),
     modebar=dict(
         orientation="v",
-        bgcolor="rgba(26, 26, 46, 0.8)",
+        bgcolor="rgba(15, 15, 26, 0.9)",
         color="#9CA3AF",
         activecolor="#5B6CFF"
     ),
     hoverlabel=dict(
-        bgcolor='rgba(15, 20, 25, 0.95)',
+        bgcolor='rgba(15, 15, 26, 0.95)',
         bordercolor='rgba(91, 108, 255, 0.5)',
         font=dict(color='#e2e8f0', size=11),
         align='left'
     )
 )
 
+st.markdown('<div class="chart-container">', unsafe_allow_html=True)
 st.plotly_chart(fig, use_container_width=True, config={
     'displayModeBar': True,
     'displaylogo': False,
@@ -535,6 +699,7 @@ st.plotly_chart(fig, use_container_width=True, config={
         'scale': 2
     }
 })
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Calculate real metrics from data
 if not hashrate_df.empty:
@@ -636,13 +801,13 @@ mini_fig.update_layout(
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter', size=12),
     xaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(54, 54, 80, 0.3)',
         gridwidth=1,
         color='#9CA3AF',
         showticklabels=True
     ),
     yaxis=dict(
-        gridcolor='#363650',
+        gridcolor='rgba(54, 54, 80, 0.3)',
         gridwidth=1,
         color='#9CA3AF'
     ),
