@@ -597,15 +597,15 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with your purple color scheme but for price (cyan/blue)
+    # Add price trace with purple color scheme (same as hashrate)
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Price'],
         mode='lines',
         name='Kaspa Price (USD)',
-        line=dict(color='#00d4ff', width=3),
+        line=dict(color='#5B6CFF', width=3),
         fill='tonexty',
-        fillcolor='rgba(0, 212, 255, 0.1)',
+        fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>Kaspa Price</b><br>Date: %{text}<br>Price: $%{y:.6f}<br><extra></extra>',
         text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
     ))
@@ -760,11 +760,11 @@ fig.update_layout(
         orientation="v",
         bgcolor="rgba(26, 26, 46, 0.8)",
         color="#9CA3AF",
-        activecolor="#00d4ff"
+        activecolor="#5B6CFF"
     ),
     hoverlabel=dict(
         bgcolor='rgba(15, 20, 25, 0.95)',
-        bordercolor='rgba(0, 212, 255, 0.5)',
+        bordercolor='rgba(91, 108, 255, 0.5)',
         font=dict(color='#e2e8f0', size=11),
         align='left'
     )
@@ -883,10 +883,10 @@ mini_fig.add_trace(go.Scatter(
     y=recent_data,
     mode='lines+markers',
     name='30-Day Trend',
-    line=dict(color='#00d4ff', width=3),
-    marker=dict(color='#00d4ff', size=4),
+    line=dict(color='#5B6CFF', width=3),
+    marker=dict(color='#5B6CFF', size=4),
     fill='tonexty',
-    fillcolor='rgba(0, 212, 255, 0.1)'
+    fillcolor='rgba(91, 108, 255, 0.1)'
 ))
 
 mini_fig.update_layout(
