@@ -474,6 +474,24 @@ div[data-testid="stColumn"] * {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Custom hover styling - hide x-axis value header in unified hover */
+.js-plotly-plot .plotly .hoverlayer .hovertext .nums {
+    display: none !important;
+}
+
+/* Keep the hover box styling but hide the x-axis value */
+.js-plotly-plot .plotly .hoverlayer .hovertext {
+    background: rgba(15, 20, 25, 0.95) !important;
+    border: 1px solid rgba(91, 108, 255, 0.5) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+/* Style the unified hover container */
+.js-plotly-plot .plotly .hoverlayer .hovertext > .name {
+    display: none !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -687,7 +705,7 @@ fig.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
-    hovermode='closest' if x_scale_type == "Log" else 'x unified',  # Use closest for log scale to avoid x-value header
+    hovermode='x unified',  # Always show unified hover for all traces at the same x-value
     hoverlabel=dict(
         bgcolor='rgba(15, 20, 25, 0.95)',
         bordercolor='rgba(91, 108, 255, 0.5)',
@@ -710,7 +728,12 @@ fig.update_layout(
         zerolinecolor='#3A3C4A',
         color='#9CA3AF',
         # Custom hover format for linear time scale
-        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None
+        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None,
+        # Hide x-axis value in hover for log scale
+        showspikes=True,
+        spikecolor='rgba(255, 255, 255, 0.6)',
+        spikethickness=1,
+        spikedash='solid'
     ),
     yaxis=dict(
         gridcolor='#363650',
@@ -727,7 +750,12 @@ fig.update_layout(
             gridcolor='rgba(54, 54, 80, 0.3)',
             tickmode='array',
             tickvals=y_minor_ticks if y_scale == "Log" else []
-        ) if y_scale == "Log" else dict()
+        ) if y_scale == "Log" else dict(),
+        # Add spikes for y-axis too
+        showspikes=True,
+        spikecolor='rgba(255, 255, 255, 0.6)',
+        spikethickness=1,
+        spikedash='solid'
     ),
     showlegend=True,
     legend=dict(
