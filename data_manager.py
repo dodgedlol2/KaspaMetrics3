@@ -5,6 +5,7 @@ from google.oauth2 import service_account
 from scipy.stats import linregress
 import streamlit as st
 from datetime import datetime, timedelta
+import os
 
 class KaspaDataManager:
     """
@@ -16,15 +17,73 @@ class KaspaDataManager:
         self.genesis_date = pd.to_datetime('2021-11-07', utc=True)
         self._client = None
     
+    def get_google_credentials(self):
+        """
+        Get Google Cloud credentials from environment variables (Heroku) 
+        or Streamlit secrets (local development)
+        """
+        try:
+            # Try environment variables first (Heroku - Method 2)
+            gcp_type = os.environ.get("GCP_TYPE")
+            
+            if gcp_type:
+                # Build credentials from individual environment variables
+                credentials = {
+                    "type": os.environ.get("GCP_TYPE"),
+                    "project_id": os.environ.get("GCP_PROJECT_ID"),
+                    "private_key_id": os.environ.get("GCP_PRIVATE_KEY_ID"),
+                    "private_key": os.environ.get("GCP_PRIVATE_KEY"),
+                    "client_email": os.environ.get("GCP_CLIENT_EMAIL"),
+                    "client_id": os.environ.get("GCP_CLIENT_ID"),
+                    "auth_uri": os.environ.get("GCP_AUTH_URI"),
+                    "token_uri": os.environ.get("GCP_TOKEN_URI"),
+                    "auth_provider_x509_cert_url": os.environ.get("GCP_AUTH_PROVIDER_X509_CERT_URL"),
+                    "client_x509_cert_url": os.environ.get("GCP_CLIENT_X509_CERT_URL"),
+                    "universe_domain": os.environ.get("GCP_UNIVERSE_DOMAIN")
+                }
+                
+                # Remove any None values
+                credentials = {k: v for k, v in credentials.items() if v is not None}
+                
+                st.write("Debug: Google credentials loaded from environment variables")
+                return credentials
+                
+            # Fallback: Try Streamlit secrets (local development)
+            else:
+                gcp_secrets = st.secrets["gcp_service_account"]
+                credentials = dict(gcp_secrets)
+                st.write("Debug: Google credentials loaded from Streamlit secrets")
+                return credentials
+                
+        except Exception as e:
+            st.write(f"Debug: Error loading Google credentials: {e}")
+            return None
+    
     @property
     def client(self):
         """Lazy initialization of Google Sheets client"""
         if self._client is None:
-            credentials = service_account.Credentials.from_service_account_info(
-                st.secrets["gcp_service_account"],
-                scopes=["https://www.googleapis.com/auth/spreadsheets"],
-            )
-            self._client = gspread.authorize(credentials)
+            try:
+                # Get credentials using the new method
+                creds_dict = self.get_google_credentials()
+                
+                if not creds_dict:
+                    st.error("Google credentials not found!")
+                    return None
+                
+                # Create credentials object
+                credentials = service_account.Credentials.from_service_account_info(
+                    creds_dict,
+                    scopes=["https://www.googleapis.com/auth/spreadsheets"]
+                )
+                
+                self._client = gspread.authorize(credentials)
+                st.success("✅ Connected to Google Sheets!")
+                
+            except Exception as e:
+                st.error(f"Error connecting to Google Sheets: {e}")
+                return None
+                
         return self._client
     
     # ===== DATA LOADING METHODS =====
@@ -33,6 +92,10 @@ class KaspaDataManager:
     def load_hashrate_data(_self):
         """Load hashrate data from Google Sheets"""
         try:
+            if not _self.client:
+                st.error("Google Sheets client not available")
+                return pd.DataFrame(), _self.genesis_date
+                
             sheet_id = "1NPwQh2FQKVES7OYUzKQLKwuOrRuIivGhOtQWZZ-Sp80"
             worksheet = _self.client.open_by_key(sheet_id).worksheet("kaspa_daily_hashrate (3)")
             data = worksheet.get_all_values()
@@ -56,6 +119,10 @@ class KaspaDataManager:
     def load_price_data(_self):
         """Load price data from Google Sheets"""
         try:
+            if not _self.client:
+                st.error("Google Sheets client not available")
+                return pd.DataFrame(), _self.genesis_date
+                
             sheet_id = "1rMBuWn0CscUZkcKy2gleH85rXSO6U4YOSk3Sz2KuR_s"
             worksheet = _self.client.open_by_key(sheet_id).worksheet("kaspa_daily_price")
             data = worksheet.get_all_values()
@@ -78,6 +145,10 @@ class KaspaDataManager:
     def load_volume_data(_self):
         """Load volume data from Google Sheets"""
         try:
+            if not _self.client:
+                st.error("Google Sheets client not available")
+                return pd.DataFrame()
+                
             sheet_id = "1IdAmETrtZ8_lCuSQwEyDLtMIGiQbJFOyGGpMa9_hxZc"
             worksheet = _self.client.open_by_key(sheet_id).worksheet("KAS_VOLUME_ETC")
             data = worksheet.get_all_values()
@@ -107,6 +178,10 @@ class KaspaDataManager:
     def load_marketcap_data(_self):
         """Load market cap data from Google Sheets"""
         try:
+            if not _self.client:
+                st.error("Google Sheets client not available")
+                return pd.DataFrame(), _self.genesis_date
+                
             sheet_id = "15BZcsswJPZZF2MQ6S_m9CtbHPtVJVcET_VjZ9_aJ8nY"
             worksheet = _self.client.open_by_key(sheet_id).worksheet("kaspa_market_cap")
             data = worksheet.get_all_values()
@@ -130,6 +205,10 @@ class KaspaDataManager:
     def load_difficulty_data(_self):
         """Load mining difficulty data from Google Sheets"""
         try:
+            if not _self.client:
+                st.error("Google Sheets client not available")
+                return pd.DataFrame(), _self.genesis_date
+                
             # Using same hashrate sheet for now - you can update with actual difficulty sheet ID
             sheet_id = "1NPwQh2FQKVES7OYUzKQLKwuOrRuIivGhOtQWZZ-Sp80"
             worksheet = _self.client.open_by_key(sheet_id).worksheet("kaspa_daily_hashrate (3)")
