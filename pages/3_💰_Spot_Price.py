@@ -84,120 +84,118 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Enhanced global background with rich textures */
+/* Creative background design for Kaspa Spot Price */
 .stApp {
     background: 
-        /* Primary deep gradient with top-left accent */
+        /* Deep space gradient foundation */
         linear-gradient(135deg, 
-            #1A1A35 0%, 
-            #0F0F28 15%, 
-            #0A0A1E 30%, 
-            #0F0F22 45%, 
-            #0A0A18 60%, 
-            #060612 80%, 
-            #040408 100%
+            #0B0B1F 0%, 
+            #1A1A3E 25%, 
+            #0F0F28 50%, 
+            #1E1E4A 75%, 
+            #0A0A1D 100%
         ),
-        /* Top-left corner accent gradient */
-        radial-gradient(ellipse at 0% 0%, 
-            rgba(91, 108, 255, 0.15) 0%, 
-            rgba(99, 102, 241, 0.08) 25%, 
+        /* Top corner ethereal glow */
+        radial-gradient(ellipse 120% 80% at 0% 0%, 
+            rgba(91, 108, 255, 0.25) 0%, 
+            rgba(147, 51, 234, 0.15) 30%, 
+            transparent 60%
+        ),
+        /* Bottom right subtle accent */
+        radial-gradient(ellipse 100% 60% at 100% 100%, 
+            rgba(99, 102, 241, 0.12) 0%, 
             transparent 50%
         ),
-        /* Secondary diagonal overlay */
-        linear-gradient(45deg, 
-            rgba(91, 108, 255, 0.04) 0%, 
-            transparent 25%, 
-            rgba(99, 102, 241, 0.025) 40%, 
-            transparent 60%, 
-            rgba(147, 51, 234, 0.03) 80%, 
-            transparent 100%
-        ),
-        /* Multiple radial light sources for depth */
-        radial-gradient(circle at 10% 10%, rgba(91, 108, 255, 0.06) 0%, transparent 35%),
-        radial-gradient(circle at 90% 15%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
-        radial-gradient(circle at 20% 80%, rgba(147, 51, 234, 0.05) 0%, transparent 38%),
-        radial-gradient(circle at 80% 85%, rgba(91, 108, 255, 0.035) 0%, transparent 42%),
-        radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.025) 0%, transparent 45%),
-        radial-gradient(circle at 70% 60%, rgba(147, 51, 234, 0.03) 0%, transparent 40%),
-        /* MUCH MORE VISIBLE grain texture patterns */
-        repeating-linear-gradient(
-            0deg,
-            rgba(255, 255, 255, 0.08) 0px,
-            rgba(255, 255, 255, 0.08) 1px,
-            transparent 1px,
-            transparent 4px
-        ),
-        repeating-linear-gradient(
-            90deg,
-            rgba(91, 108, 255, 0.12) 0px,
-            rgba(91, 108, 255, 0.12) 1px,
-            transparent 1px,
-            transparent 5px
-        ),
-        repeating-linear-gradient(
-            45deg,
-            rgba(147, 51, 234, 0.1) 0px,
-            rgba(147, 51, 234, 0.1) 1px,
-            transparent 1px,
-            transparent 6px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            rgba(99, 102, 241, 0.09) 0px,
-            rgba(99, 102, 241, 0.09) 1px,
-            transparent 1px,
-            transparent 7px
-        ),
-        /* Very fine visible grain noise */
-        repeating-linear-gradient(
-            30deg,
-            rgba(255, 255, 255, 0.06) 0px,
-            rgba(255, 255, 255, 0.06) 1px,
-            transparent 1px,
-            transparent 3px
-        ),
-        repeating-linear-gradient(
-            -30deg,
-            rgba(91, 108, 255, 0.07) 0px,
-            rgba(91, 108, 255, 0.07) 1px,
-            transparent 1px,
-            transparent 4px
-        ),
-        /* Additional visible crosshatch */
-        repeating-linear-gradient(
-            60deg,
-            rgba(147, 51, 234, 0.05) 0px,
-            rgba(147, 51, 234, 0.05) 1px,
-            transparent 1px,
-            transparent 5px
-        ),
-        repeating-linear-gradient(
-            -60deg,
-            rgba(99, 102, 241, 0.06) 0px,
-            rgba(99, 102, 241, 0.06) 1px,
-            transparent 1px,
-            transparent 6px
-        ),
-        /* Extra fine grain for texture depth */
-        repeating-linear-gradient(
-            15deg,
-            rgba(255, 255, 255, 0.04) 0px,
-            rgba(255, 255, 255, 0.04) 1px,
-            transparent 1px,
-            transparent 2px
-        ),
-        repeating-linear-gradient(
-            -15deg,
-            rgba(91, 108, 255, 0.05) 0px,
-            rgba(91, 108, 255, 0.05) 1px,
-            transparent 1px,
-            transparent 3px
-        );
+        /* Floating orbs of light */
+        radial-gradient(circle at 25% 70%, rgba(91, 108, 255, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 75% 30%, rgba(147, 51, 234, 0.06) 0%, transparent 30%),
+        radial-gradient(circle at 60% 85%, rgba(99, 102, 241, 0.05) 0%, transparent 20%),
+        /* Noise texture overlay */
+        url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9Im5vaXNlIiB4PSIwJSIgeT0iMCUiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogICAgICA8ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9IjAuOSIgbnVtT2N0YXZlcz0iMyIgcmVzdWx0PSJub2lzZSIgc2VlZD0iMSIvPgogICAgICA8ZmVDb2xvck1hdHJpeCBpbj0ibm9pc2UiIHR5cGU9InNhdHVyYXRlIiB2YWx1ZXM9IjAiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIiBvcGFjaXR5PSIwLjAzIi8+Cjwvc3ZnPg==");
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
     position: relative;
     background-attachment: fixed;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 200px 200px, 300px 300px, 150px 150px, 100px 100px;
+}
+
+/* Animated floating particles */
+.stApp::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: 
+        /* Gentle moving gradients */
+        radial-gradient(circle at 20% 20%, rgba(91, 108, 255, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 50% 10%, rgba(99, 102, 241, 0.025) 0%, transparent 40%),
+        radial-gradient(circle at 10% 90%, rgba(91, 108, 255, 0.02) 0%, transparent 45%);
+    animation: gentleFloat 60s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Subtle constellation effect */
+.stApp::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 40% 70%, rgba(91, 108, 255, 0.4), transparent),
+        radial-gradient(1px 1px at 90% 40%, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(1px 1px at 60% 10%, rgba(147, 51, 234, 0.4), transparent),
+        radial-gradient(2px 2px at 80% 90%, rgba(99, 102, 241, 0.3), transparent),
+        radial-gradient(1px 1px at 10% 80%, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(1px 1px at 30% 50%, rgba(91, 108, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 70% 20%, rgba(255, 255, 255, 0.2), transparent);
+    background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px, 180px 180px, 220px 220px, 160px 160px, 280px 280px;
+    animation: twinkle 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes gentleFloat {
+    0%, 100% { 
+        background: 
+            radial-gradient(circle at 20% 20%, rgba(91, 108, 255, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 50% 10%, rgba(99, 102, 241, 0.025) 0%, transparent 40%),
+            radial-gradient(circle at 10% 90%, rgba(91, 108, 255, 0.02) 0%, transparent 45%);
+    }
+    25% { 
+        background: 
+            radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.045) 0%, transparent 50%),
+            radial-gradient(circle at 70% 70%, rgba(91, 108, 255, 0.035) 0%, transparent 50%),
+            radial-gradient(circle at 60% 20%, rgba(147, 51, 234, 0.03) 0%, transparent 40%),
+            radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.025) 0%, transparent 45%);
+    }
+    50% { 
+        background: 
+            radial-gradient(circle at 40% 15%, rgba(147, 51, 234, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 60% 85%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 70% 30%, rgba(91, 108, 255, 0.025) 0%, transparent 40%),
+            radial-gradient(circle at 30% 70%, rgba(147, 51, 234, 0.02) 0%, transparent 45%);
+    }
+    75% { 
+        background: 
+            radial-gradient(circle at 25% 80%, rgba(91, 108, 255, 0.045) 0%, transparent 50%),
+            radial-gradient(circle at 75% 20%, rgba(147, 51, 234, 0.035) 0%, transparent 50%),
+            radial-gradient(circle at 45% 40%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+            radial-gradient(circle at 15% 60%, rgba(91, 108, 255, 0.025) 0%, transparent 45%);
+    }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }
 
 /* Fixed position animated background effect */
