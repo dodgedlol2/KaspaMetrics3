@@ -537,7 +537,7 @@ if not hashrate_df.empty:
 else:
     filtered_df = hashrate_df
 
-# Enhanced chart with power law functionality but keeping your purple theme
+# Enhanced chart with power law functionality and custom log grid lines
 fig = go.Figure()
 
 if not filtered_df.empty:
@@ -601,7 +601,62 @@ if not filtered_df.empty:
             hoverinfo='skip'
         ))
 
-# Enhanced chart layout matching your theme - INCREASED HEIGHT
+# Enhanced chart layout with custom logarithmic grid lines
+y_axis_config = dict(
+    gridcolor='#363650',
+    gridwidth=1,
+    color='#9CA3AF'
+)
+
+# Custom logarithmic grid lines when Y-axis is in log scale
+if y_scale == "Log":
+    # Get the data range to determine appropriate tick values
+    if not filtered_df.empty:
+        y_min = filtered_df['Hashrate_PH'].min()
+        y_max = filtered_df['Hashrate_PH'].max()
+        
+        # Create logarithmic tick values
+        log_min = np.floor(np.log10(y_min))
+        log_max = np.ceil(np.log10(y_max))
+        
+        # Major ticks (powers of 10)
+        major_ticks = [10**i for i in range(int(log_min), int(log_max) + 1)]
+        
+        # Minor ticks (2, 3, 4, 5, 6, 7, 8, 9 times each power of 10)
+        minor_ticks = []
+        for i in range(int(log_min), int(log_max) + 1):
+            base = 10**i
+            for multiplier in [2, 3, 4, 5, 6, 7, 8, 9]:
+                tick_val = base * multiplier
+                if y_min <= tick_val <= y_max * 1.1:  # Include ticks slightly above max for better visualization
+                    minor_ticks.append(tick_val)
+        
+        # Combine and sort all tick values
+        all_ticks = sorted(major_ticks + minor_ticks)
+        
+        # Filter ticks within reasonable range
+        valid_ticks = [tick for tick in all_ticks if y_min * 0.8 <= tick <= y_max * 1.2]
+        
+        y_axis_config.update({
+            'type': 'log',
+            'tickvals': valid_ticks,
+            'ticktext': [f'{tick:.3f}' if tick < 1 else f'{tick:.2f}' if tick < 10 else f'{tick:.1f}' if tick < 100 else f'{tick:.0f}' for tick in valid_ticks],
+            'minor': dict(
+                dtick=1,
+                showgrid=True,
+                gridcolor='rgba(54, 54, 80, 0.3)',
+                gridwidth=0.5
+            ),
+            'dtick': 1,  # This controls the major grid spacing in log scale
+            'showgrid': True,
+            'gridcolor': '#363650',
+            'gridwidth': 1.2
+        })
+    else:
+        y_axis_config['type'] = 'log'
+else:
+    y_axis_config['type'] = 'linear'
+
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Hashrate (PH/s)",
@@ -615,12 +670,7 @@ fig.update_layout(
         color='#9CA3AF',
         type="log" if x_scale_type == "Log" else None
     ),
-    yaxis=dict(
-        gridcolor='#363650',
-        gridwidth=1,
-        color='#9CA3AF',
-        type="log" if y_scale == "Log" else "linear"
-    ),
+    yaxis=y_axis_config,
     showlegend=True,
     legend=dict(
         orientation="h",
