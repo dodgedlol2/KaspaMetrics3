@@ -119,64 +119,79 @@ st.markdown("""
         radial-gradient(circle at 80% 85%, rgba(91, 108, 255, 0.035) 0%, transparent 42%),
         radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.025) 0%, transparent 45%),
         radial-gradient(circle at 70% 60%, rgba(147, 51, 234, 0.03) 0%, transparent 40%),
-        /* Heavy grain texture patterns */
+        /* MUCH MORE VISIBLE grain texture patterns */
         repeating-linear-gradient(
             0deg,
-            rgba(255, 255, 255, 0.025) 0px,
-            rgba(255, 255, 255, 0.025) 1px,
+            rgba(255, 255, 255, 0.08) 0px,
+            rgba(255, 255, 255, 0.08) 1px,
             transparent 1px,
-            transparent 8px
+            transparent 4px
         ),
         repeating-linear-gradient(
             90deg,
-            rgba(91, 108, 255, 0.03) 0px,
-            rgba(91, 108, 255, 0.03) 1px,
+            rgba(91, 108, 255, 0.12) 0px,
+            rgba(91, 108, 255, 0.12) 1px,
             transparent 1px,
-            transparent 10px
+            transparent 5px
         ),
         repeating-linear-gradient(
             45deg,
-            rgba(147, 51, 234, 0.02) 0px,
-            rgba(147, 51, 234, 0.02) 1px,
-            transparent 1px,
-            transparent 12px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            rgba(99, 102, 241, 0.018) 0px,
-            rgba(99, 102, 241, 0.018) 1px,
-            transparent 1px,
-            transparent 14px
-        ),
-        /* Fine grain noise texture */
-        repeating-linear-gradient(
-            30deg,
-            rgba(255, 255, 255, 0.015) 0px,
-            rgba(255, 255, 255, 0.015) 1px,
+            rgba(147, 51, 234, 0.1) 0px,
+            rgba(147, 51, 234, 0.1) 1px,
             transparent 1px,
             transparent 6px
         ),
         repeating-linear-gradient(
-            -30deg,
-            rgba(91, 108, 255, 0.02) 0px,
-            rgba(91, 108, 255, 0.02) 1px,
+            -45deg,
+            rgba(99, 102, 241, 0.09) 0px,
+            rgba(99, 102, 241, 0.09) 1px,
             transparent 1px,
             transparent 7px
         ),
-        /* Additional gritty crosshatch */
+        /* Very fine visible grain noise */
+        repeating-linear-gradient(
+            30deg,
+            rgba(255, 255, 255, 0.06) 0px,
+            rgba(255, 255, 255, 0.06) 1px,
+            transparent 1px,
+            transparent 3px
+        ),
+        repeating-linear-gradient(
+            -30deg,
+            rgba(91, 108, 255, 0.07) 0px,
+            rgba(91, 108, 255, 0.07) 1px,
+            transparent 1px,
+            transparent 4px
+        ),
+        /* Additional visible crosshatch */
         repeating-linear-gradient(
             60deg,
-            rgba(147, 51, 234, 0.012) 0px,
-            rgba(147, 51, 234, 0.012) 1px,
+            rgba(147, 51, 234, 0.05) 0px,
+            rgba(147, 51, 234, 0.05) 1px,
             transparent 1px,
-            transparent 9px
+            transparent 5px
         ),
         repeating-linear-gradient(
             -60deg,
-            rgba(99, 102, 241, 0.015) 0px,
-            rgba(99, 102, 241, 0.015) 1px,
+            rgba(99, 102, 241, 0.06) 0px,
+            rgba(99, 102, 241, 0.06) 1px,
             transparent 1px,
-            transparent 11px
+            transparent 6px
+        ),
+        /* Extra fine grain for texture depth */
+        repeating-linear-gradient(
+            15deg,
+            rgba(255, 255, 255, 0.04) 0px,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        repeating-linear-gradient(
+            -15deg,
+            rgba(91, 108, 255, 0.05) 0px,
+            rgba(91, 108, 255, 0.05) 1px,
+            transparent 1px,
+            transparent 3px
         );
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
