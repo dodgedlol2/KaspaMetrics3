@@ -716,10 +716,15 @@ fig.update_layout(
     ),
     margin=dict(l=50, r=20, t=20, b=50),
     modebar=dict(
-        orientation="v",
+        orientation="h",  # Changed from "v" to "h" for horizontal
         bgcolor="rgba(26, 26, 46, 0.8)",
         color="#9CA3AF",
-        activecolor="#5B6CFF"
+        activecolor="#5B6CFF",
+        # Position the modebar at top-right corner
+        x=1.0,  # Right edge
+        y=1.0,  # Top edge
+        xanchor='right',
+        yanchor='top'
     ),
     hoverlabel=dict(
         bgcolor='rgba(15, 20, 25, 0.95)',
