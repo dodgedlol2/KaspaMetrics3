@@ -194,7 +194,7 @@ div[data-testid="stColumn"] * {
     white-space: nowrap;
 }
 
-/* Metrics cards */
+/* Enhanced metrics cards with gritty texture and animations */
 .metrics-container {
     display: flex;
     gap: 1.5rem;
@@ -203,7 +203,27 @@ div[data-testid="stColumn"] * {
 }
 
 .metric-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    background: 
+        /* Main gradient */
+        linear-gradient(135deg, #1A1A2E 0%, #161629 50%, #0F0F1A 100%),
+        /* Gritty noise texture */
+        radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.06) 0%, transparent 50%),
+        /* Fine grain */
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.015) 0px,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px,
+            transparent 12px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(91, 108, 255, 0.02) 0px,
+            rgba(91, 108, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 16px
+        );
     border: 1px solid #363650;
     border-radius: 16px;
     padding: 1.5rem;
@@ -211,16 +231,83 @@ div[data-testid="stColumn"] * {
     min-width: 250px;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* Hover animations */
+.metric-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(91, 108, 255, 0.4);
+    box-shadow: 
+        0 12px 32px rgba(0, 0, 0, 0.4),
+        0 4px 16px rgba(91, 108, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: 
+        /* Enhanced hover gradient */
+        linear-gradient(135deg, #1F1F3A 0%, #1A1A35 50%, #12121F 100%),
+        /* Brighter glow on hover */
+        radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+        /* Same grain patterns */
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 12px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(91, 108, 255, 0.03) 0px,
+            rgba(91, 108, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 16px
+        );
+}
+
+/* Enhanced top gradient border */
 .metric-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #5B6CFF, #6366F1);
+    height: 3px;
+    background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 50%, #8B5CF6 100%);
+    transition: all 0.4s ease;
+}
+
+.metric-card:hover::before {
+    height: 4px;
+    background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 30%, #8B5CF6 60%, #A855F7 100%);
+    box-shadow: 0 0 12px rgba(91, 108, 255, 0.6);
+}
+
+/* Animated shimmer effect */
+.metric-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.03),
+        transparent
+    );
+    transition: left 0.6s ease;
+    pointer-events: none;
+}
+
+.metric-card:hover::after {
+    left: 100%;
 }
 
 .metric-value {
@@ -229,6 +316,17 @@ div[data-testid="stColumn"] * {
     color: #FFFFFF;
     margin-bottom: 0.5rem;
     font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card:hover .metric-value {
+    color: #F8FAFC;
+    text-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(91, 108, 255, 0.3);
 }
 
 .metric-label {
@@ -238,16 +336,41 @@ div[data-testid="stColumn"] * {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover .metric-label {
+    color: #CBD5E1;
 }
 
 .metric-change {
     color: #10B981;
     font-size: 0.9rem;
     font-weight: 600;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card:hover .metric-change {
+    color: #34D399;
+    text-shadow: 
+        0 1px 4px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(16, 185, 129, 0.3);
 }
 
 .metric-change.negative {
     color: #ef4444;
+}
+
+.metric-card:hover .metric-change.negative {
+    color: #F87171;
+    text-shadow: 
+        0 1px 4px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Chart container */
