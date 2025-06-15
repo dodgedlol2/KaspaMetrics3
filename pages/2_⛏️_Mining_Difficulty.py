@@ -64,6 +64,54 @@ else:
 
 st.markdown("""
 <style>
+.title-section {
+    position: relative;
+    margin: 2rem 0 3rem 0;
+    padding: 2rem 0;
+}
+
+.title-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50px;
+    right: -50px;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(91, 108, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(147, 51, 234, 0.06) 0%, transparent 50%);
+    border-radius: 24px;
+    filter: blur(1px);
+    z-index: -1;
+}
+
+.title-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50px;
+    right: -50px;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.01) 0px,
+            rgba(255, 255, 255, 0.01) 1px,
+            transparent 1px,
+            transparent 20px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(91, 108, 255, 0.02) 0px,
+            rgba(91, 108, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 30px
+        );
+    border-radius: 24px;
+    z-index: -1;
+}
+
 .big-font {
     font-size: 50px !important;
     font-weight: bold;
@@ -74,9 +122,13 @@ st.markdown("""
     margin: 0 0 0.5rem 0;
     padding: 0;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    position: relative;
+    z-index: 1;
 }
 </style>
-<div class='big-font'>Kaspa Network Hashrate</div>
+<div class='title-section'>
+    <div class='big-font'>Kaspa Network Hashrate</div>
+</div>
 """, unsafe_allow_html=True)
 
 # Custom CSS for BetterStack-inspired dark theme with segmented controls
@@ -84,11 +136,41 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Global dark theme with BetterStack-inspired background */
+/* Global dark theme with multi-layered BetterStack-inspired background */
 .stApp {
-    background: linear-gradient(135deg, #0F0F1A 0%, #0D0D1A 100%);
+    background: 
+        /* Base gradient */
+        linear-gradient(135deg, #0F0F1A 0%, #0D0D1A 100%),
+        /* Subtle texture layer */
+        radial-gradient(circle at 25% 25%, rgba(91, 108, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.02) 0%, transparent 50%),
+        /* Fine grain texture */
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.005) 0px,
+            rgba(255, 255, 255, 0.005) 1px,
+            transparent 1px,
+            transparent 2px
+        );
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    position: relative;
+}
+
+/* Additional atmospheric layer */
+.stApp::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(91, 108, 255, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(147, 51, 234, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.02) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Hide default streamlit styling */
@@ -191,7 +273,7 @@ div[data-testid="stColumn"] * {
     white-space: nowrap;
 }
 
-/* Metrics cards */
+/* Metrics cards with enhanced texture */
 .metrics-container {
     display: flex;
     gap: 1.5rem;
@@ -200,7 +282,15 @@ div[data-testid="stColumn"] * {
 }
 
 .metric-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    background: 
+        linear-gradient(135deg, #1A1A2E 0%, #161629 100%),
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.01) 0px,
+            rgba(255, 255, 255, 0.01) 1px,
+            transparent 1px,
+            transparent 15px
+        );
     border: 1px solid #363650;
     border-radius: 16px;
     padding: 1.5rem;
@@ -208,6 +298,7 @@ div[data-testid="stColumn"] * {
     min-width: 250px;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(10px);
 }
 
 .metric-card::before {
@@ -220,12 +311,27 @@ div[data-testid="stColumn"] * {
     background: linear-gradient(90deg, #5B6CFF, #6366F1);
 }
 
+.metric-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 80% 20%, rgba(91, 108, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
 .metric-value {
     font-size: 2.5rem;
     font-weight: 700;
     color: #FFFFFF;
     margin-bottom: 0.5rem;
     font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 1;
 }
 
 .metric-label {
@@ -235,12 +341,16 @@ div[data-testid="stColumn"] * {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
 }
 
 .metric-change {
     color: #10B981;
     font-size: 0.9rem;
     font-weight: 600;
+    position: relative;
+    z-index: 1;
 }
 
 .metric-change.negative {
