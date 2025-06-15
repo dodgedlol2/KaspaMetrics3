@@ -608,11 +608,11 @@ if not filtered_df.empty:
         x=x_values,
         y=filtered_df['Price'],
         mode='lines',
-        name='Kaspa Price (USD)',
+        name='Kaspa Price',
         line=dict(color='#5B6CFF', width=3),
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
-        hovertemplate='<b>Kaspa Price</b><br>Date: %{text}<br>Price: $%{y:.6f}<br><extra></extra>',
+        hovertemplate='<b>%{fullData.name}</b><br>Date: %{text}<br>Price: $%{y:.6f}<extra></extra>',
         text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
     ))
 
@@ -626,11 +626,11 @@ if not filtered_df.empty:
             x=fit_x,
             y=y_fit,
             mode='lines',
-            name=f'Power Law (R²={r2_price:.3f})',
+            name='Power Law',
             line=dict(color='#ff8c00', width=3, dash='solid'),
             showlegend=True,
-            hovertemplate='<b>Power Law Fit</b><br>R² = %{customdata:.3f}<br>Value: $%{y:.6f}<br><extra></extra>',
-            customdata=[r2_price] * len(fit_x)
+            hovertemplate='<b>%{fullData.name}</b><br>Date: %{text}<br>Fitted: $%{y:.6f}<br>R²: ' + f'{r2_price:.3f}' + '<extra></extra>',
+            text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
         ))
 
 # Enhanced chart layout with custom logarithmic grid lines
@@ -676,6 +676,7 @@ fig.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
+    hovermode='x unified',  # Always show unified hover for all traces at the same x-value
     xaxis=dict(
         type="log" if x_scale_type == "Log" else None,
         showgrid=True,
