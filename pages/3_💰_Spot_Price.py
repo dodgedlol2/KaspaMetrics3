@@ -76,7 +76,7 @@ st.markdown("""
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 </style>
-<div class='big-font'>Kaspapapa Spot Price</div>
+<div class='big-font'>Kaspa Spot Price</div>
 """, unsafe_allow_html=True)
 
 # Custom CSS for BetterStack-inspired dark theme with segmented controls
