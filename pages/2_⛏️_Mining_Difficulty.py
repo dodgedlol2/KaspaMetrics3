@@ -115,12 +115,10 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-/* ENHANCED SEGMENTED CONTROLS - Multiple selector approach for reliability */
+/* ENHANCED SEGMENTED CONTROLS - ONLY target chart controls area */
 
-/* Container styling - try multiple selectors */
-.stApp div[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"],
-.stApp div[data-baseweb="segmented-control"],
-.stApp [data-baseweb="segmented-control"] {
+/* Container styling - ONLY for chart controls */
+.chart-controls div[data-baseweb="segmented-control"] {
     background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
     border: 1px solid rgba(99, 102, 241, 0.2) !important;
     border-radius: 12px !important;
@@ -135,12 +133,8 @@ div[data-testid="stColumn"] * {
     overflow: hidden !important;
 }
 
-/* Individual buttons - multiple selectors for maximum compatibility */
-.stApp div[data-testid="stVerticalBlock"] button,
-.stApp div[data-baseweb="segmented-control"] button,
-.stApp [data-baseweb="segmented-control"] button,
-.stApp button[role="button"][aria-pressed],
-.stApp div[data-testid="stVerticalBlock"] button[aria-pressed] {
+/* Individual buttons - ONLY in chart controls */
+.chart-controls div[data-baseweb="segmented-control"] button {
     background: transparent !important;
     border: none !important;
     border-radius: 9px !important;
@@ -163,11 +157,8 @@ div[data-testid="stColumn"] * {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Active button state - Enhanced with #6366F1 */
-.stApp div[data-testid="stVerticalBlock"] button[aria-pressed="true"],
-.stApp div[data-baseweb="segmented-control"] button[aria-pressed="true"],
-.stApp [data-baseweb="segmented-control"] button[aria-pressed="true"],
-.stApp button[role="button"][aria-pressed="true"] {
+/* Active button state - Enhanced with #6366F1 - ONLY in chart controls */
+.chart-controls div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
     background: linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
@@ -181,10 +172,8 @@ div[data-testid="stColumn"] * {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Hover states for inactive buttons */
-.stApp div[data-testid="stVerticalBlock"] button:hover:not([aria-pressed="true"]),
-.stApp div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]),
-.stApp [data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+/* Hover states for inactive buttons - ONLY in chart controls */
+.chart-controls div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
     color: #e2e8f0 !important;
     transform: translateY(-0.5px) !important;
@@ -194,10 +183,8 @@ div[data-testid="stColumn"] * {
     border: 1px solid rgba(99, 102, 241, 0.2) !important;
 }
 
-/* Hover states for active buttons */
-.stApp div[data-testid="stVerticalBlock"] button[aria-pressed="true"]:hover,
-.stApp div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover,
-.stApp [data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
+/* Hover states for active buttons - ONLY in chart controls */
+.chart-controls div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
     background: linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
     transform: translateY(-1.5px) !important;
     box-shadow: 
@@ -207,8 +194,8 @@ div[data-testid="stColumn"] * {
         inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Shimmer effect for active buttons */
-.stApp button[aria-pressed="true"]::before {
+/* Shimmer effect for active buttons - ONLY in chart controls */
+.chart-controls button[aria-pressed="true"]::before {
     content: '';
     position: absolute;
     top: 0;
@@ -232,8 +219,8 @@ div[data-testid="stColumn"] * {
     100% { left: 100%; }
 }
 
-/* Focus states for accessibility */
-.stApp button:focus-visible {
+/* Focus states for accessibility - ONLY in chart controls */
+.chart-controls button:focus-visible {
     outline: 2px solid #6366F1 !important;
     outline-offset: 2px !important;
 }
