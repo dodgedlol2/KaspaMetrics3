@@ -84,107 +84,14 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Grainy textured background inspired by the SVG */
+/* Global dark theme with subtle textured background */
 .stApp {
     background: 
-        /* Base dark gradient */
-        linear-gradient(135deg, 
-            #0B0B1F 0%, 
-            #1A1A3E 25%, 
-            #0F0F28 50%, 
-            #1E1E4A 75%, 
-            #0A0A1D 100%
-        ),
-        /* Top-left Kaspa blue gradient (similar to SVG approach) */
-        linear-gradient(-214deg, 
-            rgba(91, 108, 255, 0.8) 0%, 
-            rgba(91, 108, 255, 0.4) 30%,
-            rgba(91, 108, 255, 0.1) 60%,
-            transparent 100%
-        ),
-        /* Bottom-right purple gradient */
-        linear-gradient(214deg, 
-            rgba(147, 51, 234, 0.6) 0%, 
-            rgba(147, 51, 234, 0.3) 40%,
-            transparent 100%
-        ),
-        /* Noise texture using data URL (like the SVG filter) */
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3'/%3E%3CfeFuncG type='linear' slope='3'/%3E%3CfeFuncB type='linear' slope='3'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E"),
-        /* Additional grain layers for more texture */
-        repeating-linear-gradient(
-            45deg,
-            transparent 0px,
-            rgba(255, 255, 255, 0.01) 1px,
-            transparent 2px,
-            rgba(91, 108, 255, 0.02) 3px,
-            transparent 4px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            transparent 0px,
-            rgba(147, 51, 234, 0.015) 1px,
-            transparent 2px,
-            rgba(255, 255, 255, 0.008) 3px,
-            transparent 4px
-        );
+        linear-gradient(135deg, #0F0F1A 0%, #0D0D1A 100%),
+        radial-gradient(circle at 20% 20%, rgba(91, 108, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.02) 0%, transparent 50%);
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    min-height: 100vh;
-    background-attachment: fixed;
-    background-size: 100% 100%, 100% 100%, 100% 100%, 200px 200px, 150px 150px, 120px 120px;
-}
-
-/* Fixed position animated background effect */
-.stApp::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: 
-        /* Top-left corner emphasis */
-        radial-gradient(ellipse at 5% 5%, rgba(91, 108, 255, 0.08) 0%, transparent 40%),
-        /* Floating gradients that stay in place */
-        radial-gradient(circle at 25% 25%, rgba(91, 108, 255, 0.02) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.018) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.015) 0%, transparent 60%);
-    animation: backgroundFloat 40s ease-in-out infinite;
-    pointer-events: none;
-    z-index: -1;
-}
-
-@keyframes backgroundFloat {
-    0%, 100% { 
-        background: 
-            radial-gradient(circle at 25% 25%, rgba(91, 108, 255, 0.02) 0%, transparent 50%),
-            radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.018) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.015) 0%, transparent 60%);
-    }
-    20% { 
-        background: 
-            radial-gradient(circle at 35% 20%, rgba(99, 102, 241, 0.025) 0%, transparent 50%),
-            radial-gradient(circle at 65% 80%, rgba(91, 108, 255, 0.02) 0%, transparent 50%),
-            radial-gradient(circle at 45% 45%, rgba(147, 51, 234, 0.018) 0%, transparent 60%);
-    }
-    40% { 
-        background: 
-            radial-gradient(circle at 30% 70%, rgba(147, 51, 234, 0.022) 0%, transparent 50%),
-            radial-gradient(circle at 70% 30%, rgba(99, 102, 241, 0.018) 0%, transparent 50%),
-            radial-gradient(circle at 55% 55%, rgba(91, 108, 255, 0.016) 0%, transparent 60%);
-    }
-    60% { 
-        background: 
-            radial-gradient(circle at 20% 60%, rgba(91, 108, 255, 0.024) 0%, transparent 50%),
-            radial-gradient(circle at 80% 40%, rgba(147, 51, 234, 0.019) 0%, transparent 50%),
-            radial-gradient(circle at 40% 65%, rgba(99, 102, 241, 0.017) 0%, transparent 60%);
-    }
-    80% { 
-        background: 
-            radial-gradient(circle at 40% 15%, rgba(99, 102, 241, 0.021) 0%, transparent 50%),
-            radial-gradient(circle at 60% 85%, rgba(91, 108, 255, 0.019) 0%, transparent 50%),
-            radial-gradient(circle at 35% 40%, rgba(147, 51, 234, 0.016) 0%, transparent 60%);
-    }
 }
 
 /* Hide default streamlit styling */
