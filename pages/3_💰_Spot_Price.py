@@ -84,9 +84,10 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Simple, clean background for Kaspa */
+/* Grainy textured background inspired by the SVG */
 .stApp {
     background: 
+        /* Base dark gradient */
         linear-gradient(135deg, 
             #0B0B1F 0%, 
             #1A1A3E 25%, 
@@ -94,19 +95,43 @@ st.markdown("""
             #1E1E4A 75%, 
             #0A0A1D 100%
         ),
-        radial-gradient(ellipse at 0% 0%, 
-            rgba(91, 108, 255, 0.3) 0%, 
-            rgba(147, 51, 234, 0.15) 40%, 
-            transparent 70%
+        /* Top-left Kaspa blue gradient (similar to SVG approach) */
+        linear-gradient(-214deg, 
+            rgba(91, 108, 255, 0.8) 0%, 
+            rgba(91, 108, 255, 0.4) 30%,
+            rgba(91, 108, 255, 0.1) 60%,
+            transparent 100%
         ),
-        radial-gradient(ellipse at 100% 100%, 
-            rgba(99, 102, 241, 0.2) 0%, 
-            transparent 60%
+        /* Bottom-right purple gradient */
+        linear-gradient(214deg, 
+            rgba(147, 51, 234, 0.6) 0%, 
+            rgba(147, 51, 234, 0.3) 40%,
+            transparent 100%
+        ),
+        /* Noise texture using data URL (like the SVG filter) */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3'/%3E%3CfeFuncG type='linear' slope='3'/%3E%3CfeFuncB type='linear' slope='3'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E"),
+        /* Additional grain layers for more texture */
+        repeating-linear-gradient(
+            45deg,
+            transparent 0px,
+            rgba(255, 255, 255, 0.01) 1px,
+            transparent 2px,
+            rgba(91, 108, 255, 0.02) 3px,
+            transparent 4px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent 0px,
+            rgba(147, 51, 234, 0.015) 1px,
+            transparent 2px,
+            rgba(255, 255, 255, 0.008) 3px,
+            transparent 4px
         );
     color: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
     background-attachment: fixed;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 200px 200px, 150px 150px, 120px 120px;
 }
 
 /* Fixed position animated background effect */
