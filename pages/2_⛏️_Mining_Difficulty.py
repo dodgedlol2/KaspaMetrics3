@@ -843,6 +843,59 @@ with col4:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
+# INJECT CSS AFTER CONTROLS ARE CREATED - This is key!
+st.markdown("""
+<style>
+/* SEGMENTED CONTROL STYLING - INJECTED AFTER CREATION */
+
+/* Ultra high specificity with delayed injection */
+.chart-controls button {
+    background: rgba(255, 0, 0, 0.8) !important; /* RED TEST - should be visible now */
+    color: white !important;
+    border: 3px solid yellow !important;
+}
+
+.chart-controls button[aria-pressed="true"] {
+    background: #6366F1 !important; /* BLUE TEST */
+    color: white !important;
+    border: 3px solid #FFD700 !important;
+}
+
+/* Alternative selectors */
+[data-baseweb="segmented-control"] button {
+    background: rgba(0, 255, 0, 0.8) !important; /* GREEN TEST */
+    color: black !important;
+}
+
+[data-baseweb="segmented-control"] button[aria-pressed="true"] {
+    background: #FF00FF !important; /* MAGENTA TEST */
+    color: white !important;
+}
+
+/* Nuclear option - style everything with high specificity */
+div[data-testid="stColumn"] button {
+    background: rgba(255, 165, 0, 0.8) !important; /* ORANGE TEST */
+    color: black !important;
+}
+
+div[data-testid="stColumn"] button[aria-pressed="true"] {
+    background: #00FFFF !important; /* CYAN TEST */
+    color: black !important;
+}
+
+/* Even more nuclear */
+.stApp .main button {
+    outline: 5px solid purple !important; /* PURPLE OUTLINE TEST */
+}
+
+.stApp .main button[aria-pressed="true"] {
+    outline: 5px solid red !important; /* RED OUTLINE for active */
+    background: #6366F1 !important;
+    color: white !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Data filtering based on time range
 if not hashrate_df.empty:
     last_date = hashrate_df['Date'].iloc[-1]
