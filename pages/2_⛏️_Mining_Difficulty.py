@@ -843,55 +843,118 @@ with col4:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# INJECT CSS AFTER CONTROLS ARE CREATED - This is key!
+# APPLY PROPER STYLING - Using the working selector!
 st.markdown("""
 <style>
-/* SEGMENTED CONTROL STYLING - INJECTED AFTER CREATION */
+/* SEGMENTED CONTROL STYLING - PROFESSIONAL #6366F1 THEME */
 
-/* Ultra high specificity with delayed injection */
-.chart-controls button {
-    background: rgba(255, 0, 0, 0.8) !important; /* RED TEST - should be visible now */
-    color: white !important;
-    border: 3px solid yellow !important;
+/* Container styling for segmented controls */
+.chart-controls [data-baseweb="segmented-control"] {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(16px) !important;
+    padding: 3px !important;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    display: inline-flex !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
-.chart-controls button[aria-pressed="true"] {
-    background: #6366F1 !important; /* BLUE TEST */
-    color: white !important;
-    border: 3px solid #FFD700 !important;
+/* Individual segmented control buttons - WORKING SELECTOR */
+.chart-controls div[data-testid="stColumn"] button {
+    background: transparent !important;
+    border: 1px solid rgba(156, 163, 175, 0.2) !important;
+    border-radius: 9px !important;
+    color: #9CA3AF !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+    margin: 0 1px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-family: 'Inter', sans-serif !important;
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: fit-content !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    box-sizing: border-box !important;
 }
 
-/* Alternative selectors */
-[data-baseweb="segmented-control"] button {
-    background: rgba(0, 255, 0, 0.8) !important; /* GREEN TEST */
-    color: black !important;
+/* Active segmented control buttons - BEAUTIFUL #6366F1 STYLING */
+.chart-controls div[data-testid="stColumn"] button[aria-pressed="true"] {
+    background: linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 
+        0 2px 8px rgba(99, 102, 241, 0.4),
+        0 1px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: #FF00FF !important; /* MAGENTA TEST */
-    color: white !important;
+/* Hover states for inactive buttons */
+.chart-controls div[data-testid="stColumn"] button:hover:not([aria-pressed="true"]) {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.12) 100%) !important;
+    color: #e2e8f0 !important;
+    transform: translateY(-0.5px) !important;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
 }
 
-/* Nuclear option - style everything with high specificity */
-div[data-testid="stColumn"] button {
-    background: rgba(255, 165, 0, 0.8) !important; /* ORANGE TEST */
-    color: black !important;
+/* Hover states for active buttons */
+.chart-controls div[data-testid="stColumn"] button[aria-pressed="true"]:hover {
+    background: linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: 
+        0 4px 12px rgba(99, 102, 241, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
 }
 
-div[data-testid="stColumn"] button[aria-pressed="true"] {
-    background: #00FFFF !important; /* CYAN TEST */
-    color: black !important;
+/* Shimmer effect for active buttons */
+.chart-controls div[data-testid="stColumn"] button[aria-pressed="true"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+    pointer-events: none;
+    z-index: 1;
 }
 
-/* Even more nuclear */
-.stApp .main button {
-    outline: 5px solid purple !important; /* PURPLE OUTLINE TEST */
+@keyframes shimmer {
+    0% { left: -100%; }
+    50% { left: -100%; }
+    100% { left: 100%; }
 }
 
-.stApp .main button[aria-pressed="true"] {
-    outline: 5px solid red !important; /* RED OUTLINE for active */
-    background: #6366F1 !important;
-    color: white !important;
+/* Focus states for accessibility */
+.chart-controls div[data-testid="stColumn"] button:focus-visible {
+    outline: 2px solid #6366F1 !important;
+    outline-offset: 2px !important;
 }
 </style>
 """, unsafe_allow_html=True)
