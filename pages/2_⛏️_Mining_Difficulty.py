@@ -843,120 +843,108 @@ with col4:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# APPLY PROPER STYLING - Using the working selector!
+# FINAL ATTEMPT - Use JavaScript to force the styling after page load
 st.markdown("""
 <style>
-/* SEGMENTED CONTROL STYLING - PROFESSIONAL #6366F1 THEME */
-
-/* Container styling for segmented controls */
-.chart-controls [data-baseweb="segmented-control"] {
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
-    border: 1px solid rgba(99, 102, 241, 0.2) !important;
-    border-radius: 12px !important;
-    backdrop-filter: blur(16px) !important;
-    padding: 3px !important;
-    box-shadow: 
-        0 4px 16px rgba(0, 0, 0, 0.2),
-        0 2px 8px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-    display: inline-flex !important;
-    position: relative !important;
-    overflow: hidden !important;
-}
-
-/* Individual segmented control buttons - WORKING SELECTOR */
+/* Base styling that we know works */
 .chart-controls div[data-testid="stColumn"] button {
     background: transparent !important;
-    border: 1px solid rgba(156, 163, 175, 0.2) !important;
-    border-radius: 9px !important;
+    border: 1px solid rgba(156, 163, 175, 0.3) !important;
+    border-radius: 8px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
     font-size: 13px !important;
-    padding: 8px 12px !important;
-    margin: 0 1px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    padding: 6px 12px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease !important;
     font-family: 'Inter', sans-serif !important;
-    min-height: 32px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-width: fit-content !important;
-    width: auto !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
-    overflow: hidden !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-    box-sizing: border-box !important;
 }
 
-/* Active segmented control buttons - BEAUTIFUL #6366F1 STYLING */
 .chart-controls div[data-testid="stColumn"] button[aria-pressed="true"] {
-    background: linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
-    color: #ffffff !important;
+    background: #6366F1 !important;
+    background-image: linear-gradient(135deg, #6366F1 0%, #5B5FED 100%) !important;
+    color: white !important;
     font-weight: 600 !important;
-    box-shadow: 
-        0 2px 8px rgba(99, 102, 241, 0.4),
-        0 1px 4px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    transform: translateY(-1px) !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Hover states for inactive buttons */
-.chart-controls div[data-testid="stColumn"] button:hover:not([aria-pressed="true"]) {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.12) 100%) !important;
-    color: #e2e8f0 !important;
-    transform: translateY(-0.5px) !important;
-    box-shadow: 
-        0 2px 6px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(99, 102, 241, 0.3) !important;
-}
-
-/* Hover states for active buttons */
-.chart-controls div[data-testid="stColumn"] button[aria-pressed="true"]:hover {
-    background: linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
-    transform: translateY(-1.5px) !important;
-    box-shadow: 
-        0 4px 12px rgba(99, 102, 241, 0.5),
-        0 2px 8px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Shimmer effect for active buttons */
-.chart-controls div[data-testid="stColumn"] button[aria-pressed="true"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.15),
-        transparent
-    );
-    animation: shimmer 2s infinite;
-    pointer-events: none;
-    z-index: 1;
-}
-
-@keyframes shimmer {
-    0% { left: -100%; }
-    50% { left: -100%; }
-    100% { left: 100%; }
-}
-
-/* Focus states for accessibility */
-.chart-controls div[data-testid="stColumn"] button:focus-visible {
-    outline: 2px solid #6366F1 !important;
-    outline-offset: 2px !important;
+    border: 1px solid #5B5FED !important;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3) !important;
 }
 </style>
+
+<script>
+// JavaScript fallback to force styling
+setTimeout(function() {
+    // Find all buttons in chart-controls
+    const chartControls = document.querySelector('.chart-controls');
+    if (chartControls) {
+        const buttons = chartControls.querySelectorAll('button');
+        buttons.forEach(button => {
+            // Apply base styles
+            button.style.setProperty('background', 'transparent', 'important');
+            button.style.setProperty('border', '1px solid rgba(156, 163, 175, 0.3)', 'important');
+            button.style.setProperty('border-radius', '8px', 'important');
+            button.style.setProperty('color', '#9CA3AF', 'important');
+            button.style.setProperty('font-weight', '500', 'important');
+            button.style.setProperty('font-size', '13px', 'important');
+            button.style.setProperty('padding', '6px 12px', 'important');
+            button.style.setProperty('margin', '0 2px', 'important');
+            button.style.setProperty('transition', 'all 0.2s ease', 'important');
+            button.style.setProperty('font-family', 'Inter, sans-serif', 'important');
+            
+            // Check if button is active
+            if (button.getAttribute('aria-pressed') === 'true') {
+                button.style.setProperty('background', '#6366F1', 'important');
+                button.style.setProperty('color', 'white', 'important');
+                button.style.setProperty('font-weight', '600', 'important');
+                button.style.setProperty('border', '1px solid #5B5FED', 'important');
+                button.style.setProperty('box-shadow', '0 2px 4px rgba(99, 102, 241, 0.3)', 'important');
+            }
+            
+            // Add click event listener to maintain styling
+            button.addEventListener('click', function() {
+                setTimeout(() => {
+                    const allButtons = chartControls.querySelectorAll('button');
+                    allButtons.forEach(btn => {
+                        if (btn.getAttribute('aria-pressed') === 'true') {
+                            btn.style.setProperty('background', '#6366F1', 'important');
+                            btn.style.setProperty('color', 'white', 'important');
+                            btn.style.setProperty('font-weight', '600', 'important');
+                            btn.style.setProperty('border', '1px solid #5B5FED', 'important');
+                            btn.style.setProperty('box-shadow', '0 2px 4px rgba(99, 102, 241, 0.3)', 'important');
+                        } else {
+                            btn.style.setProperty('background', 'transparent', 'important');
+                            btn.style.setProperty('color', '#9CA3AF', 'important');
+                            btn.style.setProperty('font-weight', '500', 'important');
+                            btn.style.setProperty('border', '1px solid rgba(156, 163, 175, 0.3)', 'important');
+                            btn.style.setProperty('box-shadow', 'none', 'important');
+                        }
+                    });
+                }, 50);
+            });
+        });
+    }
+}, 1000); // Wait 1 second for everything to load
+
+// Also run immediately and on interval
+function styleSegmentedControls() {
+    const chartControls = document.querySelector('.chart-controls');
+    if (chartControls) {
+        const buttons = chartControls.querySelectorAll('button');
+        buttons.forEach(button => {
+            if (button.getAttribute('aria-pressed') === 'true') {
+                button.style.setProperty('background', '#6366F1', 'important');
+                button.style.setProperty('color', 'white', 'important');
+                button.style.setProperty('border', '1px solid #5B5FED', 'important');
+            }
+        });
+    }
+}
+
+// Run styling function multiple times to catch dynamic updates
+setTimeout(styleSegmentedControls, 100);
+setTimeout(styleSegmentedControls, 500);
+setTimeout(styleSegmentedControls, 1500);
+setInterval(styleSegmentedControls, 2000);
+</script>
 """, unsafe_allow_html=True)
 
 # Data filtering based on time range
