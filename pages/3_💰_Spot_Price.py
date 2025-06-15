@@ -623,8 +623,8 @@ if not filtered_df.empty:
         line=dict(color='#5B6CFF', width=3),
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
-        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
+        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+        customdata=[f"{d.strftime('%B %d, %Y')}<br>Day {int(days)} since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if x_scale_type == "Log" and not filtered_df.empty else None
     ))
 
     # Add power law if enabled
@@ -683,11 +683,11 @@ elif x_scale_type == "Log":
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Price (USD)",
-    height=650,  # Increased from 450 to 650
+    height=650,
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#9CA3AF', family='Inter'),
-    hovermode='x unified',  # Always show unified hover for all traces at the same x-value
+    hovermode='x unified',
     xaxis=dict(
         type="log" if x_scale_type == "Log" else None,
         showgrid=True,
@@ -702,8 +702,7 @@ fig.update_layout(
         linecolor='#3A3C4A',
         zerolinecolor='#3A3C4A',
         color='#9CA3AF',
-        # Custom hover format for linear time scale
-        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else '%B %d, %Y<br>Day %{x} since genesis'
+        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None
     ),
     yaxis=dict(
         gridcolor='#363650',
