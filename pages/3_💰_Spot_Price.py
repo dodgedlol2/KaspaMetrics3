@@ -459,6 +459,17 @@ div[data-testid="stColumn"] * {
     right: 10px !important;
 }
 
+/* Make hover line thinner and more subtle */
+.js-plotly-plot .plotly .hoverline {
+    stroke-width: 1px !important;
+    opacity: 0.6 !important;
+}
+
+.js-plotly-plot .plotly .spikeline {
+    stroke-width: 1px !important;
+    opacity: 0.6 !important;
+}
+
 /* Hide Streamlit branding */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
@@ -629,7 +640,7 @@ if not filtered_df.empty:
             name='Power Law',
             line=dict(color='#ff8c00', width=3, dash='solid'),
             showlegend=True,
-            hovertemplate='<b>%{fullData.name}</b><br>Fitted: $%{y:.6f}<br>R²: ' + f'{r2_price:.3f}' + '<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Date: %{text}<br>Fitted: $%{y:.6f}<br>R²: ' + f'{r2_price:.3f}' + '<extra></extra>',
+            hovertemplate='<b>%{fullData.name}</b><br>Fitted: $%{y:.6f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Date: %{text}<br>Fitted: $%{y:.6f}<extra></extra>',
             text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
         ))
 
