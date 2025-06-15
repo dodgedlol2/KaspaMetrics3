@@ -101,7 +101,7 @@ st.markdown("""
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: -10;
     background: 
         /* Primary gradient layer */
         radial-gradient(ellipse 800px 600px at 20% 40%, rgba(91, 108, 255, 0.15) 0%, transparent 50%),
@@ -113,6 +113,7 @@ st.markdown("""
         /* Base gradients */
         linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 30%, #16213E 60%, #1A1A2E 100%);
     animation: backgroundShift 20s ease-in-out infinite;
+    pointer-events: none;
 }
 
 /* Animated noise texture overlay */
@@ -123,10 +124,11 @@ st.markdown("""
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: -9;
     background-image: 
         url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
+    pointer-events: none;
 }
 
 @keyframes backgroundShift {
@@ -155,11 +157,44 @@ st.markdown("""
     background-color: transparent;
 }
 
+/* Ensure main content is visible */
+.main .block-container {
+    position: relative;
+    z-index: 10 !important;
+}
+
+/* Ensure all content containers are visible */
+div[data-testid="stVerticalBlock"] {
+    position: relative;
+    z-index: 10;
+}
+
+div[data-testid="stColumn"] {
+    position: relative;
+    z-index: 10;
+}
+
 .stApp > .main .block-container {
     padding-top: 0.5rem;
     padding-bottom: 2rem;
     max-width: 1200px;
     position: relative;
+    z-index: 1;
+}
+
+/* Ensure sidebar is visible */
+.stSidebar {
+    background: linear-gradient(135deg, 
+        rgba(26, 26, 46, 0.95) 0%, 
+        rgba(22, 22, 41, 0.95) 100%) !important;
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(91, 108, 255, 0.1);
+    z-index: 100 !important;
+}
+
+.stSidebar .block-container {
+    padding-top: 1rem;
+    z-index: 101 !important;
 }
 
 /* GLOWING CARDS WITH ENHANCED EFFECTS */
@@ -510,7 +545,7 @@ header {visibility: hidden;}
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: -1;
+    z-index: -8;
 }
 
 .floating-particles::before,
@@ -550,7 +585,7 @@ col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
     y_scale = st.segmented_control(
-        label="",
+        label="Hashrate Scale",
         options=["Linear", "Log"],
         default="Log",
         label_visibility="collapsed",
@@ -561,7 +596,7 @@ with col1:
 with col2:
     st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
     x_scale_type = st.segmented_control(
-        label="",
+        label="Time Scale",
         options=["Linear", "Log"],
         default="Linear",
         label_visibility="collapsed",
@@ -572,7 +607,7 @@ with col2:
 with col3:
     st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
     show_power_law = st.segmented_control(
-        label="",
+        label="Power Law",
         options=["Hide", "Show"],
         default="Show",
         label_visibility="collapsed",
@@ -586,7 +621,7 @@ with spacer:
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
-        label="",
+        label="Time Period",
         options=["1M", "3M", "6M", "1Y", "All"],
         default="All",
         label_visibility="collapsed",
