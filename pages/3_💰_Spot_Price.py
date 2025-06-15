@@ -624,7 +624,7 @@ if not filtered_df.empty:
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>%{text}<br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}<br>Day {int(days)} since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else []
+        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else []
     ))
 
     # Add power law if enabled
@@ -641,7 +641,7 @@ if not filtered_df.empty:
             line=dict(color='#ff8c00', width=3, dash='solid'),
             showlegend=True,
             hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>%{text}<br>Fit: $%{y:.4f}<extra></extra>',
-            text=[f"{d.strftime('%B %d, %Y')}<br>Day {int(days)} since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else []
+            text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else []
         ))
 
 # Enhanced chart layout with custom logarithmic grid lines
