@@ -474,6 +474,24 @@ div[data-testid="stColumn"] * {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Custom hover styling - hide x-axis value header in unified hover */
+.js-plotly-plot .plotly .hoverlayer .hovertext .nums {
+    display: none !important;
+}
+
+/* Keep the hover box styling but hide the x-axis value */
+.js-plotly-plot .plotly .hoverlayer .hovertext {
+    background: rgba(15, 20, 25, 0.95) !important;
+    border: 1px solid rgba(91, 108, 255, 0.5) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+/* Style the unified hover container */
+.js-plotly-plot .plotly .hoverlayer .hovertext > .name {
+    display: none !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -624,8 +642,7 @@ if not filtered_df.empty:
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else [],
-        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else []
     ))
 
     # Add power law if enabled
@@ -696,13 +713,6 @@ fig.update_layout(
         align='left',
         namelength=-1  # Show full trace names
     ),
-    # Custom hover label formatting for unified mode
-    annotations=[
-        dict(
-            x=0.5, y=1.15, xref='paper', yref='paper',
-            text='', showarrow=False, font=dict(size=12)
-        ) if x_scale_type == "Log" and not filtered_df.empty else dict()
-    ] if x_scale_type == "Log" and not filtered_df.empty else [],
     xaxis=dict(
         type="log" if x_scale_type == "Log" else None,
         showgrid=True,
@@ -718,7 +728,12 @@ fig.update_layout(
         zerolinecolor='#3A3C4A',
         color='#9CA3AF',
         # Custom hover format for linear time scale
-        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None
+        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None,
+        # Hide x-axis value in hover for log scale
+        showspikes=True,
+        spikecolor='rgba(255, 255, 255, 0.6)',
+        spikethickness=1,
+        spikedash='solid'
     ),
     yaxis=dict(
         gridcolor='#363650',
@@ -735,7 +750,12 @@ fig.update_layout(
             gridcolor='rgba(54, 54, 80, 0.3)',
             tickmode='array',
             tickvals=y_minor_ticks if y_scale == "Log" else []
-        ) if y_scale == "Log" else dict()
+        ) if y_scale == "Log" else dict(),
+        # Add spikes for y-axis too
+        showspikes=True,
+        spikecolor='rgba(255, 255, 255, 0.6)',
+        spikethickness=1,
+        spikedash='solid'
     ),
     showlegend=True,
     legend=dict(
