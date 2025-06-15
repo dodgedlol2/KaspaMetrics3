@@ -612,7 +612,7 @@ if not filtered_df.empty:
         line=dict(color='#5B6CFF', width=3),
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
-        hovertemplate='<b>%{fullData.name}</b><br>Date: %{text}<br>Price: $%{y:.6f}<extra></extra>',
+        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.6f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Date: %{text}<br>Price: $%{y:.6f}<extra></extra>',
         text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
     ))
 
@@ -629,7 +629,7 @@ if not filtered_df.empty:
             name='Power Law',
             line=dict(color='#ff8c00', width=3, dash='solid'),
             showlegend=True,
-            hovertemplate='<b>%{fullData.name}</b><br>Date: %{text}<br>Fitted: $%{y:.6f}<br>R²: ' + f'{r2_price:.3f}' + '<extra></extra>',
+            hovertemplate='<b>%{fullData.name}</b><br>Fitted: $%{y:.6f}<br>R²: ' + f'{r2_price:.3f}' + '<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Date: %{text}<br>Fitted: $%{y:.6f}<br>R²: ' + f'{r2_price:.3f}' + '<extra></extra>',
             text=[d.strftime('%Y-%m-%d') for d in filtered_df['Date']] if not filtered_df.empty else []
         ))
 
@@ -733,7 +733,25 @@ fig.update_layout(
         bordercolor='rgba(91, 108, 255, 0.5)',
         font=dict(color='#e2e8f0', size=11),
         align='left'
-    )
+    ),
+    # Custom hover label formatting for linear time scale
+    xaxis=dict(
+        type="log" if x_scale_type == "Log" else None,
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(255, 255, 255, 0.1)',
+        minor=dict(
+            ticklen=6,
+            gridcolor='rgba(255, 255, 255, 0.05)',
+            gridwidth=0.5
+        ),
+        tickformat="%b %Y" if x_scale_type == "Linear" else None,
+        linecolor='#3A3C4A',
+        zerolinecolor='#3A3C4A',
+        color='#9CA3AF',
+        # Custom hover format for linear time scale
+        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None
+    ),
 )
 
 st.plotly_chart(fig, use_container_width=True, config={
