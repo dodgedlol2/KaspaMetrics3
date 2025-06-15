@@ -105,16 +105,35 @@ st.markdown("""
     max-width: 1200px;
 }
 
-/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
+/* ENHANCED BETTERSTACK-STYLE SEGMENTED CONTROLS */
 /* Target all segmented controls */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
-    background: rgba(26, 26, 46, 0.6) !important;
-    border: 1px solid rgba(54, 54, 80, 0.4) !important;
-    border-radius: 8px !important;
-    backdrop-filter: blur(12px) !important;
-    padding: 2px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    background: 
+        linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%),
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.01) 0px,
+            rgba(255, 255, 255, 0.01) 1px,
+            transparent 1px,
+            transparent 8px
+        ) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(16px) !important;
+    padding: 3px !important;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     display: inline-flex !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"]:hover {
+    border-color: rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(99, 102, 241, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 /* PROVEN SOLUTION: Make columns fit their content */
@@ -135,38 +154,76 @@ div[data-testid="stColumn"] * {
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
     background: transparent !important;
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
     font-size: 13px !important;
-    padding: 6px 8px !important;
+    padding: 8px 12px !important;
     margin: 0 1px !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: 'Inter', sans-serif !important;
-    min-height: 28px !important;
+    min-height: 32px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: fit-content !important;
     width: auto !important;
     flex-shrink: 0 !important;
-}
-
-/* Active segment - BetterStack style */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: rgba(91, 108, 255, 0.15) !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    box-shadow: 
-        0 1px 3px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(91, 108, 255, 0.3) !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 /* Hover state for inactive segments */
 [data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
-    background: rgba(54, 54, 80, 0.3) !important;
-    color: #e2e8f0 !important;
+    background: 
+        linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%) !important;
+    color: #CBD5E1 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 
+        0 2px 8px rgba(99, 102, 241, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Active segment - Enhanced with #6366F1 */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
+    background: 
+        linear-gradient(135deg, #6366F1 0%, #5B6CFF 50%, #8B5CF6 100%),
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.1) 0px,
+            rgba(255, 255, 255, 0.1) 1px,
+            transparent 1px,
+            transparent 6px
+        ) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 
+        0 4px 16px rgba(99, 102, 241, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Active segment hover */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
+    background: 
+        linear-gradient(135deg, #7C3AED 0%, #6366F1 50%, #9333EA 100%),
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.12) 0px,
+            rgba(255, 255, 255, 0.12) 1px,
+            transparent 1px,
+            transparent 6px
+        ) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 
+        0 6px 20px rgba(99, 102, 241, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.25),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Controls container */
