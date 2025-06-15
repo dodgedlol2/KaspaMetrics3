@@ -115,27 +115,11 @@ div[data-testid="stColumn"] * {
     width: fit-content !important;
 }
 
-/* DEBUG MODE - Remove after testing */
-/* 
-.chart-controls {
-    border: 3px solid #FF0000 !important;
-    background: rgba(255, 0, 0, 0.1) !important;
-}
+/* ENHANCED SEGMENTED CONTROLS - MAXIMUM SPECIFICITY APPROACH */
 
-[data-baseweb="segmented-control"] {
-    border: 3px solid #00FF00 !important;
-    background: rgba(0, 255, 0, 0.1) !important;
-}
-
-[data-baseweb] {
-    outline: 2px solid #FF69B4 !important;
-}
-*/
-
-/* ENHANCED SEGMENTED CONTROLS - CORRECT SELECTORS */
-
-/* Container styling - Target segmented control containers in chart controls */
-.chart-controls [data-baseweb="segmented-control"] {
+/* Container styling - Multiple selectors with high specificity */
+.stApp .chart-controls [data-baseweb="segmented-control"],
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] {
     background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 22, 41, 0.9) 100%) !important;
     border: 1px solid rgba(99, 102, 241, 0.2) !important;
     border-radius: 12px !important;
@@ -150,10 +134,13 @@ div[data-testid="stColumn"] * {
     overflow: hidden !important;
 }
 
-/* Individual buttons - Target BaseWeb buttons in chart controls segmented controls */
-.chart-controls [data-baseweb="segmented-control"] [data-baseweb] {
-    background: transparent !important;
-    border: none !important;
+/* Individual buttons - MAXIMUM SPECIFICITY */
+.stApp .chart-controls [data-baseweb="segmented-control"] [data-baseweb],
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] div[data-baseweb],
+.stApp .chart-controls [data-baseweb="segmented-control"] button,
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] button {
+    background: rgba(156, 163, 175, 0.1) !important;
+    border: 1px solid rgba(156, 163, 175, 0.2) !important;
     border-radius: 9px !important;
     color: #9CA3AF !important;
     font-weight: 500 !important;
@@ -172,11 +159,17 @@ div[data-testid="stColumn"] * {
     position: relative !important;
     overflow: hidden !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    box-sizing: border-box !important;
 }
 
-/* Active button state - Enhanced with #6366F1 */
-.chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"] {
+/* Active button state - ULTRA HIGH SPECIFICITY */
+.stApp .chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"],
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] div[data-baseweb][aria-pressed="true"],
+.stApp .chart-controls [data-baseweb="segmented-control"] button[aria-pressed="true"],
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] button[aria-pressed="true"],
+.chart-controls [data-baseweb][aria-pressed="true"] {
     background: linear-gradient(135deg, #6366F1 0%, #5B5FED 50%, #5855EA 100%) !important;
+    background-color: #6366F1 !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     box-shadow: 
@@ -184,25 +177,35 @@ div[data-testid="stColumn"] * {
         0 1px 4px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.15),
         inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
     transform: translateY(-1px) !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Hover states for inactive buttons */
-.chart-controls [data-baseweb="segmented-control"] [data-baseweb]:hover:not([aria-pressed="true"]) {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
+/* Hover states for inactive buttons - HIGH SPECIFICITY */
+.stApp .chart-controls [data-baseweb="segmented-control"] [data-baseweb]:hover:not([aria-pressed="true"]),
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] div[data-baseweb]:hover:not([aria-pressed="true"]),
+.stApp .chart-controls [data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]),
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.12) 100%) !important;
+    background-color: rgba(99, 102, 241, 0.15) !important;
     color: #e2e8f0 !important;
     transform: translateY(-0.5px) !important;
     box-shadow: 
         0 2px 6px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
 }
 
-/* Hover states for active buttons */
-.chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"]:hover {
+/* Hover states for active buttons - HIGH SPECIFICITY */
+.stApp .chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"]:hover,
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] div[data-baseweb][aria-pressed="true"]:hover,
+.stApp .chart-controls [data-baseweb="segmented-control"] button[aria-pressed="true"]:hover,
+div.stApp div.chart-controls div[data-baseweb="segmented-control"] button[aria-pressed="true"]:hover {
     background: linear-gradient(135deg, #6D72F3 0%, #6269EF 50%, #5D63EC 100%) !important;
+    background-color: #6D72F3 !important;
     transform: translateY(-1.5px) !important;
     box-shadow: 
         0 4px 12px rgba(99, 102, 241, 0.5),
@@ -211,35 +214,37 @@ div[data-testid="stColumn"] * {
         inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Shimmer effect for active buttons */
-.chart-controls [data-baseweb="segmented-control"] [data-baseweb][aria-pressed="true"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.15),
-        transparent
-    );
-    animation: shimmer 2s infinite;
-    pointer-events: none;
-    z-index: 1;
+/* Alternative approach - Target by position if BaseWeb doesn't work */
+.chart-controls > div:nth-child(1) [data-baseweb][aria-pressed="true"],
+.chart-controls > div:nth-child(2) [data-baseweb][aria-pressed="true"],
+.chart-controls > div:nth-child(3) [data-baseweb][aria-pressed="true"],
+.chart-controls > div:nth-child(4) [data-baseweb][aria-pressed="true"] {
+    background: #6366F1 !important;
+    background-color: #6366F1 !important;
+    color: white !important;
+    border: 1px solid #5B5FED !important;
 }
 
-@keyframes shimmer {
-    0% { left: -100%; }
-    50% { left: -100%; }
-    100% { left: 100%; }
+/* Nuclear option - style ALL elements in chart-controls with aria-pressed */
+.chart-controls [aria-pressed="true"] {
+    background: #6366F1 !important;
+    background-color: #6366F1 !important;
+    color: white !important;
+    border: 1px solid #5B5FED !important;
+    border-radius: 8px !important;
 }
 
-/* Focus states for accessibility */
-.chart-controls [data-baseweb="segmented-control"] [data-baseweb]:focus-visible {
-    outline: 2px solid #6366F1 !important;
-    outline-offset: 2px !important;
+/* Even more nuclear - inline style simulation */
+.chart-controls * {
+    /* This will catch everything in chart-controls */
+}
+
+.chart-controls *[aria-pressed="true"] {
+    background: #6366F1 !important;
+    background-color: #6366F1 !important;
+    background-image: linear-gradient(135deg, #6366F1 0%, #5B5FED 100%) !important;
+    color: #ffffff !important;
+    border-color: #5B5FED !important;
 }
 
 /* Controls container */
