@@ -614,7 +614,21 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add power law first so it appears below Kaspa price in hover
+    # Add price trace with purple color scheme (same as hashrate)
+    fig.add_trace(go.Scatter(
+        x=x_values,
+        y=filtered_df['Price'],
+        mode='lines',
+        name='Kaspa Price',
+        line=dict(color='#5B6CFF', width=3),
+        fill='tonexty',
+        fillcolor='rgba(91, 108, 255, 0.1)',
+        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else [],
+        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+    ))
+
+    # Add power law if enabled
     if show_power_law == "Show" and not filtered_df.empty:
         x_fit = filtered_df['days_from_genesis']
         y_fit = a_price * np.power(x_fit, b_price)
@@ -630,20 +644,6 @@ if not filtered_df.empty:
             hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>',
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
         ))
-
-    # Add price trace with purple color scheme (after power law so it appears on top in hover)
-    fig.add_trace(go.Scatter(
-        x=x_values,
-        y=filtered_df['Price'],
-        mode='lines',
-        name='Kaspa Price',
-        line=dict(color='#5B6CFF', width=3),
-        fill='tonexty',
-        fillcolor='rgba(91, 108, 255, 0.1)',
-        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
-        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
-    ))
 
 # Enhanced chart layout with custom logarithmic grid lines
 x_axis_config = dict(
@@ -749,7 +749,7 @@ fig.update_layout(
         borderwidth=0,
         font=dict(size=11)
     ),
-    margin=dict(l=50, r=20, t=20, b=50),
+    margin=dict(l=50, r=20, t=20, b=50    ),
     modebar=dict(
         orientation="h",  # Changed from "v" to "h" for horizontal
         bgcolor="rgba(0,0,0,0)",  # Transparent background
