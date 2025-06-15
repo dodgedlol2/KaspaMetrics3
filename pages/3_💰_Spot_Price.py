@@ -690,7 +690,9 @@ fig.update_layout(
         tickformat="%b %Y" if x_scale_type == "Linear" else None,
         linecolor='#3A3C4A',
         zerolinecolor='#3A3C4A',
-        color='#9CA3AF'
+        color='#9CA3AF',
+        # Custom hover format for linear time scale
+        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None
     ),
     yaxis=dict(
         gridcolor='#363650',
@@ -733,25 +735,7 @@ fig.update_layout(
         bordercolor='rgba(91, 108, 255, 0.5)',
         font=dict(color='#e2e8f0', size=11),
         align='left'
-    ),
-    # Custom hover label formatting for linear time scale
-    xaxis=dict(
-        type="log" if x_scale_type == "Log" else None,
-        showgrid=True,
-        gridwidth=1,
-        gridcolor='rgba(255, 255, 255, 0.1)',
-        minor=dict(
-            ticklen=6,
-            gridcolor='rgba(255, 255, 255, 0.05)',
-            gridwidth=0.5
-        ),
-        tickformat="%b %Y" if x_scale_type == "Linear" else None,
-        linecolor='#3A3C4A',
-        zerolinecolor='#3A3C4A',
-        color='#9CA3AF',
-        # Custom hover format for linear time scale
-        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None
-    ),
+    )
 )
 
 st.plotly_chart(fig, use_container_width=True, config={
