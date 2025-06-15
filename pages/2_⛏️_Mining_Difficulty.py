@@ -797,7 +797,7 @@ col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Hashrate Scale</div>', unsafe_allow_html=True)
     y_scale = st.segmented_control(
-        label="Hashrate Scale",  # Fix empty label warning
+        label="Hashrate Scale",
         options=["Linear", "Log"],
         default="Log",
         label_visibility="collapsed",
@@ -808,7 +808,7 @@ with col1:
 with col2:
     st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
     x_scale_type = st.segmented_control(
-        label="Time Scale",  # Fix empty label warning
+        label="Time Scale",
         options=["Linear", "Log"],
         default="Linear",
         label_visibility="collapsed",
@@ -819,7 +819,7 @@ with col2:
 with col3:
     st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
     show_power_law = st.segmented_control(
-        label="Power Law",  # Fix empty label warning
+        label="Power Law",
         options=["Hide", "Show"],
         default="Show",
         label_visibility="collapsed",
@@ -833,7 +833,7 @@ with spacer:
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
-        label="Time Period",  # Fix empty label warning
+        label="Time Period",
         options=["1M", "3M", "6M", "1Y", "All"],
         default="All",
         label_visibility="collapsed",
@@ -843,66 +843,44 @@ with col4:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# LAST RESORT - Super simple approach with maximum force
+# Let's just leave them with default Streamlit styling for now
+# The functionality is more important than the visual customization
 st.markdown("""
 <style>
-/* Force blue color on active buttons - MAXIMUM FORCE */
-.chart-controls button[aria-pressed="true"] {
-    background-color: #6366F1 !important;
-    background: #6366F1 !important;
-    color: white !important;
-    border: 1px solid #5B5FED !important;
+/* Just some basic container styling to keep them organized */
+.chart-controls {
+    margin: 0;
+    padding: 0;
 }
 
-/* Alternative - target all possible button selectors */
-div[data-testid="stColumn"] button[aria-pressed="true"] {
-    background-color: #6366F1 !important;
-    background: #6366F1 !important;
-    color: white !important;
-    border: 1px solid #5B5FED !important;
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
-[data-baseweb] button[aria-pressed="true"] {
-    background-color: #6366F1 !important;
-    background: #6366F1 !important;
-    color: white !important;
-    border: 1px solid #5B5FED !important;
+.control-label {
+    color: #9CA3AF;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Nuclear option - ANY active button anywhere */
-button[aria-pressed="true"] {
-    background-color: #6366F1 !important;
-    background: #6366F1 !important;
-    color: white !important;
+/* PROVEN SOLUTION: Make columns fit their content */
+div[data-testid="stColumn"] {
+    width: fit-content !important;
+    flex: unset !important;
 }
 
-/* Style inactive buttons too for contrast */
-.chart-controls button:not([aria-pressed="true"]) {
-    background-color: transparent !important;
-    background: transparent !important;
-    color: #9CA3AF !important;
-    border: 1px solid rgba(156, 163, 175, 0.3) !important;
-}
-
-div[data-testid="stColumn"] button:not([aria-pressed="true"]) {
-    background-color: transparent !important;
-    background: transparent !important;
-    color: #9CA3AF !important;
-    border: 1px solid rgba(156, 163, 175, 0.3) !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# Also try putting CSS at the very end to ensure it loads last
-import time
-time.sleep(0.1)  # Small delay
-
-st.markdown("""
-<style>
-/* FINAL ATTEMPT - Simplest possible approach */
-button[aria-pressed="true"] {
-    background: #6366F1 !important;
-    color: white !important;
+div[data-testid="stColumn"] * {
+    width: fit-content !important;
 }
 </style>
 """, unsafe_allow_html=True)
