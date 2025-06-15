@@ -232,7 +232,7 @@ div[data-testid="stColumn"] * {
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
     transform: translateY(0);
     box-shadow: 
         0 4px 16px rgba(0, 0, 0, 0.3),
@@ -241,7 +241,7 @@ div[data-testid="stColumn"] * {
 
 /* Hover animations */
 .metric-card:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-6px) scale(1.015);
     border-color: rgba(91, 108, 255, 0.4);
     box-shadow: 
         0 12px 32px rgba(0, 0, 0, 0.4),
@@ -279,7 +279,7 @@ div[data-testid="stColumn"] * {
     right: 0;
     height: 3px;
     background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 50%, #8B5CF6 100%);
-    transition: all 0.4s ease;
+    transition: all 0.5s ease;
 }
 
 .metric-card:hover::before {
@@ -302,7 +302,7 @@ div[data-testid="stColumn"] * {
         rgba(255, 255, 255, 0.03),
         transparent
     );
-    transition: left 0.6s ease;
+    transition: left 0.8s ease;
     pointer-events: none;
 }
 
@@ -318,7 +318,7 @@ div[data-testid="stColumn"] * {
     font-family: 'Inter', sans-serif;
     position: relative;
     z-index: 2;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
