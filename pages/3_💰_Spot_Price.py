@@ -624,7 +624,7 @@ if not filtered_df.empty:
         fill='tonexty',
         fillcolor='rgba(91, 108, 255, 0.1)',
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}<br>{int(days)} Days since genesis" for d, days in zip(filtered_df['Date'], filtered_df['days_from_genesis'])] if not filtered_df.empty else [],
+        text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
         customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
     ))
 
@@ -749,7 +749,7 @@ fig.update_layout(
         borderwidth=0,
         font=dict(size=11)
     ),
-    margin=dict(l=50, r=20, t=20, b=50    ),
+    margin=dict(l=50, r=20, t=20, b=50),
     modebar=dict(
         orientation="h",  # Changed from "v" to "h" for horizontal
         bgcolor="rgba(0,0,0,0)",  # Transparent background
