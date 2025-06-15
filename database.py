@@ -8,17 +8,25 @@ from datetime import datetime, timedelta
 
 class Database:
     def __init__(self):
-        # Get database URL from Streamlit secrets or environment
+        # Get database URL from environment variables (Heroku) or Streamlit secrets (local)
         try:
-            self.database_url = st.secrets["default"]["DATABASE_URL"]
+            # Try environment variables first (Heroku)
+            self.database_url = os.environ.get("DATABASE_URL")
+            
+            # If not found in environment, try Streamlit secrets (local development)
+            if not self.database_url:
+                try:
+                    self.database_url = st.secrets["default"]["DATABASE_URL"]
+                except:
+                    try:
+                        self.database_url = st.secrets["DATABASE_URL"]
+                    except:
+                        self.database_url = 'sqlite:///kaspa_users.db'
         except:
-            try:
-                self.database_url = st.secrets["DATABASE_URL"]
-            except:
-                self.database_url = os.getenv('DATABASE_URL', 'sqlite:///kaspa_users.db')
+            self.database_url = 'sqlite:///kaspa_users.db'
         
         # Check if using PostgreSQL (Supabase) or fallback to SQLite
-        if self.database_url.startswith('postgresql://'):
+        if self.database_url and self.database_url.startswith('postgresql://'):
             self.use_postgres = True
             self.init_postgres_database()
         else:
@@ -608,7 +616,14 @@ class Database:
                     
                     try:
                         import stripe
-                        stripe.api_key = st.secrets["default"]["STRIPE_SECRET_KEY"]
+                        # Try environment variables first (Heroku)
+                        stripe_key = os.environ.get("STRIPE_SECRET_KEY")
+                        
+                        # If not found in environment, try Streamlit secrets (local development)
+                        if not stripe_key:
+                            stripe_key = st.secrets["default"]["STRIPE_SECRET_KEY"]
+                        
+                        stripe.api_key = stripe_key
                         subscription = stripe.Subscription.retrieve(user['stripe_subscription_id'])
                         
                         if subscription.status == 'active':
