@@ -625,8 +625,8 @@ if not filtered_df.empty:
         fillgradient=dict(
             type="vertical",
             colorscale=[
-                [0, "rgba(91, 108, 255, 0.6)"],  # Top: bright/opaque
-                [1, "rgba(91, 108, 255, 0.05)"]  # Bottom: transparent
+                [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
             ]
         ),
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
@@ -883,8 +883,8 @@ mini_fig.add_trace(go.Scatter(
     fillgradient=dict(
         type="vertical",
         colorscale=[
-            [0, "rgba(91, 108, 255, 0.6)"],  # Top: bright/opaque
-            [1, "rgba(91, 108, 255, 0.05)"]  # Bottom: transparent
+            [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+            [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
         ]
     )
 ))
