@@ -550,9 +550,6 @@ if not price_df.empty:
 else:
     filtered_df = price_df
 
-# Initialize y_range early to avoid NameError
-y_range = None
-
 # Custom Y-axis tick formatting function for currency
 def format_currency(value):
     """Format currency values for clean display"""
@@ -573,39 +570,6 @@ def format_currency(value):
         return f"${value:.5f}"
     else:
         return f"${value:.1e}"
-
-# Smart Y-axis range calculation that works for any metric (reusable function)
-def calculate_smart_y_range(data_series, scale_type="linear", padding_percent=0.05):
-    """
-    Calculate optimal Y-axis range for any metric data.
-    
-    Args:
-        data_series: pandas Series or array of values
-        scale_type: "linear" or "log" 
-        padding_percent: percentage padding above/below data range (0.05 = 5%)
-    
-    Returns:
-        tuple: (y_min, y_max) for axis range
-    """
-    if len(data_series) == 0:
-        return [0, 1]
-    
-    data_min, data_max = data_series.min(), data_series.max()
-    
-    if scale_type == "log":
-        # For log scale: use multiplicative padding
-        log_range = np.log10(data_max) - np.log10(data_min)
-        padding = log_range * padding_percent
-        y_min = 10 ** (np.log10(data_min) - padding)
-        y_max = 10 ** (np.log10(data_max) + padding)
-    else:
-        # For linear scale: use additive padding 
-        range_size = data_max - data_min
-        padding = range_size * padding_percent
-        y_min = max(0, data_min - padding)  # Don't go below 0 for linear
-        y_max = data_max + padding
-    
-    return [y_min, y_max]
 
 # Generate custom tick values for log scale
 def generate_log_ticks(data_min, data_max):
@@ -642,12 +606,6 @@ def generate_log_ticks(data_min, data_max):
 # Enhanced chart with power law functionality and custom log grid lines
 fig = go.Figure()
 
-# Calculate y_range before creating traces
-if not filtered_df.empty:
-    y_range = calculate_smart_y_range(filtered_df['Price'], y_scale.lower(), padding_percent=0.08)
-else:
-    y_range = [0, 1]  # Fallback range
-
 if not filtered_df.empty:
     if x_scale_type == "Log":
         x_values = filtered_df['days_from_genesis']
@@ -656,22 +614,23 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with smart fill that adapts to data range
-    if y_scale == "Log":
-        # For log scale: create a proper baseline trace to prevent fill to zero
-        baseline_value = y_range[0] if y_range else filtered_df['Price'].min() * 0.9
+    # Add price trace with appropriate fill method for each scale
+    if y_scale == "Log" and not filtered_df.empty:
+        # For log scale: add invisible baseline at the bottom of visible range
+        y_min_visible = filtered_df['Price'].min()
         
         fig.add_trace(go.Scatter(
             x=x_values,
-            y=[baseline_value] * len(x_values),
+            y=[y_min_visible] * len(x_values),
             mode='lines',
             name='baseline',
             line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
             showlegend=False,
-            hoverinfo='skip'
+            hoverinfo='skip',
+            fill=None
         ))
         
-        # Price trace fills to baseline (not zero)
+        # Price trace fills to baseline
         fig.add_trace(go.Scatter(
             x=x_values,
             y=filtered_df['Price'],
@@ -691,14 +650,14 @@ if not filtered_df.empty:
             customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
         ))
     else:
-        # For linear scale: fill to zero works fine
+        # For linear scale: fill to zero (no extra chart area)
         fig.add_trace(go.Scatter(
             x=x_values,
             y=filtered_df['Price'],
             mode='lines',
             name='Kaspa Price',
             line=dict(color='#5B6CFF', width=2),
-            fill='tozeroy',
+            fill='tozeroy',  # Fill to zero
             fillgradient=dict(
                 type="vertical",
                 colorscale=[
@@ -727,39 +686,6 @@ if not filtered_df.empty:
             hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>',
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
         ))
-
-# Smart Y-axis range calculation that works for any metric (reusable function)
-def calculate_smart_y_range(data_series, scale_type="linear", padding_percent=0.05):
-    """
-    Calculate optimal Y-axis range for any metric data.
-    
-    Args:
-        data_series: pandas Series or array of values
-        scale_type: "linear" or "log" 
-        padding_percent: percentage padding above/below data range (0.05 = 5%)
-    
-    Returns:
-        tuple: (y_min, y_max) for axis range
-    """
-    if len(data_series) == 0:
-        return [0, 1]
-    
-    data_min, data_max = data_series.min(), data_series.max()
-    
-    if scale_type == "log":
-        # For log scale: use multiplicative padding
-        log_range = np.log10(data_max) - np.log10(data_min)
-        padding = log_range * padding_percent
-        y_min = 10 ** (np.log10(data_min) - padding)
-        y_max = 10 ** (np.log10(data_max) + padding)
-    else:
-        # For linear scale: use additive padding 
-        range_size = data_max - data_min
-        padding = range_size * padding_percent
-        y_min = max(0, data_min - padding)  # Don't go below 0 for linear
-        y_max = data_max + padding
-    
-    return [y_min, y_max]
 
 # Enhanced chart layout with custom logarithmic grid lines
 x_axis_config = dict(
@@ -841,9 +767,6 @@ fig.update_layout(
         gridwidth=1,
         color='#9CA3AF',
         type="log" if y_scale == "Log" else "linear",
-        # Force explicit Y-axis range for log scale to ensure proper focus
-        autorange=False if y_scale == "Log" else True,
-        range=y_range if y_scale == "Log" else None,  # Only set range for log scale
         # Custom currency formatting for Y-axis
         tickmode='array' if y_scale == "Log" and y_tick_vals else 'auto',
         tickvals=y_tick_vals,
