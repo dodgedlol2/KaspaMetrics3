@@ -948,7 +948,12 @@ fig.update_layout(
         zerolinecolor='#3A3C4A',
         color='#9CA3AF',
         # Custom hover format for linear time scale
-        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None
+        hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None,
+        # Explicitly set x-axis range to prevent auto-expansion for text labels
+        range=[
+            np.log10(filtered_df['days_from_genesis'].min()) if x_scale_type == "Log" and not filtered_df.empty else filtered_df['Date'].min() if not filtered_df.empty else None,
+            np.log10(filtered_df['days_from_genesis'].max()) if x_scale_type == "Log" and not filtered_df.empty else filtered_df['Date'].max() if not filtered_df.empty else None
+        ] if not filtered_df.empty else None
     ),
     yaxis=dict(
         gridcolor='#363650',
