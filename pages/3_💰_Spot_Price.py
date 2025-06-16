@@ -480,8 +480,8 @@ header {visibility: hidden;}
 # BETTERSTACK-STYLE CHART CONTROLS WITH SEGMENTED CONTROLS
 st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
 
-# Create the layout with proper spacing - added two new columns for ATH and 1YL
-col1, col2, col3, col4, col5, spacer, col6 = st.columns([0.8, 0.8, 0.8, 0.8, 0.8, 3, 1.2])
+# Create the layout with proper spacing
+col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Price Scale</div>', unsafe_allow_html=True)
@@ -516,32 +516,10 @@ with col3:
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-with col4:
-    st.markdown('<div class="control-group"><div class="control-label">ATH Label</div>', unsafe_allow_html=True)
-    show_ath = st.segmented_control(
-        label="",
-        options=["Hide", "Show"],
-        default="Show",
-        label_visibility="collapsed",
-        key="show_ath_segment"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col5:
-    st.markdown('<div class="control-group"><div class="control-label">1YL Label</div>', unsafe_allow_html=True)
-    show_1yl = st.segmented_control(
-        label="",
-        options=["Hide", "Show"],
-        default="Show",
-        label_visibility="collapsed",
-        key="show_1yl_segment"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
 with spacer:
     st.empty()  # Creates the space between left and right groups
 
-with col6:
+with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
         label="",
@@ -682,12 +660,12 @@ if not filtered_df.empty:
         # For log scale, set a sensible minimum that's lower than data min but not too extreme
         y_min_chart = y_min_data * 0.8  # 20% below minimum data point
         # Add extra padding at top if ATH is visible (for text label)
-        y_max_chart = y_max_data * (1.50 if (ath_in_view and show_ath == "Show") else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * (1.50 if ath_in_view else 1.05)  # Extra padding for ATH text
     else:
         # For linear scale, start from zero or slightly below data minimum
         y_min_chart = 0
         # Add extra padding at top if ATH is visible (for text label) 
-        y_max_chart = y_max_data * (1.15 if (ath_in_view and show_ath == "Show") else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * (1.15 if ath_in_view else 1.05)  # Extra padding for ATH text
 
     # Add price trace with appropriate fill method for each scale
     if y_scale == "Log" and not filtered_df.empty:
@@ -747,8 +725,8 @@ if not filtered_df.empty:
             ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
             oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
             
-            # Add ATH point as scatter trace (only if show_ath is "Show")
-            if not ath_in_filtered.empty and show_ath == "Show":
+            # Add ATH point as scatter trace
+            if not ath_in_filtered.empty:
                 fig.add_trace(go.Scatter(
                     x=[ath_days],
                     y=[ath_price],
@@ -771,8 +749,8 @@ if not filtered_df.empty:
                     hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
                 ))
             
-            # Add 1YL point as scatter trace (only if show_1yl is "Show")
-            if not oyl_in_filtered.empty and show_1yl == "Show":
+            # Add 1YL point as scatter trace
+            if not oyl_in_filtered.empty:
                 fig.add_trace(go.Scatter(
                     x=[oyl_days],
                     y=[oyl_price],
@@ -799,8 +777,8 @@ if not filtered_df.empty:
             ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
             oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
             
-            # Add ATH point as scatter trace (only if show_ath is "Show")
-            if not ath_in_filtered.empty and show_ath == "Show":
+            # Add ATH point as scatter trace
+            if not ath_in_filtered.empty:
                 fig.add_trace(go.Scatter(
                     x=[ath_date],
                     y=[ath_price],
@@ -823,8 +801,8 @@ if not filtered_df.empty:
                     hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
                 ))
             
-            # Add 1YL point as scatter trace (only if show_1yl is "Show")
-            if not oyl_in_filtered.empty and show_1yl == "Show":
+            # Add 1YL point as scatter trace
+            if not oyl_in_filtered.empty:
                 fig.add_trace(go.Scatter(
                     x=[oyl_date],
                     y=[oyl_price],
