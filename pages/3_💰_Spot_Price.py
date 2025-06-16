@@ -776,12 +776,17 @@ if not filtered_df.empty and ath_price is not None and oyl_price is not None:
         ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
         oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
         
+        # Debug: Let's also check if we should use xref="x" explicitly for log scale
+        # and ensure we're using the right coordinate system
+        
         # Check if ATH point exists in filtered data
         if not ath_in_filtered.empty:
             ath_x = ath_in_filtered['days_from_genesis'].iloc[0]  # Use exact value from filtered data
             annotations.append(dict(
                 x=ath_x,
                 y=ath_price,
+                xref="x",  # Explicitly reference the x-axis
+                yref="y",  # Explicitly reference the y-axis
                 text=f"ATH ${ath_price:.4f}",
                 showarrow=True,
                 arrowhead=2,
@@ -806,6 +811,8 @@ if not filtered_df.empty and ath_price is not None and oyl_price is not None:
             annotations.append(dict(
                 x=oyl_x,
                 y=oyl_price,
+                xref="x",  # Explicitly reference the x-axis
+                yref="y",  # Explicitly reference the y-axis
                 text=f"1YL ${oyl_price:.4f}",
                 showarrow=True,
                 arrowhead=2,
@@ -875,6 +882,13 @@ if not filtered_df.empty and ath_price is not None and oyl_price is not None:
                 bordercolor="rgba(255, 255, 255, 0.3)",
                 borderwidth=1
             ))
+
+# Debug info - let's add this temporarily to see what's happening
+if not filtered_df.empty and x_scale_type == "Log" and ath_price is not None:
+    st.write(f"Debug: ATH days_from_genesis = {ath_days}")
+    st.write(f"Debug: Filtered DF days range = {filtered_df['days_from_genesis'].min()} to {filtered_df['days_from_genesis'].max()}")
+    st.write(f"Debug: ATH in filtered = {ath_days in filtered_df['days_from_genesis'].values}")
+    st.write(f"Debug: Number of annotations = {len(annotations)}")
 
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
