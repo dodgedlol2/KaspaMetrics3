@@ -1,8 +1,6 @@
 import streamlit as st
-
 # Page config MUST be first!
 st.set_page_config(page_title="Market Cap", page_icon="🏦", layout="wide")
-
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
@@ -67,7 +65,7 @@ with col3:
 with col4:
     st.metric("Max Supply", "28.7B KAS", "")
 
-# Market cap chart
+# Market cap chart with gradient fill
 fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=dates,
@@ -75,7 +73,14 @@ fig.add_trace(go.Scatter(
     mode='lines',
     name='Market Cap',
     line=dict(color='#9467bd', width=2),
-    fill='tonexty'
+    fill='tozeroy',
+    fillgradient=dict(
+        type="vertical",
+        colorscale=[
+            [0, "rgba(148, 103, 189, 0.8)"],  # Top: more opaque purple
+            [1, "rgba(148, 103, 189, 0.1)"]   # Bottom: more transparent
+        ]
+    )
 ))
 
 fig.update_layout(
@@ -91,7 +96,6 @@ st.plotly_chart(fig, use_container_width=True)
 # Supply metrics
 st.subheader("📊 Supply Analysis")
 col1, col2 = st.columns(2)
-
 with col1:
     # Supply distribution pie chart
     supply_labels = ['Circulating', 'Remaining']
