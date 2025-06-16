@@ -550,6 +550,9 @@ if not price_df.empty:
 else:
     filtered_df = price_df
 
+# Initialize y_range early to avoid NameError
+y_range = None
+
 # Custom Y-axis tick formatting function for currency
 def format_currency(value):
     """Format currency values for clean display"""
@@ -638,6 +641,12 @@ def generate_log_ticks(data_min, data_max):
 
 # Enhanced chart with power law functionality and custom log grid lines
 fig = go.Figure()
+
+# Calculate y_range before creating traces
+if not filtered_df.empty:
+    y_range = calculate_smart_y_range(filtered_df['Price'], y_scale.lower(), padding_percent=0.08)
+else:
+    y_range = [0, 1]  # Fallback range
 
 if not filtered_df.empty:
     if x_scale_type == "Log":
