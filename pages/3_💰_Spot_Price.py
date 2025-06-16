@@ -647,7 +647,7 @@ col1, col2, col3, spacer, col4 = st.columns([0.8, 0.8, 0.8, 4, 1.2])
 with col1:
     st.markdown('<div class="control-group"><div class="control-label">Price Scale</div>', unsafe_allow_html=True)
     y_scale = st.segmented_control(
-        label="",
+        label="Price Scale",
         options=["Linear", "Log"],
         default="Log",
         label_visibility="collapsed",
@@ -658,7 +658,7 @@ with col1:
 with col2:
     st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
     x_scale_type = st.segmented_control(
-        label="",
+        label="Time Scale",
         options=["Linear", "Log"],
         default="Linear",
         label_visibility="collapsed",
@@ -669,7 +669,7 @@ with col2:
 with col3:
     st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
     show_power_law = st.segmented_control(
-        label="",
+        label="Power Law",
         options=["Hide", "Show"],
         default="Show",
         label_visibility="collapsed",
@@ -683,7 +683,7 @@ with spacer:
 with col4:
     st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
     time_range = st.segmented_control(
-        label="",
+        label="Time Period",
         options=["1M", "3M", "6M", "1Y", "All"],
         default="All",
         label_visibility="collapsed",
