@@ -732,6 +732,109 @@ if not filtered_df.empty:
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
         ))
 
+    # Add ATH and 1YL as scatter traces for precise positioning
+    if ath_price is not None and oyl_price is not None:
+        if x_scale_type == "Log":
+            # Find the ATH and 1YL points within the filtered dataframe
+            ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
+            oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
+            
+            # Add ATH point as scatter trace
+            if not ath_in_filtered.empty:
+                fig.add_trace(go.Scatter(
+                    x=[ath_days],
+                    y=[ath_price],
+                    mode='markers+text',
+                    name='ATH',
+                    marker=dict(
+                        color='rgba(255, 255, 255, 0.9)',
+                        size=8,
+                        line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
+                    ),
+                    text=[f'ATH ${ath_price:.4f}'],
+                    textposition='top center',
+                    textfont=dict(
+                        size=11,
+                        color='white',
+                        family='Inter'
+                    ),
+                    showlegend=False,
+                    hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
+                ))
+            
+            # Add 1YL point as scatter trace
+            if not oyl_in_filtered.empty:
+                fig.add_trace(go.Scatter(
+                    x=[oyl_days],
+                    y=[oyl_price],
+                    mode='markers+text',
+                    name='1YL',
+                    marker=dict(
+                        color='rgba(255, 255, 255, 0.9)',
+                        size=8,
+                        line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
+                    ),
+                    text=[f'1YL ${oyl_price:.4f}'],
+                    textposition='bottom center',
+                    textfont=dict(
+                        size=11,
+                        color='white',
+                        family='Inter'
+                    ),
+                    showlegend=False,
+                    hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
+                ))
+        else:
+            # For linear time scale, use dates
+            ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
+            oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
+            
+            # Add ATH point as scatter trace
+            if not ath_in_filtered.empty:
+                fig.add_trace(go.Scatter(
+                    x=[ath_date],
+                    y=[ath_price],
+                    mode='markers+text',
+                    name='ATH',
+                    marker=dict(
+                        color='rgba(255, 255, 255, 0.9)',
+                        size=8,
+                        line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
+                    ),
+                    text=[f'ATH ${ath_price:.4f}'],
+                    textposition='top center',
+                    textfont=dict(
+                        size=11,
+                        color='white',
+                        family='Inter'
+                    ),
+                    showlegend=False,
+                    hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
+                ))
+            
+            # Add 1YL point as scatter trace
+            if not oyl_in_filtered.empty:
+                fig.add_trace(go.Scatter(
+                    x=[oyl_date],
+                    y=[oyl_price],
+                    mode='markers+text',
+                    name='1YL',
+                    marker=dict(
+                        color='rgba(255, 255, 255, 0.9)',
+                        size=8,
+                        line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
+                    ),
+                    text=[f'1YL ${oyl_price:.4f}'],
+                    textposition='bottom center',
+                    textfont=dict(
+                        size=11,
+                        color='white',
+                        family='Inter'
+                    ),
+                    showlegend=False,
+                    hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
+                ))
+
 # Enhanced chart layout with custom logarithmic grid lines
 x_axis_config = dict(
     gridcolor='#363650',
