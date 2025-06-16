@@ -738,7 +738,7 @@ if not filtered_df.empty:
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
         ))
 
-    # Add ATH and 1YL as scatter traces for precise positioning
+    # Add ATH and 1YL as scatter traces for precise positioning with legend control
     if ath_price is not None and oyl_price is not None:
         if x_scale_type == "Log":
             # Find the ATH and 1YL points within the filtered dataframe
@@ -764,7 +764,8 @@ if not filtered_df.empty:
                         color='white',
                         family='Inter'
                     ),
-                    showlegend=False,
+                    showlegend=True,  # Changed to True for legend control
+                    legendgroup='markers',
                     hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
                 ))
             
@@ -787,7 +788,8 @@ if not filtered_df.empty:
                         color='white',
                         family='Inter'
                     ),
-                    showlegend=False,
+                    showlegend=True,  # Changed to True for legend control
+                    legendgroup='markers',
                     hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
                 ))
         else:
@@ -814,7 +816,8 @@ if not filtered_df.empty:
                         color='white',
                         family='Inter'
                     ),
-                    showlegend=False,
+                    showlegend=True,  # Changed to True for legend control
+                    legendgroup='markers',
                     hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
                 ))
             
@@ -837,7 +840,8 @@ if not filtered_df.empty:
                         color='white',
                         family='Inter'
                     ),
-                    showlegend=False,
+                    showlegend=True,  # Changed to True for legend control
+                    legendgroup='markers',
                     hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
                 ))
 
