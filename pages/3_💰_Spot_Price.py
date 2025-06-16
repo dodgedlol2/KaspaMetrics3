@@ -916,7 +916,7 @@ fig.update_layout(
         # Custom hover format for linear time scale
         hoverformat='%B %d, %Y' if x_scale_type == "Linear" else None,
         # Explicitly set X-axis range to eliminate gaps
-        range=[np.log10(x_min_chart), np.log10(x_max_chart)] if x_scale_type == "Log" and not filtered_df.empty else [x_min_chart, x_max_chart] if not filtered_df.empty else None
+        range=[np.log10(x_min_chart), np.log10(x_max_chart)] if x_scale_type == "Log" else [x_min_chart, x_max_chart]
     ),
     yaxis=dict(
         gridcolor='#363650',
