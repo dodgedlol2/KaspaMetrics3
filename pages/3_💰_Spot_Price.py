@@ -614,61 +614,25 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with appropriate fill method for each scale
-    if y_scale == "Log" and not filtered_df.empty:
-        # For log scale: add invisible baseline at the bottom of visible range
-        y_min_visible = filtered_df['Price'].min()
-        
-        fig.add_trace(go.Scatter(
-            x=x_values,
-            y=[y_min_visible] * len(x_values),
-            mode='lines',
-            name='baseline',
-            line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
-            showlegend=False,
-            hoverinfo='skip',
-            fill=None
-        ))
-        
-        # Price trace fills to baseline
-        fig.add_trace(go.Scatter(
-            x=x_values,
-            y=filtered_df['Price'],
-            mode='lines',
-            name='Kaspa Price',
-            line=dict(color='#5B6CFF', width=2),
-            fill='tonexty',  # Fill to previous trace (baseline)
-            fillgradient=dict(
-                type="vertical",
-                colorscale=[
-                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
-                ]
-            ),
-            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
-            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
-        ))
-    else:
-        # For linear scale: fill to zero (no extra chart area)
-        fig.add_trace(go.Scatter(
-            x=x_values,
-            y=filtered_df['Price'],
-            mode='lines',
-            name='Kaspa Price',
-            line=dict(color='#5B6CFF', width=2),
-            fill='tozeroy',  # Fill to zero
-            fillgradient=dict(
-                type="vertical",
-                colorscale=[
-                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
-                ]
-            ),
-            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
-            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
-        ))
+    # Add price trace with smart fill that adapts to data range
+    fig.add_trace(go.Scatter(
+        x=x_values,
+        y=filtered_df['Price'],
+        mode='lines',
+        name='Kaspa Price',
+        line=dict(color='#5B6CFF', width=2),
+        fill='tozeroy',
+        fillgradient=dict(
+            type="vertical",
+            colorscale=[
+                [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
+            ]
+        ),
+        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+        text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+    ))
 
     # Add power law if enabled with thinner line (reduced from width=3 to width=2)
     if show_power_law == "Show" and not filtered_df.empty:
@@ -686,6 +650,39 @@ if not filtered_df.empty:
             hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Fit: $%{y:.4f}<extra></extra>',
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
         ))
+
+# Smart Y-axis range calculation that works for any metric (reusable function)
+def calculate_smart_y_range(data_series, scale_type="linear", padding_percent=0.05):
+    """
+    Calculate optimal Y-axis range for any metric data.
+    
+    Args:
+        data_series: pandas Series or array of values
+        scale_type: "linear" or "log" 
+        padding_percent: percentage padding above/below data range (0.05 = 5%)
+    
+    Returns:
+        tuple: (y_min, y_max) for axis range
+    """
+    if len(data_series) == 0:
+        return [0, 1]
+    
+    data_min, data_max = data_series.min(), data_series.max()
+    
+    if scale_type == "log":
+        # For log scale: use multiplicative padding
+        log_range = np.log10(data_max) - np.log10(data_min)
+        padding = log_range * padding_percent
+        y_min = 10 ** (np.log10(data_min) - padding)
+        y_max = 10 ** (np.log10(data_max) + padding)
+    else:
+        # For linear scale: use additive padding 
+        range_size = data_max - data_min
+        padding = range_size * padding_percent
+        y_min = max(0, data_min - padding)  # Don't go below 0 for linear
+        y_max = data_max + padding
+    
+    return [y_min, y_max]
 
 # Enhanced chart layout with custom logarithmic grid lines
 x_axis_config = dict(
@@ -767,6 +764,7 @@ fig.update_layout(
         gridwidth=1,
         color='#9CA3AF',
         type="log" if y_scale == "Log" else "linear",
+        range=y_range,  # Smart range based on actual data
         # Custom currency formatting for Y-axis
         tickmode='array' if y_scale == "Log" and y_tick_vals else 'auto',
         tickvals=y_tick_vals,
