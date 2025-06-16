@@ -444,7 +444,7 @@ div[data-testid="stColumn"] * {
     }
 }
 
-# Override Streamlit's default styling */
+/* Override Streamlit's default styling */
 .stMetric {
     background: none !important;
 }
@@ -689,6 +689,26 @@ if not filtered_df.empty:
             name='Kaspa Price',
             line=dict(color='#5B6CFF', width=2),
             fill='tonexty',  # Fill to previous trace (baseline)
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(13, 13, 26, 0.01)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: full opacity
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        ))
+    else:
+        # For linear scale: fill to zero (no extra chart area)
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=filtered_df['Price'],
+            mode='lines',
+            name='Kaspa Price',
+            line=dict(color='#5B6CFF', width=2),
+            fill='tozeroy',  # Fill to zero
             fillgradient=dict(
                 type="vertical",
                 colorscale=[
@@ -1095,24 +1115,4 @@ st.markdown("""
 
 # At the end of each page:
 from footer import add_footer
-add_footer(), 26, 0.01)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: full opacity
-                ]
-            ),
-            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
-            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
-        ))
-    else:
-        # For linear scale: fill to zero (no extra chart area)
-        fig.add_trace(go.Scatter(
-            x=x_values,
-            y=filtered_df['Price'],
-            mode='lines',
-            name='Kaspa Price',
-            line=dict(color='#5B6CFF', width=2),
-            fill='tozeroy',  # Fill to zero
-            fillgradient=dict(
-                type="vertical",
-                colorscale=[
-                    [0, "rgba(13, 13
+add_footer()
