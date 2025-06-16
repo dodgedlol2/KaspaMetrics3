@@ -665,7 +665,7 @@ if not filtered_df.empty:
         # For linear scale, start from zero or slightly below data minimum
         y_min_chart = 0
         # Add extra padding at top if ATH is visible (for text label) 
-        y_max_chart = y_max_data * (1.50 if ath_in_view else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * (1.20 if ath_in_view else 1.05)  # Extra padding for ATH text
 
     # Add price trace with appropriate fill method for each scale
     if y_scale == "Log" and not filtered_df.empty:
