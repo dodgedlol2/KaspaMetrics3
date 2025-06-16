@@ -614,14 +614,26 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
+    # Calculate Y-axis range to eliminate gaps
+    y_min_data = filtered_df['Price'].min()
+    y_max_data = filtered_df['Price'].max()
+    
+    # Set manual minimum values for different scales
+    if y_scale == "Log":
+        # For log scale, set a sensible minimum that's lower than data min but not too extreme
+        y_min_chart = y_min_data * 0.8  # 20% below minimum data point
+        y_max_chart = y_max_data * 1.05  # 5% above maximum data point
+    else:
+        # For linear scale, start from zero or slightly below data minimum
+        y_min_chart = 0
+        y_max_chart = y_max_data * 1.05  # 5% above maximum data point
+
     # Add price trace with appropriate fill method for each scale
     if y_scale == "Log" and not filtered_df.empty:
-        # For log scale: add invisible baseline at the bottom of visible range
-        y_min_visible = filtered_df['Price'].min()
-        
+        # For log scale: add invisible baseline at the bottom of chart range
         fig.add_trace(go.Scatter(
             x=x_values,
-            y=[y_min_visible] * len(x_values),
+            y=[y_min_chart] * len(x_values),
             mode='lines',
             name='baseline',
             line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
@@ -696,8 +708,7 @@ x_axis_config = dict(
 
 # Generate custom ticks for Y-axis if log scale
 if y_scale == "Log" and not filtered_df.empty:
-    y_min, y_max = filtered_df['Price'].min(), filtered_df['Price'].max()
-    y_major_ticks, y_intermediate_ticks, y_minor_ticks = generate_log_ticks(y_min, y_max)
+    y_major_ticks, y_intermediate_ticks, y_minor_ticks = generate_log_ticks(y_min_chart, y_max_chart)
     # Combine major and intermediate ticks for display
     y_tick_vals = sorted(y_major_ticks + y_intermediate_ticks)
     y_tick_text = [format_currency(val) for val in y_tick_vals]
@@ -767,6 +778,8 @@ fig.update_layout(
         gridwidth=1,
         color='#9CA3AF',
         type="log" if y_scale == "Log" else "linear",
+        # Explicitly set Y-axis range to eliminate gaps
+        range=[np.log10(y_min_chart), np.log10(y_max_chart)] if y_scale == "Log" and not filtered_df.empty else [y_min_chart, y_max_chart] if not filtered_df.empty else None,
         # Custom currency formatting for Y-axis
         tickmode='array' if y_scale == "Log" and y_tick_vals else 'auto',
         tickvals=y_tick_vals,
