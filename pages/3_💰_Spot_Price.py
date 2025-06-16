@@ -614,19 +614,14 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add invisible baseline trace first for proper fill area
-    if not filtered_df.empty:
-        if y_scale == "Log":
-            # For log scale, use a baseline that's a percentage below the minimum visible value
-            y_min_visible = filtered_df['Price'].min()
-            y_baseline = y_min_visible * 0.5  # 50% below minimum visible
-        else:
-            # For linear scale, use zero baseline
-            y_baseline = 0
+    # Add price trace with appropriate fill method for each scale
+    if y_scale == "Log" and not filtered_df.empty:
+        # For log scale: add invisible baseline at the bottom of visible range
+        y_min_visible = filtered_df['Price'].min()
         
         fig.add_trace(go.Scatter(
             x=x_values,
-            y=[y_baseline] * len(x_values),
+            y=[y_min_visible] * len(x_values),
             mode='lines',
             name='baseline',
             line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
@@ -634,26 +629,46 @@ if not filtered_df.empty:
             hoverinfo='skip',
             fill=None
         ))
-
-    # Add price trace with gradient fill
-    fig.add_trace(go.Scatter(
-        x=x_values,
-        y=filtered_df['Price'],
-        mode='lines',
-        name='Kaspa Price',
-        line=dict(color='#5B6CFF', width=2),
-        fill='tonexty',  # Fill to previous trace (baseline)
-        fillgradient=dict(
-            type="vertical",
-            colorscale=[
-                [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
-                [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
-            ]
-        ),
-        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
-        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
-    ))
+        
+        # Price trace fills to baseline
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=filtered_df['Price'],
+            mode='lines',
+            name='Kaspa Price',
+            line=dict(color='#5B6CFF', width=2),
+            fill='tonexty',  # Fill to previous trace (baseline)
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        ))
+    else:
+        # For linear scale: fill to zero (no extra chart area)
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=filtered_df['Price'],
+            mode='lines',
+            name='Kaspa Price',
+            line=dict(color='#5B6CFF', width=2),
+            fill='tozeroy',  # Fill to zero
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        ))
 
     # Add power law if enabled with thinner line (reduced from width=3 to width=2)
     if show_power_law == "Show" and not filtered_df.empty:
