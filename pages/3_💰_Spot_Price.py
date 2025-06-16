@@ -571,6 +571,39 @@ def format_currency(value):
     else:
         return f"${value:.1e}"
 
+# Smart Y-axis range calculation that works for any metric (reusable function)
+def calculate_smart_y_range(data_series, scale_type="linear", padding_percent=0.05):
+    """
+    Calculate optimal Y-axis range for any metric data.
+    
+    Args:
+        data_series: pandas Series or array of values
+        scale_type: "linear" or "log" 
+        padding_percent: percentage padding above/below data range (0.05 = 5%)
+    
+    Returns:
+        tuple: (y_min, y_max) for axis range
+    """
+    if len(data_series) == 0:
+        return [0, 1]
+    
+    data_min, data_max = data_series.min(), data_series.max()
+    
+    if scale_type == "log":
+        # For log scale: use multiplicative padding
+        log_range = np.log10(data_max) - np.log10(data_min)
+        padding = log_range * padding_percent
+        y_min = 10 ** (np.log10(data_min) - padding)
+        y_max = 10 ** (np.log10(data_max) + padding)
+    else:
+        # For linear scale: use additive padding 
+        range_size = data_max - data_min
+        padding = range_size * padding_percent
+        y_min = max(0, data_min - padding)  # Don't go below 0 for linear
+        y_max = data_max + padding
+    
+    return [y_min, y_max]
+
 # Generate custom tick values for log scale
 def generate_log_ticks(data_min, data_max):
     """Generate physics-style log tick marks with 1, 2, 5 pattern"""
