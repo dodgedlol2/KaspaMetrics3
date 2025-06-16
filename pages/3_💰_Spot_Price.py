@@ -660,7 +660,7 @@ if not filtered_df.empty:
         # For log scale, set a sensible minimum that's lower than data min but not too extreme
         y_min_chart = y_min_data * 0.8  # 20% below minimum data point
         # Add extra padding at top if ATH is visible (for text label)
-        y_max_chart = y_max_data * (1.15 if ath_in_view else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * (1.50 if ath_in_view else 1.05)  # Extra padding for ATH text
     else:
         # For linear scale, start from zero or slightly below data minimum
         y_min_chart = 0
