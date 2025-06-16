@@ -654,7 +654,7 @@ if not filtered_df.empty:
                 type="vertical",
                 colorscale=[
                     [0, "rgba(13, 13, 26, 0.01)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.07)"]   # Bottom: full opacity
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: full opacity
                 ]
             ),
             hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
@@ -674,7 +674,7 @@ if not filtered_df.empty:
                 type="vertical",
                 colorscale=[
                     [0, "rgba(13, 13, 26, 0.01)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.07)"]   # Bottom: full opacity
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: full opacity
                 ]
             ),
             hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
