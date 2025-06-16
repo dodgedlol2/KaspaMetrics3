@@ -104,7 +104,6 @@ def add_ath_to_chart(fig, filtered_df, ath_price, ath_date, ath_days, x_scale_ty
                     family='Inter'
                 ),
                 showlegend=True,
-                legendgroup='markers',
                 hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
             ))
     else:
@@ -131,7 +130,6 @@ def add_ath_to_chart(fig, filtered_df, ath_price, ath_date, ath_days, x_scale_ty
                     family='Inter'
                 ),
                 showlegend=True,
-                legendgroup='markers',
                 hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
             ))
     
@@ -190,7 +188,6 @@ def add_1yl_to_chart(fig, filtered_df, oyl_price, oyl_date, oyl_days, x_scale_ty
                     family='Inter'
                 ),
                 showlegend=True,
-                legendgroup='markers',
                 hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
             ))
     else:
@@ -217,7 +214,6 @@ def add_1yl_to_chart(fig, filtered_df, oyl_price, oyl_date, oyl_days, x_scale_ty
                     family='Inter'
                 ),
                 showlegend=True,
-                legendgroup='markers',
                 hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
             ))
     
