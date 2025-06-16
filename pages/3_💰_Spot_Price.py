@@ -603,6 +603,30 @@ def generate_log_ticks(data_min, data_max):
     
     return major_ticks, intermediate_ticks, minor_ticks
 
+# Calculate ATH and 1YL for annotations
+if not price_df.empty:
+    # All-time high
+    ath_idx = price_df['Price'].idxmax()
+    ath_price = price_df.loc[ath_idx, 'Price']
+    ath_date = price_df.loc[ath_idx, 'Date']
+    ath_days = price_df.loc[ath_idx, 'days_from_genesis']
+    
+    # One year low (last 365 days)
+    one_year_ago = price_df['Date'].iloc[-1] - timedelta(days=365)
+    recent_year_df = price_df[price_df['Date'] >= one_year_ago]
+    
+    if not recent_year_df.empty:
+        oyl_idx = recent_year_df['Price'].idxmin()
+        oyl_price = recent_year_df.loc[oyl_idx, 'Price']
+        oyl_date = recent_year_df.loc[oyl_idx, 'Date']
+        oyl_days = recent_year_df.loc[oyl_idx, 'days_from_genesis']
+    else:
+        # Fallback to global minimum
+        oyl_idx = price_df['Price'].idxmin()
+        oyl_price = price_df.loc[oyl_idx, 'Price']
+        oyl_date = price_df.loc[oyl_idx, 'Date']
+        oyl_days = price_df.loc[oyl_idx, 'days_from_genesis']
+
 # Enhanced chart with power law functionality and custom log grid lines
 fig = go.Figure()
 
@@ -610,9 +634,15 @@ if not filtered_df.empty:
     if x_scale_type == "Log":
         x_values = filtered_df['days_from_genesis']
         x_title = "Days Since Genesis (Log Scale)"
+        # For annotations
+        ath_x = ath_days
+        oyl_x = oyl_days
     else:
         x_values = filtered_df['Date']
         x_title = "Date"
+        # For annotations
+        ath_x = ath_date
+        oyl_x = oyl_date
 
     # Calculate Y-axis range to eliminate gaps
     y_min_data = filtered_df['Price'].min()
@@ -734,6 +764,63 @@ if x_scale_type == "Log" and not filtered_df.empty:
 elif x_scale_type == "Log":
     x_axis_config['type'] = 'log'
 
+# Add ATH and 1YL annotations if data points are within the filtered view
+annotations = []
+if not filtered_df.empty and not price_df.empty:
+    # Check if ATH is within the filtered time range
+    if x_scale_type == "Log":
+        ath_in_range = ath_days >= filtered_df['days_from_genesis'].min() and ath_days <= filtered_df['days_from_genesis'].max()
+        oyl_in_range = oyl_days >= filtered_df['days_from_genesis'].min() and oyl_days <= filtered_df['days_from_genesis'].max()
+    else:
+        ath_in_range = ath_date >= filtered_df['Date'].min() and ath_date <= filtered_df['Date'].max()
+        oyl_in_range = oyl_date >= filtered_df['Date'].min() and oyl_date <= filtered_df['Date'].max()
+    
+    # Add ATH annotation
+    if ath_in_range:
+        annotations.append(dict(
+            x=ath_x,
+            y=ath_price,
+            text=f"ATH ${ath_price:.4f}",
+            showarrow=True,
+            arrowhead=2,
+            arrowsize=1,
+            arrowwidth=1,
+            arrowcolor="rgba(255, 255, 255, 0.8)",
+            ax=0,
+            ay=-30,
+            font=dict(
+                size=11,
+                color="white",
+                family="Inter"
+            ),
+            bgcolor="rgba(0, 0, 0, 0.7)",
+            bordercolor="rgba(255, 255, 255, 0.3)",
+            borderwidth=1
+        ))
+    
+    # Add 1YL annotation
+    if oyl_in_range:
+        annotations.append(dict(
+            x=oyl_x,
+            y=oyl_price,
+            text=f"1YL ${oyl_price:.4f}",
+            showarrow=True,
+            arrowhead=2,
+            arrowsize=1,
+            arrowwidth=1,
+            arrowcolor="rgba(255, 255, 255, 0.8)",
+            ax=0,
+            ay=30,
+            font=dict(
+                size=11,
+                color="white",
+                family="Inter"
+            ),
+            bgcolor="rgba(0, 0, 0, 0.7)",
+            bordercolor="rgba(255, 255, 255, 0.3)",
+            borderwidth=1
+        ))
+
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Price (USD)",
@@ -749,13 +836,8 @@ fig.update_layout(
         align='left',
         namelength=-1  # Show full trace names
     ),
-    # Custom hover label formatting for unified mode
-    annotations=[
-        dict(
-            x=0.5, y=1.15, xref='paper', yref='paper',
-            text='', showarrow=False, font=dict(size=12)
-        ) if x_scale_type == "Log" and not filtered_df.empty else dict()
-    ] if x_scale_type == "Log" and not filtered_df.empty else [],
+    # Add ATH and 1YL annotations
+    annotations=annotations,
     xaxis=dict(
         type="log" if x_scale_type == "Log" else None,
         showgrid=True,
