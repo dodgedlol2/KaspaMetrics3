@@ -62,6 +62,167 @@ if not price_df.empty:
 else:
     a_price, b_price, r2_price = 1, 1, 0
 
+# ====================== ATH CALCULATION AND LOGIC ======================
+def calculate_ath_data(price_df):
+    """Calculate All-Time High data"""
+    if price_df.empty:
+        return None, None, None
+    
+    ath_idx = price_df['Price'].idxmax()
+    ath_price = price_df.loc[ath_idx, 'Price']
+    ath_date = price_df.loc[ath_idx, 'Date']
+    ath_days = price_df.loc[ath_idx, 'days_from_genesis']
+    
+    return ath_price, ath_date, ath_days
+
+def add_ath_to_chart(fig, filtered_df, ath_price, ath_date, ath_days, x_scale_type):
+    """Add ATH point as scatter trace to the chart"""
+    if ath_price is None:
+        return fig
+    
+    if x_scale_type == "Log":
+        # Find the ATH point within the filtered dataframe
+        ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
+        
+        # Add ATH point as scatter trace
+        if not ath_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[ath_days],
+                y=[ath_price],
+                mode='markers+text',
+                name='ATH',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
+                ),
+                text=[f'ATH ${ath_price:.4f}'],
+                textposition='top center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                legendgroup='markers',
+                hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    else:
+        # For linear time scale, use dates
+        ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
+        
+        # Add ATH point as scatter trace
+        if not ath_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[ath_date],
+                y=[ath_price],
+                mode='markers+text',
+                name='ATH',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
+                ),
+                text=[f'ATH ${ath_price:.4f}'],
+                textposition='top center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                legendgroup='markers',
+                hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    
+    return fig
+
+# ====================== 1YL CALCULATION AND LOGIC ======================
+def calculate_1yl_data(price_df):
+    """Calculate One Year Low data"""
+    if price_df.empty:
+        return None, None, None
+    
+    # One year low (last 365 days)
+    one_year_ago = price_df['Date'].iloc[-1] - timedelta(days=365)
+    recent_year_df = price_df[price_df['Date'] >= one_year_ago]
+    
+    if not recent_year_df.empty:
+        oyl_idx = recent_year_df['Price'].idxmin()
+        oyl_price = recent_year_df.loc[oyl_idx, 'Price']
+        oyl_date = recent_year_df.loc[oyl_idx, 'Date']
+        oyl_days = recent_year_df.loc[oyl_idx, 'days_from_genesis']
+    else:
+        # Fallback to global minimum
+        oyl_idx = price_df['Price'].idxmin()
+        oyl_price = price_df.loc[oyl_idx, 'Price']
+        oyl_date = price_df.loc[oyl_idx, 'Date']
+        oyl_days = price_df.loc[oyl_idx, 'days_from_genesis']
+    
+    return oyl_price, oyl_date, oyl_days
+
+def add_1yl_to_chart(fig, filtered_df, oyl_price, oyl_date, oyl_days, x_scale_type):
+    """Add 1YL point as scatter trace to the chart"""
+    if oyl_price is None:
+        return fig
+    
+    if x_scale_type == "Log":
+        # Find the 1YL point within the filtered dataframe
+        oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
+        
+        # Add 1YL point as scatter trace
+        if not oyl_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[oyl_days],
+                y=[oyl_price],
+                mode='markers+text',
+                name='1YL',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
+                ),
+                text=[f'1YL ${oyl_price:.4f}'],
+                textposition='bottom center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                legendgroup='markers',
+                hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    else:
+        # For linear time scale, use dates
+        oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
+        
+        # Add 1YL point as scatter trace
+        if not oyl_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[oyl_date],
+                y=[oyl_price],
+                mode='markers+text',
+                name='1YL',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
+                ),
+                text=[f'1YL ${oyl_price:.4f}'],
+                textposition='bottom center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                legendgroup='markers',
+                hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    
+    return fig
+
 st.markdown("""
 <style>
 .big-font {
@@ -444,7 +605,7 @@ div[data-testid="stColumn"] * {
     }
 }
 
-/* Override Streamlit's default styling */
+# Override Streamlit's default styling */
 .stMetric {
     background: none !important;
 }
@@ -603,32 +764,9 @@ def generate_log_ticks(data_min, data_max):
     
     return major_ticks, intermediate_ticks, minor_ticks
 
-# Calculate ATH and 1YL for annotations
-ath_price = ath_date = ath_days = None
-oyl_price = oyl_date = oyl_days = None
-
-if not price_df.empty:
-    # All-time high
-    ath_idx = price_df['Price'].idxmax()
-    ath_price = price_df.loc[ath_idx, 'Price']
-    ath_date = price_df.loc[ath_idx, 'Date']
-    ath_days = price_df.loc[ath_idx, 'days_from_genesis']
-    
-    # One year low (last 365 days)
-    one_year_ago = price_df['Date'].iloc[-1] - timedelta(days=365)
-    recent_year_df = price_df[price_df['Date'] >= one_year_ago]
-    
-    if not recent_year_df.empty:
-        oyl_idx = recent_year_df['Price'].idxmin()
-        oyl_price = recent_year_df.loc[oyl_idx, 'Price']
-        oyl_date = recent_year_df.loc[oyl_idx, 'Date']
-        oyl_days = recent_year_df.loc[oyl_idx, 'days_from_genesis']
-    else:
-        # Fallback to global minimum
-        oyl_idx = price_df['Price'].idxmin()
-        oyl_price = price_df.loc[oyl_idx, 'Price']
-        oyl_date = price_df.loc[oyl_idx, 'Date']
-        oyl_days = price_df.loc[oyl_idx, 'days_from_genesis']
+# Calculate ATH and 1YL data using separated functions
+ath_price, ath_date, ath_days = calculate_ath_data(price_df)
+oyl_price, oyl_date, oyl_days = calculate_1yl_data(price_df)
 
 # Enhanced chart with power law functionality and custom log grid lines
 fig = go.Figure()
@@ -738,119 +876,11 @@ if not filtered_df.empty:
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
         ))
 
-    # Add ATH as separate scatter trace (completely independent)
-    if ath_price is not None:
-        if x_scale_type == "Log":
-            # Find the ATH point within the filtered dataframe
-            ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
-            
-            # Add ATH point as scatter trace
-            if not ath_in_filtered.empty:
-                fig.add_trace(go.Scatter(
-                    x=[ath_days],
-                    y=[ath_price],
-                    mode='markers+text',
-                    name='ATH',
-                    marker=dict(
-                        color='rgba(255, 255, 255, 0.9)',
-                        size=8,
-                        line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
-                    ),
-                    text=[f'ATH ${ath_price:.4f}'],
-                    textposition='top center',
-                    textfont=dict(
-                        size=11,
-                        color='white',
-                        family='Inter'
-                    ),
-                    showlegend=True,
-                    legendgroup='ath_marker',
-                    hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
-                ))
-        else:
-            # For linear time scale, use dates
-            ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
-            
-            # Add ATH point as scatter trace
-            if not ath_in_filtered.empty:
-                fig.add_trace(go.Scatter(
-                    x=[ath_date],
-                    y=[ath_price],
-                    mode='markers+text',
-                    name='ATH',
-                    marker=dict(
-                        color='rgba(255, 255, 255, 0.9)',
-                        size=8,
-                        line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
-                    ),
-                    text=[f'ATH ${ath_price:.4f}'],
-                    textposition='top center',
-                    textfont=dict(
-                        size=11,
-                        color='white',
-                        family='Inter'
-                    ),
-                    showlegend=True,
-                    legendgroup='ath_marker',
-                    hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
-                ))
+    # Add ATH using separated function
+    fig = add_ath_to_chart(fig, filtered_df, ath_price, ath_date, ath_days, x_scale_type)
     
-    # Add 1YL as separate scatter trace (completely independent)
-    if oyl_price is not None:
-        if x_scale_type == "Log":
-            # Find the 1YL point within the filtered dataframe
-            oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
-            
-            # Add 1YL point as scatter trace
-            if not oyl_in_filtered.empty:
-                fig.add_trace(go.Scatter(
-                    x=[oyl_days],
-                    y=[oyl_price],
-                    mode='markers+text',
-                    name='1YL',
-                    marker=dict(
-                        color='rgba(255, 255, 255, 0.9)',
-                        size=8,
-                        line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
-                    ),
-                    text=[f'1YL ${oyl_price:.4f}'],
-                    textposition='bottom center',
-                    textfont=dict(
-                        size=11,
-                        color='white',
-                        family='Inter'
-                    ),
-                    showlegend=True,
-                    legendgroup='oyl_marker',
-                    hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
-                ))
-        else:
-            # For linear time scale, use dates
-            oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
-            
-            # Add 1YL point as scatter trace
-            if not oyl_in_filtered.empty:
-                fig.add_trace(go.Scatter(
-                    x=[oyl_date],
-                    y=[oyl_price],
-                    mode='markers+text',
-                    name='1YL',
-                    marker=dict(
-                        color='rgba(255, 255, 255, 0.9)',
-                        size=8,
-                        line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
-                    ),
-                    text=[f'1YL ${oyl_price:.4f}'],
-                    textposition='bottom center',
-                    textfont=dict(
-                        size=11,
-                        color='white',
-                        family='Inter'
-                    ),
-                    showlegend=True,
-                    legendgroup='oyl_marker',
-                    hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
-                ))
+    # Add 1YL using separated function
+    fig = add_1yl_to_chart(fig, filtered_df, oyl_price, oyl_date, oyl_days, x_scale_type)
 
 # Enhanced chart layout with custom logarithmic grid lines
 x_axis_config = dict(
@@ -887,11 +917,8 @@ if x_scale_type == "Log" and not filtered_df.empty:
 elif x_scale_type == "Log":
     x_axis_config['type'] = 'log'
 
-# Add ATH and 1YL annotations if data points are within the filtered view
+# Empty annotations array since we're using scatter traces
 annotations = []
-
-# Remove the old annotation logic and replace with an empty annotations array
-# since we're now using scatter traces instead
 
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
