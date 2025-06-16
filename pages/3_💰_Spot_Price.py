@@ -614,14 +614,35 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with scale-aware gradient fill
+    # Add invisible baseline trace first for proper fill area
+    if not filtered_df.empty:
+        if y_scale == "Log":
+            # For log scale, use a baseline that's a percentage below the minimum visible value
+            y_min_visible = filtered_df['Price'].min()
+            y_baseline = y_min_visible * 0.5  # 50% below minimum visible
+        else:
+            # For linear scale, use zero baseline
+            y_baseline = 0
+        
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=[y_baseline] * len(x_values),
+            mode='lines',
+            name='baseline',
+            line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
+            showlegend=False,
+            hoverinfo='skip',
+            fill=None
+        ))
+
+    # Add price trace with gradient fill
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Price'],
         mode='lines',
         name='Kaspa Price',
         line=dict(color='#5B6CFF', width=2),
-        fill='tonexty' if y_scale == "Log" else 'tozeroy',  # Use tonexty for log scale
+        fill='tonexty',  # Fill to previous trace (baseline)
         fillgradient=dict(
             type="vertical",
             colorscale=[
@@ -633,19 +654,6 @@ if not filtered_df.empty:
         text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
         customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
     ))
-
-    # Add invisible baseline trace for log scale to create proper fill area
-    if y_scale == "Log" and not filtered_df.empty:
-        y_min_visible = filtered_df['Price'].min() * 0.8  # Start fill from slightly below lowest visible value
-        fig.add_trace(go.Scatter(
-            x=x_values,
-            y=[y_min_visible] * len(x_values),
-            mode='lines',
-            name='baseline',
-            line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
-            showlegend=False,
-            hoverinfo='skip'
-        ))
 
     # Add power law if enabled with thinner line (reduced from width=3 to width=2)
     if show_power_law == "Show" and not filtered_df.empty:
