@@ -653,7 +653,7 @@ if not filtered_df.empty:
             fillgradient=dict(
                 type="vertical",
                 colorscale=[
-                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                    [0, "rgba(91, 108, 255, 0.2)"],  # Top: transparent
                     [1, "rgba(91, 108, 255, 1.0)"]   # Bottom: full opacity
                 ]
             ),
@@ -673,7 +673,7 @@ if not filtered_df.empty:
             fillgradient=dict(
                 type="vertical",
                 colorscale=[
-                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                    [0, "rgba(91, 108, 255, 0.2)"],  # Top: transparent
                     [1, "rgba(91, 108, 255, 1.0)"]   # Bottom: full opacity
                 ]
             ),
