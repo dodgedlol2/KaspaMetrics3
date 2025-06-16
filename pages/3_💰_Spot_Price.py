@@ -657,24 +657,59 @@ if not filtered_df.empty:
         x_title = "Date"
 
     # Add price trace with smart fill that adapts to data range
-    fig.add_trace(go.Scatter(
-        x=x_values,
-        y=filtered_df['Price'],
-        mode='lines',
-        name='Kaspa Price',
-        line=dict(color='#5B6CFF', width=2),
-        fill='tozeroy',
-        fillgradient=dict(
-            type="vertical",
-            colorscale=[
-                [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
-                [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
-            ]
-        ),
-        hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-        text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
-        customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
-    ))
+    if y_scale == "Log":
+        # For log scale: create a proper baseline trace to prevent fill to zero
+        baseline_value = y_range[0] if y_range else filtered_df['Price'].min() * 0.9
+        
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=[baseline_value] * len(x_values),
+            mode='lines',
+            name='baseline',
+            line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
+            showlegend=False,
+            hoverinfo='skip'
+        ))
+        
+        # Price trace fills to baseline (not zero)
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=filtered_df['Price'],
+            mode='lines',
+            name='Kaspa Price',
+            line=dict(color='#5B6CFF', width=2),
+            fill='tonexty',  # Fill to previous trace (baseline)
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        ))
+    else:
+        # For linear scale: fill to zero works fine
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=filtered_df['Price'],
+            mode='lines',
+            name='Kaspa Price',
+            line=dict(color='#5B6CFF', width=2),
+            fill='tozeroy',
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(91, 108, 255, 0.05)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: bright/opaque
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        ))
 
     # Add power law if enabled with thinner line (reduced from width=3 to width=2)
     if show_power_law == "Show" and not filtered_df.empty:
@@ -806,7 +841,9 @@ fig.update_layout(
         gridwidth=1,
         color='#9CA3AF',
         type="log" if y_scale == "Log" else "linear",
-        range=y_range,  # Smart range based on actual data
+        # Force explicit Y-axis range for log scale to ensure proper focus
+        autorange=False if y_scale == "Log" else True,
+        range=y_range if y_scale == "Log" else None,  # Only set range for log scale
         # Custom currency formatting for Y-axis
         tickmode='array' if y_scale == "Log" and y_tick_vals else 'auto',
         tickvals=y_tick_vals,
