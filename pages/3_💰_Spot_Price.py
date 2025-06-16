@@ -770,71 +770,111 @@ elif x_scale_type == "Log":
 # Add ATH and 1YL annotations if data points are within the filtered view
 annotations = []
 if not filtered_df.empty and ath_price is not None and oyl_price is not None:
-    # Check if ATH is within the filtered time range and set correct x-coordinates
+    # For log time scale, we need to ensure we're using the exact same x-values as the chart traces
     if x_scale_type == "Log":
-        # Use days_from_genesis for log scale
-        ath_x = ath_days
-        oyl_x = oyl_days
-        # Check if within filtered range
-        ath_in_range = (ath_days >= filtered_df['days_from_genesis'].min() and 
-                       ath_days <= filtered_df['days_from_genesis'].max())
-        oyl_in_range = (oyl_days >= filtered_df['days_from_genesis'].min() and 
-                       oyl_days <= filtered_df['days_from_genesis'].max())
+        # Find the ATH and 1YL points within the filtered dataframe to get exact x-coordinates
+        ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
+        oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
+        
+        # Check if ATH point exists in filtered data
+        if not ath_in_filtered.empty:
+            ath_x = ath_in_filtered['days_from_genesis'].iloc[0]  # Use exact value from filtered data
+            annotations.append(dict(
+                x=ath_x,
+                y=ath_price,
+                text=f"ATH ${ath_price:.4f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1,
+                arrowwidth=1,
+                arrowcolor="rgba(255, 255, 255, 0.8)",
+                ax=0,
+                ay=-30,
+                font=dict(
+                    size=11,
+                    color="white",
+                    family="Inter"
+                ),
+                bgcolor="rgba(0, 0, 0, 0.7)",
+                bordercolor="rgba(255, 255, 255, 0.3)",
+                borderwidth=1
+            ))
+        
+        # Check if 1YL point exists in filtered data
+        if not oyl_in_filtered.empty:
+            oyl_x = oyl_in_filtered['days_from_genesis'].iloc[0]  # Use exact value from filtered data
+            annotations.append(dict(
+                x=oyl_x,
+                y=oyl_price,
+                text=f"1YL ${oyl_price:.4f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1,
+                arrowwidth=1,
+                arrowcolor="rgba(255, 255, 255, 0.8)",
+                ax=0,
+                ay=30,
+                font=dict(
+                    size=11,
+                    color="white",
+                    family="Inter"
+                ),
+                bgcolor="rgba(0, 0, 0, 0.7)",
+                bordercolor="rgba(255, 255, 255, 0.3)",
+                borderwidth=1
+            ))
     else:
-        # Use dates for linear scale
-        ath_x = ath_date
-        oyl_x = oyl_date
-        # Check if within filtered range
-        ath_in_range = (ath_date >= filtered_df['Date'].min() and 
-                       ath_date <= filtered_df['Date'].max())
-        oyl_in_range = (oyl_date >= filtered_df['Date'].min() and 
-                       oyl_date <= filtered_df['Date'].max())
-    
-    # Add ATH annotation
-    if ath_in_range:
-        annotations.append(dict(
-            x=ath_x,
-            y=ath_price,
-            text=f"ATH ${ath_price:.4f}",
-            showarrow=True,
-            arrowhead=2,
-            arrowsize=1,
-            arrowwidth=1,
-            arrowcolor="rgba(255, 255, 255, 0.8)",
-            ax=0,
-            ay=-30,
-            font=dict(
-                size=11,
-                color="white",
-                family="Inter"
-            ),
-            bgcolor="rgba(0, 0, 0, 0.7)",
-            bordercolor="rgba(255, 255, 255, 0.3)",
-            borderwidth=1
-        ))
-    
-    # Add 1YL annotation
-    if oyl_in_range:
-        annotations.append(dict(
-            x=oyl_x,
-            y=oyl_price,
-            text=f"1YL ${oyl_price:.4f}",
-            showarrow=True,
-            arrowhead=2,
-            arrowsize=1,
-            arrowwidth=1,
-            arrowcolor="rgba(255, 255, 255, 0.8)",
-            ax=0,
-            ay=30,
-            font=dict(
-                size=11,
-                color="white",
-                family="Inter"
-            ),
-            bgcolor="rgba(0, 0, 0, 0.7)",
-            bordercolor="rgba(255, 255, 255, 0.3)",
-            borderwidth=1
-        ))
+        # For linear time scale, use dates
+        ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
+        oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
+        
+        # Check if ATH point exists in filtered data
+        if not ath_in_filtered.empty:
+            ath_x = ath_in_filtered['Date'].iloc[0]  # Use exact date from filtered data
+            annotations.append(dict(
+                x=ath_x,
+                y=ath_price,
+                text=f"ATH ${ath_price:.4f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1,
+                arrowwidth=1,
+                arrowcolor="rgba(255, 255, 255, 0.8)",
+                ax=0,
+                ay=-30,
+                font=dict(
+                    size=11,
+                    color="white",
+                    family="Inter"
+                ),
+                bgcolor="rgba(0, 0, 0, 0.7)",
+                bordercolor="rgba(255, 255, 255, 0.3)",
+                borderwidth=1
+            ))
+        
+        # Check if 1YL point exists in filtered data
+        if not oyl_in_filtered.empty:
+            oyl_x = oyl_in_filtered['Date'].iloc[0]  # Use exact date from filtered data
+            annotations.append(dict(
+                x=oyl_x,
+                y=oyl_price,
+                text=f"1YL ${oyl_price:.4f}",
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1,
+                arrowwidth=1,
+                arrowcolor="rgba(255, 255, 255, 0.8)",
+                ax=0,
+                ay=30,
+                font=dict(
+                    size=11,
+                    color="white",
+                    family="Inter"
+                ),
+                bgcolor="rgba(0, 0, 0, 0.7)",
+                bordercolor="rgba(255, 255, 255, 0.3)",
+                borderwidth=1
+            ))
 
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
