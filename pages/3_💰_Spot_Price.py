@@ -633,23 +633,39 @@ if not price_df.empty:
 # Enhanced chart with power law functionality and custom log grid lines
 fig = go.Figure()
 
+# Initialize variables for when data is empty
+x_title = "Date"
+x_min_chart = None
+x_max_chart = None
+y_min_chart = 0
+y_max_chart = 1
+
 if not filtered_df.empty:
     if x_scale_type == "Log":
         x_values = filtered_df['days_from_genesis']
         x_title = "Days Since Genesis (Log Scale)"
-        # For annotations
-        ath_x = ath_days
-        oyl_x = oyl_days
     else:
         x_values = filtered_df['Date']
         x_title = "Date"
-        # For annotations
-        ath_x = ath_date
-        oyl_x = oyl_date
 
     # Calculate Y-axis range to eliminate gaps and accommodate ATH/1YL labels
     y_min_data = filtered_df['Price'].min()
     y_max_data = filtered_df['Price'].max()
+    
+    # Calculate X-axis range to eliminate gaps (especially for log time scale)
+    if x_scale_type == "Log":
+        x_min_data = filtered_df['days_from_genesis'].min()
+        x_max_data = filtered_df['days_from_genesis'].max()
+        # Add small padding for log scale (5% on each side)
+        x_min_chart = x_min_data * 0.95
+        x_max_chart = x_max_data * 1.05
+    else:
+        x_min_data = filtered_df['Date'].min()
+        x_max_data = filtered_df['Date'].max()
+        # Add small padding for linear scale
+        time_delta = (x_max_data - x_min_data) * 0.02  # 2% padding
+        x_min_chart = x_min_data - time_delta
+        x_max_chart = x_max_data + time_delta
     
     # Check if ATH/1YL points are in the current view to add extra padding for text
     ath_in_view = ath_price is not None and ath_days >= filtered_df['days_from_genesis'].min() and ath_days <= filtered_df['days_from_genesis'].max() if x_scale_type == "Log" else ath_price is not None and ath_date >= filtered_df['Date'].min() and ath_date <= filtered_df['Date'].max()
@@ -660,12 +676,12 @@ if not filtered_df.empty:
         # For log scale, set a sensible minimum that's lower than data min but not too extreme
         y_min_chart = y_min_data * 0.8  # 20% below minimum data point
         # Add extra padding at top if ATH is visible (for text label)
-        y_max_chart = y_max_data * (1.15 if ath_in_view else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * (1.50 if ath_in_view else 1.05)  # Extra padding for ATH text
     else:
         # For linear scale, start from zero or slightly below data minimum
         y_min_chart = 0
         # Add extra padding at top if ATH is visible (for text label) 
-        y_max_chart = y_max_data * (1.15 if ath_in_view else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * (1.20 if ath_in_view else 1.05)  # Extra padding for ATH text
 
     # Add price trace with appropriate fill method for each scale
     if y_scale == "Log" and not filtered_df.empty:
@@ -689,26 +705,6 @@ if not filtered_df.empty:
             name='Kaspa Price',
             line=dict(color='#5B6CFF', width=2),
             fill='tonexty',  # Fill to previous trace (baseline)
-            fillgradient=dict(
-                type="vertical",
-                colorscale=[
-                    [0, "rgba(13, 13, 26, 0.01)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: full opacity
-                ]
-            ),
-            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
-            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
-            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
-        ))
-    else:
-        # For linear scale: fill to zero (no extra chart area)
-        fig.add_trace(go.Scatter(
-            x=x_values,
-            y=filtered_df['Price'],
-            mode='lines',
-            name='Kaspa Price',
-            line=dict(color='#5B6CFF', width=2),
-            fill='tozeroy',  # Fill to zero
             fillgradient=dict(
                 type="vertical",
                 colorscale=[
@@ -883,7 +879,7 @@ annotations = []
 # since we're now using scatter traces instead
 
 fig.update_layout(
-    xaxis_title=x_title if not filtered_df.empty else "Date",
+    xaxis_title=x_title,
     yaxis_title="Price (USD)",
     height=650,  # Increased from 450 to 650
     plot_bgcolor='rgba(0,0,0,0)',
@@ -1113,4 +1109,24 @@ st.markdown("""
 
 # At the end of each page:
 from footer import add_footer
-add_footer()
+add_footer()</extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
+            customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
+        ))
+    else:
+        # For linear scale: fill to zero (no extra chart area)
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=filtered_df['Price'],
+            mode='lines',
+            name='Kaspa Price',
+            line=dict(color='#5B6CFF', width=2),
+            fill='tozeroy',  # Fill to zero
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(13, 13, 26, 0.01)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.6)"]   # Bottom: full opacity
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra>
