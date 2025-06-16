@@ -614,7 +614,7 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with gradient fill
+    # Add price trace with gradient fill (works for both linear and log scales)
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Price'],
@@ -625,8 +625,8 @@ if not filtered_df.empty:
         fillgradient=dict(
             type="vertical",
             colorscale=[
-                [0, "rgba(91, 108, 255, 0.8)"],  # Top: more opaque blue
-                [1, "rgba(91, 108, 255, 0.1)"]   # Bottom: more transparent
+                [0, "rgba(91, 108, 255, 0.1)"],  # Top: more transparent (bright Y)
+                [1, "rgba(91, 108, 255, 0.8)"]   # Bottom: more opaque (darker Y)
             ]
         ),
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
@@ -883,8 +883,8 @@ mini_fig.add_trace(go.Scatter(
     fillgradient=dict(
         type="vertical",
         colorscale=[
-            [0, "rgba(91, 108, 255, 0.8)"],  # Top: more opaque blue
-            [1, "rgba(91, 108, 255, 0.1)"]   # Bottom: more transparent
+            [0, "rgba(91, 108, 255, 0.1)"],  # Top: more transparent (bright Y)
+            [1, "rgba(91, 108, 255, 0.8)"]   # Bottom: more opaque (darker Y)
         ]
     )
 ))
