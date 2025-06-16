@@ -647,19 +647,25 @@ if not filtered_df.empty:
         ath_x = ath_date
         oyl_x = oyl_date
 
-    # Calculate Y-axis range to eliminate gaps
+    # Calculate Y-axis range to eliminate gaps and accommodate ATH/1YL labels
     y_min_data = filtered_df['Price'].min()
     y_max_data = filtered_df['Price'].max()
+    
+    # Check if ATH/1YL points are in the current view to add extra padding for text
+    ath_in_view = ath_price is not None and ath_days >= filtered_df['days_from_genesis'].min() and ath_days <= filtered_df['days_from_genesis'].max() if x_scale_type == "Log" else ath_price is not None and ath_date >= filtered_df['Date'].min() and ath_date <= filtered_df['Date'].max()
+    oyl_in_view = oyl_price is not None and oyl_days >= filtered_df['days_from_genesis'].min() and oyl_days <= filtered_df['days_from_genesis'].max() if x_scale_type == "Log" else oyl_price is not None and oyl_date >= filtered_df['Date'].min() and oyl_date <= filtered_df['Date'].max()
     
     # Set manual minimum values for different scales
     if y_scale == "Log":
         # For log scale, set a sensible minimum that's lower than data min but not too extreme
         y_min_chart = y_min_data * 0.8  # 20% below minimum data point
-        y_max_chart = y_max_data * 1.05  # 5% above maximum data point
+        # Add extra padding at top if ATH is visible (for text label)
+        y_max_chart = y_max_data * (1.15 if ath_in_view else 1.05)  # Extra padding for ATH text
     else:
         # For linear scale, start from zero or slightly below data minimum
         y_min_chart = 0
-        y_max_chart = y_max_data * 1.05  # 5% above maximum data point
+        # Add extra padding at top if ATH is visible (for text label) 
+        y_max_chart = y_max_data * (1.15 if ath_in_view else 1.05)  # Extra padding for ATH text
 
     # Add price trace with appropriate fill method for each scale
     if y_scale == "Log" and not filtered_df.empty:
