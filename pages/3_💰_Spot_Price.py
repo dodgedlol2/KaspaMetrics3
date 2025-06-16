@@ -653,8 +653,8 @@ if not filtered_df.empty:
             fillgradient=dict(
                 type="vertical",
                 colorscale=[
-                    [0, "rgba(13, 13, 26, 0.05)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.9)"]   # Bottom: full opacity
+                    [0, "rgba(13, 13, 26, 0.01)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.8)"]   # Bottom: full opacity
                 ]
             ),
             hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
@@ -673,8 +673,8 @@ if not filtered_df.empty:
             fillgradient=dict(
                 type="vertical",
                 colorscale=[
-                    [0, "rgba(13, 13, 26, 0.05)"],  # Top: transparent
-                    [1, "rgba(91, 108, 255, 0.9)"]   # Bottom: full opacity
+                    [0, "rgba(13, 13, 26, 0.01)"],  # Top: transparent
+                    [1, "rgba(91, 108, 255, 0.8)"]   # Bottom: full opacity
                 ]
             ),
             hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
