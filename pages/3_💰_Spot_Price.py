@@ -604,6 +604,9 @@ def generate_log_ticks(data_min, data_max):
     return major_ticks, intermediate_ticks, minor_ticks
 
 # Calculate ATH and 1YL for annotations
+ath_price = ath_date = ath_days = None
+oyl_price = oyl_date = oyl_days = None
+
 if not price_df.empty:
     # All-time high
     ath_idx = price_df['Price'].idxmax()
@@ -766,14 +769,26 @@ elif x_scale_type == "Log":
 
 # Add ATH and 1YL annotations if data points are within the filtered view
 annotations = []
-if not filtered_df.empty and not price_df.empty:
-    # Check if ATH is within the filtered time range
+if not filtered_df.empty and ath_price is not None and oyl_price is not None:
+    # Check if ATH is within the filtered time range and set correct x-coordinates
     if x_scale_type == "Log":
-        ath_in_range = ath_days >= filtered_df['days_from_genesis'].min() and ath_days <= filtered_df['days_from_genesis'].max()
-        oyl_in_range = oyl_days >= filtered_df['days_from_genesis'].min() and oyl_days <= filtered_df['days_from_genesis'].max()
+        # Use days_from_genesis for log scale
+        ath_x = ath_days
+        oyl_x = oyl_days
+        # Check if within filtered range
+        ath_in_range = (ath_days >= filtered_df['days_from_genesis'].min() and 
+                       ath_days <= filtered_df['days_from_genesis'].max())
+        oyl_in_range = (oyl_days >= filtered_df['days_from_genesis'].min() and 
+                       oyl_days <= filtered_df['days_from_genesis'].max())
     else:
-        ath_in_range = ath_date >= filtered_df['Date'].min() and ath_date <= filtered_df['Date'].max()
-        oyl_in_range = oyl_date >= filtered_df['Date'].min() and oyl_date <= filtered_df['Date'].max()
+        # Use dates for linear scale
+        ath_x = ath_date
+        oyl_x = oyl_date
+        # Check if within filtered range
+        ath_in_range = (ath_date >= filtered_df['Date'].min() and 
+                       ath_date <= filtered_df['Date'].max())
+        oyl_in_range = (oyl_date >= filtered_df['Date'].min() and 
+                       oyl_date <= filtered_df['Date'].max())
     
     # Add ATH annotation
     if ath_in_range:
