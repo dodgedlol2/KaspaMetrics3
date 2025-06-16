@@ -614,14 +614,14 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with consistent gradient fill for all scale combinations
+    # Add price trace with scale-aware gradient fill
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Price'],
         mode='lines',
         name='Kaspa Price',
         line=dict(color='#5B6CFF', width=2),
-        fill='tozeroy',
+        fill='tonexty' if y_scale == "Log" else 'tozeroy',  # Use tonexty for log scale
         fillgradient=dict(
             type="vertical",
             colorscale=[
@@ -633,6 +633,19 @@ if not filtered_df.empty:
         text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
         customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
     ))
+
+    # Add invisible baseline trace for log scale to create proper fill area
+    if y_scale == "Log" and not filtered_df.empty:
+        y_min_visible = filtered_df['Price'].min() * 0.8  # Start fill from slightly below lowest visible value
+        fig.add_trace(go.Scatter(
+            x=x_values,
+            y=[y_min_visible] * len(x_values),
+            mode='lines',
+            name='baseline',
+            line=dict(color='rgba(0,0,0,0)', width=0),  # Invisible line
+            showlegend=False,
+            hoverinfo='skip'
+        ))
 
     # Add power law if enabled with thinner line (reduced from width=3 to width=2)
     if show_power_law == "Show" and not filtered_df.empty:
