@@ -614,15 +614,21 @@ if not filtered_df.empty:
         x_values = filtered_df['Date']
         x_title = "Date"
 
-    # Add price trace with thinner line (reduced from width=3 to width=2)
+    # Add price trace with gradient fill
     fig.add_trace(go.Scatter(
         x=x_values,
         y=filtered_df['Price'],
         mode='lines',
         name='Kaspa Price',
-        line=dict(color='#5B6CFF', width=2),  # Changed from 3 to 2
-        fill='tonexty',
-        fillcolor='rgba(91, 108, 255, 0.1)',
+        line=dict(color='#5B6CFF', width=2),
+        fill='tozeroy',
+        fillgradient=dict(
+            type="vertical",
+            colorscale=[
+                [0, "rgba(91, 108, 255, 0.8)"],  # Top: more opaque blue
+                [1, "rgba(91, 108, 255, 0.1)"]   # Bottom: more transparent
+            ]
+        ),
         hovertemplate='<b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>' if x_scale_type == "Linear" else '%{text}<br><b>%{fullData.name}</b><br>Price: $%{y:.4f}<extra></extra>',
         text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df['Date']] if not filtered_df.empty else [],
         customdata=filtered_df[['Date', 'days_from_genesis']].values if not filtered_df.empty else []
@@ -873,8 +879,14 @@ mini_fig.add_trace(go.Scatter(
     name='30-Day Trend',
     line=dict(color='#5B6CFF', width=2),  # Also made mini chart line thinner (from 3 to 2)
     marker=dict(color='#5B6CFF', size=4),
-    fill='tonexty',
-    fillcolor='rgba(91, 108, 255, 0.1)'
+    fill='tozeroy',
+    fillgradient=dict(
+        type="vertical",
+        colorscale=[
+            [0, "rgba(91, 108, 255, 0.8)"],  # Top: more opaque blue
+            [1, "rgba(91, 108, 255, 0.1)"]   # Bottom: more transparent
+        ]
+    )
 ))
 
 mini_fig.update_layout(
