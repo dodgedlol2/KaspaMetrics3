@@ -84,6 +84,14 @@ def combine_price_datasets():
             # If no early data, return original data
             return exchange_df, genesis_date, pd.DataFrame()
         
+        # Ensure all datetime objects are timezone-naive for consistency
+        if early_df['date'].dt.tz is not None:
+            early_df['date'] = early_df['date'].dt.tz_localize(None)
+        if exchange_df['Date'].dt.tz is not None:
+            exchange_df['Date'] = exchange_df['Date'].dt.tz_localize(None)
+        if hasattr(genesis_date, 'tz') and genesis_date.tz is not None:
+            genesis_date = genesis_date.tz_localize(None)
+        
         # Calculate days from genesis for early data
         early_df['days_from_genesis'] = (early_df['date'] - genesis_date).dt.days
         
@@ -949,7 +957,7 @@ if not filtered_df.empty:
             
             # Group by confidence level for different opacities
             for confidence in ['high', 'medium', 'low']:
-                conf_data = estimated_data[estimated_data.get('confidence', 'medium') == confidence]
+                conf_data = estimated_data[estimated_data['confidence'] == confidence] if 'confidence' in estimated_data.columns else pd.DataFrame()
                 if not conf_data.empty:
                     conf_x = conf_data['days_from_genesis'] if x_scale_type == "Log" else conf_data['Date']
                     fig.add_trace(go.Scatter(
@@ -1209,7 +1217,7 @@ if not combined_price_df.empty:
     
     # Calculate early data coverage
     early_data_count = len(early_data_df) if not early_data_df.empty else 0
-    exchange_data_count = len(combined_price_df[combined_price_df.get('data_source', 'exchange') == 'exchange'])
+    exchange_data_count = len(combined_price_df[combined_price_df['data_source'] == 'exchange']) if 'data_source' in combined_price_df.columns else len(combined_price_df)
     total_data_points = len(combined_price_df)
     
     # Calculate data coverage percentage
@@ -1287,9 +1295,9 @@ price_trend = "bullish" if price_pct_change > 5 else "bearish" if price_pct_chan
 slope_trend = "increasing" if slope_pct_change > 0 else "decreasing"
 
 # Calculate data quality metrics
-high_confidence_count = len(early_data_df[early_data_df.get('confidence', '') == 'high']) if not early_data_df.empty else 0
-medium_confidence_count = len(early_data_df[early_data_df.get('confidence', '') == 'medium']) if not early_data_df.empty else 0
-low_confidence_count = len(early_data_df[early_data_df.get('confidence', '') == 'low']) if not early_data_df.empty else 0
+high_confidence_count = len(early_data_df[early_data_df['confidence'] == 'high']) if not early_data_df.empty and 'confidence' in early_data_df.columns else 0
+medium_confidence_count = len(early_data_df[early_data_df['confidence'] == 'medium']) if not early_data_df.empty and 'confidence' in early_data_df.columns else 0
+low_confidence_count = len(early_data_df[early_data_df['confidence'] == 'low']) if not early_data_df.empty and 'confidence' in early_data_df.columns else 0
 
 st.markdown(f"""
 <div class="analysis-section">
