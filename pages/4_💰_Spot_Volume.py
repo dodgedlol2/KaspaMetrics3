@@ -1389,6 +1389,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)_change:+.1f}%</div>
     </div>
+</div>
+""", unsafe_allow_html=True)_change:+.1f}%</div>
+    </div>
     <div class="metric-card">
         <div class="metric-label">Early Data Points</div>
         <div class="metric-value">{early_data_count}</div>
