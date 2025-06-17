@@ -1,720 +1,3 @@
-import streamlit as st
-
-# Page config MUST be first!
-st.set_page_config(page_title="Enhanced Spot Price", page_icon="💰", layout="wide")
-
-import plotly.graph_objects as go
-import pandas as pd
-import numpy as np
-import sys
-import os
-from datetime import datetime, timedelta
-import requests
-from io import StringIO
-
-# Add parent directory to path for imports
-parent_dir = os.path.dirname(os.path.dirname(__file__))
-sys.path.append(parent_dir)
-
-from database import Database
-from auth_handler import AuthHandler
-from payment_handler import PaymentHandler
-from navigation import add_navigation
-from data_manager import kaspa_data, fit_power_law
-
-# NOW add navigation (after page config)
-add_navigation()
-
-# Initialize handlers
-@st.cache_resource
-def init_handlers():
-    db = Database()
-    auth_handler = AuthHandler(db)
-    payment_handler = PaymentHandler()
-    return db, auth_handler, payment_handler
-
-db, auth_handler, payment_handler = init_handlers()
-
-# Cache function to load Google Sheets data
-@st.cache_data(ttl=3600)  # Cache for 1 hour
-def load_google_sheets_data():
-    """Load early price data from Google Sheets"""
-    try:
-        # Google Sheets CSV export URL for price estimates
-        sheets_url = "https://docs.google.com/spreadsheets/d/1zwQ_Ew2G_reqTYhCCIT276ph5aG-rxNT4BRLL88c38w/export?format=csv&gid=275707638"
-        
-        # Download the CSV data
-        response = requests.get(sheets_url, timeout=10)
-        response.raise_for_status()
-        
-        # Parse CSV data
-        csv_data = StringIO(response.text)
-        df = pd.read_csv(csv_data)
-        
-        # Clean and process the data
-        df['date'] = pd.to_datetime(df['date'])
-        df['estimatedprice'] = pd.to_numeric(df['estimatedprice'], errors='coerce')
-        
-        # Remove any invalid rows
-        df = df.dropna(subset=['date', 'estimatedprice'])
-        
-        # Sort by date
-        df = df.sort_values('date').reset_index(drop=True)
-        
-        st.success(f"✅ Loaded {len(df)} early price data points from Google Sheets")
-        return df
-        
-    except Exception as e:
-        st.error(f"⚠️ Failed to load Google Sheets data: {str(e)}")
-        # Return empty dataframe as fallback
-        return pd.DataFrame(columns=['date', 'estimatedprice', 'amountofselloffers', 'amountofbuyoffers', 'confidencelvl'])
-
-# Cache function to load price floor data
-@st.cache_data(ttl=3600)  # Cache for 1 hour
-def load_price_floor_data():
-    """Load price floor data from Google Sheets"""
-    try:
-        # Google Sheets CSV export URL for price floor
-        sheets_url = "https://docs.google.com/spreadsheets/d/1hLOPPNUCPmBJ_IisrbCmkDJ3hjWiKG3tyx5ugtpB5cY/export?format=csv&gid=1073617241"
-        
-        # Download the CSV data
-        response = requests.get(sheets_url, timeout=10)
-        response.raise_for_status()
-        
-        # Parse CSV data
-        csv_data = StringIO(response.text)
-        df = pd.read_csv(csv_data)
-        
-        # Clean and process the data
-        df['date'] = pd.to_datetime(df['date'])
-        df['pricefloor'] = pd.to_numeric(df['pricefloor'], errors='coerce')
-        
-        # Remove any invalid rows
-        df = df.dropna(subset=['date', 'pricefloor'])
-        
-        # Sort by date
-        df = df.sort_values('date').reset_index(drop=True)
-        
-        st.success(f"✅ Loaded {len(df)} price floor data points from Google Sheets")
-        return df
-        
-    except Exception as e:
-        st.error(f"⚠️ Failed to load price floor data: {str(e)}")
-        # Return empty dataframe as fallback
-        return pd.DataFrame(columns=['date', 'pricefloor'])
-
-# Cache function to combine datasets
-@st.cache_data(ttl=3600)
-def combine_price_datasets():
-    """Combine early estimated data, price floor data, and exchange data"""
-    try:
-        # Load exchange data (your existing data)
-        exchange_df, genesis_date = kaspa_data.load_price_data()
-        
-        # Load early estimated data
-        early_df = load_google_sheets_data()
-        
-        # Load price floor data
-        floor_df = load_price_floor_data()
-        
-        if early_df.empty and floor_df.empty:
-            # If no early data, return original data
-            return exchange_df, genesis_date, pd.DataFrame(), pd.DataFrame()
-        
-        # Ensure all datetime objects are timezone-naive for consistency
-        if not early_df.empty and early_df['date'].dt.tz is not None:
-            early_df['date'] = early_df['date'].dt.tz_localize(None)
-        if not floor_df.empty and floor_df['date'].dt.tz is not None:
-            floor_df['date'] = floor_df['date'].dt.tz_localize(None)
-        if exchange_df['Date'].dt.tz is not None:
-            exchange_df['Date'] = exchange_df['Date'].dt.tz_localize(None)
-        if hasattr(genesis_date, 'tz') and genesis_date.tz is not None:
-            genesis_date = genesis_date.tz_localize(None)
-        
-        # Calculate days from genesis for early data
-        if not early_df.empty:
-            early_df['days_from_genesis'] = (early_df['date'] - genesis_date).dt.days
-        if not floor_df.empty:
-            floor_df['days_from_genesis'] = (floor_df['date'] - genesis_date).dt.days
-        
-        # Find the overlap point - where exchange data starts
-        exchange_start_date = exchange_df['Date'].min()
-        
-        # Filter early data to only include dates before exchange data starts
-        early_filtered = early_df[early_df['date'] < exchange_start_date].copy() if not early_df.empty else pd.DataFrame()
-        floor_filtered = floor_df[floor_df['date'] < exchange_start_date].copy() if not floor_df.empty else pd.DataFrame()
-        
-        # Prepare datasets in a common format
-        datasets = []
-        
-        # Add early estimates if available
-        if not early_filtered.empty:
-            early_formatted = pd.DataFrame({
-                'Date': early_filtered['date'],
-                'Price': early_filtered['estimatedprice'],
-                'days_from_genesis': early_filtered['days_from_genesis'],
-                'data_source': 'estimated',
-                'confidence': early_filtered['confidencelvl'] if 'confidencelvl' in early_filtered.columns else 'unknown'
-            })
-            datasets.append(early_formatted)
-        
-        # Add price floor if available
-        if not floor_filtered.empty:
-            floor_formatted = pd.DataFrame({
-                'Date': floor_filtered['date'],
-                'Price': floor_filtered['pricefloor'],
-                'days_from_genesis': floor_filtered['days_from_genesis'],
-                'data_source': 'price_floor',
-                'confidence': 'medium'  # Assign medium confidence to price floor data
-            })
-            datasets.append(floor_formatted)
-        
-        # Add exchange data
-        exchange_formatted = exchange_df.copy()
-        exchange_formatted['data_source'] = 'exchange'
-        exchange_formatted['confidence'] = 'high'
-        datasets.append(exchange_formatted)
-        
-        # Combine all datasets
-        combined_df = pd.concat(datasets, ignore_index=True)
-        combined_df = combined_df.sort_values('Date').reset_index(drop=True)
-        
-        # Recalculate days from genesis for the combined dataset
-        combined_df['days_from_genesis'] = (combined_df['Date'] - genesis_date).dt.days
-        
-        early_count = len(early_filtered) if not early_filtered.empty else 0
-        floor_count = len(floor_filtered) if not floor_filtered.empty else 0
-        exchange_count = len(exchange_formatted)
-        
-        st.success(f"✅ Combined dataset: {early_count} estimates + {floor_count} floor + {exchange_count} exchange = {len(combined_df)} total points")
-        
-        return combined_df, genesis_date, early_filtered, floor_filtered
-        
-    except Exception as e:
-        st.error(f"Failed to combine datasets: {str(e)}")
-        # Fallback to original data
-        original_df, genesis_date = kaspa_data.load_price_data()
-        return original_df, genesis_date, pd.DataFrame(), pd.DataFrame()
-
-# Load combined price data
-if 'combined_price_df' not in st.session_state or 'early_data_df' not in st.session_state or 'floor_data_df' not in st.session_state:
-    st.session_state.combined_price_df, st.session_state.price_genesis_date, st.session_state.early_data_df, st.session_state.floor_data_df = combine_price_datasets()
-
-combined_price_df = st.session_state.combined_price_df
-early_data_df = st.session_state.early_data_df
-floor_data_df = st.session_state.floor_data_df
-genesis_date = st.session_state.price_genesis_date
-
-# Calculate power law if we have data
-if not combined_price_df.empty:
-    try:
-        a_price, b_price, r2_price = fit_power_law(combined_price_df, y_col='Price')
-    except Exception as e:
-        st.error(f"Failed to calculate price power law: {str(e)}")
-        a_price, b_price, r2_price = 1, 1, 0
-else:
-    a_price, b_price, r2_price = 1, 1, 0
-
-# ====================== ATH CALCULATION AND LOGIC ======================
-def calculate_ath_data(price_df):
-    """Calculate All-Time High data"""
-    if price_df.empty:
-        return None, None, None
-    
-    ath_idx = price_df['Price'].idxmax()
-    ath_price = price_df.loc[ath_idx, 'Price']
-    ath_date = price_df.loc[ath_idx, 'Date']
-    ath_days = price_df.loc[ath_idx, 'days_from_genesis']
-    
-    return ath_price, ath_date, ath_days
-
-def add_ath_to_chart(fig, filtered_df, ath_price, ath_date, ath_days, x_scale_type):
-    """Add ATH point as scatter trace to the chart"""
-    if ath_price is None:
-        return fig
-    
-    if x_scale_type == "Log":
-        # Find the ATH point within the filtered dataframe
-        ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
-        
-        # Add ATH point as scatter trace
-        if not ath_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[ath_days],
-                y=[ath_price],
-                mode='markers+text',
-                name='ATH',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
-                ),
-                text=[f'ATH ${ath_price:.4f}'],
-                textposition='top center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
-            ))
-    else:
-        # For linear time scale, use dates
-        ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
-        
-        # Add ATH point as scatter trace
-        if not ath_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[ath_date],
-                y=[ath_price],
-                mode='markers+text',
-                name='ATH',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
-                ),
-                text=[f'ATH ${ath_price:.4f}'],
-                textposition='top center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
-            ))
-    
-    return fig
-
-# ====================== 1YL CALCULATION AND LOGIC ======================
-def calculate_1yl_data(price_df):
-    """Calculate One Year Low data"""
-    if price_df.empty:
-        return None, None, None
-    
-    # One year low (last 365 days)
-    one_year_ago = price_df['Date'].iloc[-1] - timedelta(days=365)
-    recent_year_df = price_df[price_df['Date'] >= one_year_ago]
-    
-    if not recent_year_df.empty:
-        oyl_idx = recent_year_df['Price'].idxmin()
-        oyl_price = recent_year_df.loc[oyl_idx, 'Price']
-        oyl_date = recent_year_df.loc[oyl_idx, 'Date']
-        oyl_days = recent_year_df.loc[oyl_idx, 'days_from_genesis']
-    else:
-        # Fallback to global minimum
-        oyl_idx = price_df['Price'].idxmin()
-        oyl_price = price_df.loc[oyl_idx, 'Price']
-        oyl_date = price_df.loc[oyl_idx, 'Date']
-        oyl_days = price_df.loc[oyl_idx, 'days_from_genesis']
-    
-    return oyl_price, oyl_date, oyl_days
-
-def add_1yl_to_chart(fig, filtered_df, oyl_price, oyl_date, oyl_days, x_scale_type):
-    """Add 1YL point as scatter trace to the chart"""
-    if oyl_price is None:
-        return fig
-    
-    if x_scale_type == "Log":
-        # Find the 1YL point within the filtered dataframe
-        oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
-        
-        # Add 1YL point as scatter trace
-        if not oyl_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[oyl_days],
-                y=[oyl_price],
-                mode='markers+text',
-                name='1YL',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
-                ),
-                text=[f'1YL ${oyl_price:.4f}'],
-                textposition='bottom center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
-            ))
-    else:
-        # For linear time scale, use dates
-        oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
-        
-        # Add 1YL point as scatter trace
-        if not oyl_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[oyl_date],
-                y=[oyl_price],
-                mode='markers+text',
-                name='1YL',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
-                ),
-                text=[f'1YL ${oyl_price:.4f}'],
-                textposition='bottom center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
-            ))
-    
-    return fig
-
-st.markdown("""
-<style>
-.big-font {
-    font-size: 50px !important;
-    font-weight: bold;
-    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 0.5rem 0;
-    padding: 0;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-}
-
-.subtitle-enhanced {
-    font-size: 18px;
-    color: #9CA3AF;
-    margin-bottom: 2rem;
-    background: linear-gradient(90deg, #ff8c00 0%, #5B6CFF 50%, #8B5CF6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 600;
-}
-</style>
-<div class='big-font'>Enhanced Kaspa Price History</div>
-<div class='subtitle-enhanced'>🔗 Combined Discord Estimates + Exchange Data | Complete Historical View</div>
-""", unsafe_allow_html=True)
-
-# Custom CSS for BetterStack-inspired dark theme with segmented controls
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-/* Global dark theme with subtle textured background */
-.stApp {
-    background: 
-        linear-gradient(135deg, #0F0F1A 0%, #0D0D1A 100%),
-        radial-gradient(circle at 20% 20%, rgba(91, 108, 255, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.02) 0%, transparent 50%);
-    color: #FFFFFF;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-/* Hide default streamlit styling */
-.stApp > header {
-    background-color: transparent;
-}
-
-.stApp > .main .block-container {
-    padding-top: 0.5rem;
-    padding-bottom: 2rem;
-    max-width: 1200px;
-}
-
-/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
-/* Target all segmented controls */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
-    background: rgba(26, 26, 46, 0.6) !important;
-    border: 1px solid rgba(54, 54, 80, 0.4) !important;
-    border-radius: 8px !important;
-    backdrop-filter: blur(12px) !important;
-    padding: 2px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    display: inline-flex !important;
-}
-
-/* PROVEN SOLUTION: Make columns fit their content */
-div[data-testid="stColumn"] {
-    width: fit-content !important;
-    flex: unset !important;
-}
-
-div[data-testid="stColumn"] * {
-    width: fit-content !important;
-}
-
-/* Individual segments - inactive state */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
-    background: transparent !important;
-    border: none !important;
-    border-radius: 6px !important;
-    color: #9CA3AF !important;
-    font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 6px 8px !important;
-    margin: 0 1px !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    font-family: 'Inter', sans-serif !important;
-    min-height: 28px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-width: fit-content !important;
-    width: auto !important;
-    flex-shrink: 0 !important;
-}
-
-/* Active segment - BetterStack style */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
-    background: rgba(91, 108, 255, 0.15) !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    box-shadow: 
-        0 1px 3px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(91, 108, 255, 0.3) !important;
-}
-
-/* Hover state for inactive segments */
-[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
-    background: rgba(54, 54, 80, 0.3) !important;
-    color: #e2e8f0 !important;
-}
-
-/* Controls container */
-.chart-controls {
-    margin: 0;
-    padding: 0;
-}
-
-.control-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.control-label {
-    color: #9CA3AF;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    text-align: center;
-    white-space: nowrap;
-}
-
-/* Enhanced metrics cards with gritty texture and animations */
-.metrics-container {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-    flex-wrap: wrap;
-}
-
-.metric-card {
-    background: 
-        /* Main gradient */
-        linear-gradient(135deg, #1A1A2E 0%, #161629 50%, #0F0F1A 100%),
-        /* Gritty noise texture */
-        radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.06) 0%, transparent 50%),
-        /* Fine grain */
-        repeating-linear-gradient(
-            45deg,
-            rgba(255, 255, 255, 0.015) 0px,
-            rgba(255, 255, 255, 0.015) 1px,
-            transparent 1px,
-            transparent 12px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            rgba(91, 108, 255, 0.02) 0px,
-            rgba(91, 108, 255, 0.02) 1px,
-            transparent 1px,
-            transparent 16px
-        );
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 1.5rem;
-    flex: 1;
-    min-width: 200px;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    transform: translateY(0);
-    box-shadow: 
-        0 4px 16px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-/* Hover animations */
-.metric-card:hover {
-    transform: translateY(-6px) scale(1.015);
-    border-color: rgba(91, 108, 255, 0.4);
-    box-shadow: 
-        0 12px 32px rgba(0, 0, 0, 0.4),
-        0 4px 16px rgba(91, 108, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    background: 
-        /* Enhanced hover gradient */
-        linear-gradient(135deg, #1F1F3A 0%, #1A1A35 50%, #12121F 100%),
-        /* Brighter glow on hover */
-        radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
-        /* Same grain patterns */
-        repeating-linear-gradient(
-            45deg,
-            rgba(255, 255, 255, 0.02) 0px,
-            rgba(255, 255, 255, 0.02) 1px,
-            transparent 1px,
-            transparent 12px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            rgba(91, 108, 255, 0.03) 0px,
-            rgba(91, 108, 255, 0.03) 1px,
-            transparent 1px,
-            transparent 16px
-        );
-}
-
-/* Enhanced top gradient border */
-.metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 50%, #8B5CF6 100%);
-    transition: all 0.5s ease;
-}
-
-.metric-card:hover::before {
-    height: 4px;
-    background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 30%, #8B5CF6 60%, #A855F7 100%);
-    box-shadow: 0 0 12px rgba(91, 108, 255, 0.6);
-}
-
-/* Animated shimmer effect */
-.metric-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.03),
-        transparent
-    );
-    transition: left 0.8s ease;
-    pointer-events: none;
-}
-
-.metric-card:hover::after {
-    left: 100%;
-}
-
-.metric-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin-bottom: 0.5rem;
-    font-family: 'Inter', sans-serif;
-    position: relative;
-    z-index: 2;
-    transition: all 0.4s ease;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.metric-card:hover .metric-value {
-    color: #F8FAFC;
-    text-shadow: 
-        0 2px 8px rgba(0, 0, 0, 0.4),
-        0 0 20px rgba(91, 108, 255, 0.3);
-}
-
-.metric-label {
-    color: #9CA3AF;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
-    position: relative;
-    z-index: 2;
-    transition: all 0.3s ease;
-}
-
-.metric-card:hover .metric-label {
-    color: #CBD5E1;
-}
-
-.metric-change {
-    color: #10B981;
-    font-size: 0.9rem;
-    font-weight: 600;
-    position: relative;
-    z-index: 2;
-    transition: all 0.3s ease;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-.metric-card:hover .metric-change {
-    color: #34D399;
-    text-shadow: 
-        0 1px 4px rgba(0, 0, 0, 0.4),
-        0 0 12px rgba(16, 185, 129, 0.3);
-}
-
-.metric-change.negative {
-    color: #ef4444;
-}
-
-.metric-card:hover .metric-change.negative {
-    color: #F87171;
-    text-shadow: 
-        0 1px 4px rgba(0, 0, 0, 0.4),
-        0 0 12px rgba(239, 68, 68, 0.3);
-}
-
-/* Chart container */
-.chart-container {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 3rem;
-}
-
-/* Analysis section */
-.analysis-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.analysis-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
-}
-
 .section-title {
     color: #FFFFFF;
     font-size: 1.5rem;
@@ -779,7 +62,7 @@ div[data-testid="stColumn"] * {
     }
 }
 
-# Override Streamlit's default styling */
+/* Override Streamlit's default styling */
 .stMetric {
     background: none !important;
 }
@@ -1354,28 +637,13 @@ else:
     floor_coverage_pct = 0
 
 # Enhanced metrics cards with data coverage information
+positive_class = 'positive' if slope_pct_change >= 0 else 'negative'
+r2_class = 'positive' if r2_pct_change >= 0 else 'negative'
+price_class = 'positive' if price_pct_change >= 0 else 'negative'
+
 st.markdown(f"""
 <div class="metrics-container">
     <div class="metric-card">
-        <div class="metric-label">Power-Law Slope</div>
-        <div class="metric-value">{b_price:.4f}</div>
-        <div class="metric-change {'positive' if slope_pct_change >= 0 else 'negative'}">{slope_pct_change:+.1f}%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Model Accuracy (R²)</div>
-        <div class="metric-value">{r2_price:.4f}</div>
-        <div class="metric-change {'positive' if r2_pct_change >= 0 else 'negative'}">{r2_pct_change:+.1f}%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Current Price</div>
-        <div class="metric-value">${current_price:.6f}</div>
-        <div class="metric-change {'positive' if price_pct_change >= 0 else 'negative'}">{price_pct_change:+.1f}%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Discord Estimates</div>
-        <div class="metric-value">{early_data_count}</div>
-        <div class="metric-change positive">{early_coverage_pct:.1f}% coverage</div>
-    </div>
     <div class="metric-card">
         <div class="metric-label">Price Floor Data</div>
         <div class="metric-value">{floor_data_count}</div>
@@ -1384,23 +652,7 @@ st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Est. Market Cap</div>
         <div class="metric-value">${market_cap_estimate/1e9:.2f}B</div>
-        <div class="metric-change {'positive' if price_pct_change >= 0 else 'negative'}">{price_pct_change:+.1f}%</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)_change:+.1f}%</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)_change:+.1f}%</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Early Data Points</div>
-        <div class="metric-value">{early_data_count}</div>
-        <div class="metric-change positive">{early_coverage_pct:.1f}% coverage</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Est. Market Cap</div>
-        <div class="metric-value">${market_cap_estimate/1e9:.2f}B</div>
-        <div class="metric-change {'positive' if price_pct_change >= 0 else 'negative'}">{price_pct_change:+.1f}%</div>
+        <div class="metric-change {price_class}">{price_pct_change:+.1f}%</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1663,4 +915,742 @@ st.markdown(f"""
 
 # At the end of each page:
 from footer import add_footer
-add_footer()
+add_footer()">Power-Law Slope</div>
+        <div class="metric-value">{b_price:.4f}</div>
+        <div class="metric-change {positive_class}">{slope_pct_change:+.1f}%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Model Accuracy (R²)</div>
+        <div class="metric-value">{r2_price:.4f}</div>
+        <div class="metric-change {r2_class}">{r2_pct_change:+.1f}%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Current Price</div>
+        <div class="metric-value">${current_price:.6f}</div>
+        <div class="metric-change {price_class}">{price_pct_change:+.1f}%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Discord Estimates</div>
+        <div class="metric-value">{early_data_count}</div>
+        <div class="metric-change positive">{early_coverage_pct:.1f}% coverage</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-labelimport streamlit as st
+
+# Page config MUST be first!
+st.set_page_config(page_title="Enhanced Spot Price", page_icon="💰", layout="wide")
+
+import plotly.graph_objects as go
+import pandas as pd
+import numpy as np
+import sys
+import os
+from datetime import datetime, timedelta
+import requests
+from io import StringIO
+
+# Add parent directory to path for imports
+parent_dir = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(parent_dir)
+
+from database import Database
+from auth_handler import AuthHandler
+from payment_handler import PaymentHandler
+from navigation import add_navigation
+from data_manager import kaspa_data, fit_power_law
+
+# NOW add navigation (after page config)
+add_navigation()
+
+# Initialize handlers
+@st.cache_resource
+def init_handlers():
+    db = Database()
+    auth_handler = AuthHandler(db)
+    payment_handler = PaymentHandler()
+    return db, auth_handler, payment_handler
+
+db, auth_handler, payment_handler = init_handlers()
+
+# Cache function to load Google Sheets data
+@st.cache_data(ttl=3600)  # Cache for 1 hour
+def load_google_sheets_data():
+    """Load early price data from Google Sheets"""
+    try:
+        # Google Sheets CSV export URL for price estimates
+        sheets_url = "https://docs.google.com/spreadsheets/d/1zwQ_Ew2G_reqTYhCCIT276ph5aG-rxNT4BRLL88c38w/export?format=csv&gid=275707638"
+        
+        # Download the CSV data
+        response = requests.get(sheets_url, timeout=10)
+        response.raise_for_status()
+        
+        # Parse CSV data
+        csv_data = StringIO(response.text)
+        df = pd.read_csv(csv_data)
+        
+        # Clean and process the data
+        df['date'] = pd.to_datetime(df['date'])
+        df['estimatedprice'] = pd.to_numeric(df['estimatedprice'], errors='coerce')
+        
+        # Remove any invalid rows
+        df = df.dropna(subset=['date', 'estimatedprice'])
+        
+        # Sort by date
+        df = df.sort_values('date').reset_index(drop=True)
+        
+        st.success(f"✅ Loaded {len(df)} early price data points from Google Sheets")
+        return df
+        
+    except Exception as e:
+        st.error(f"⚠️ Failed to load Google Sheets data: {str(e)}")
+        # Return empty dataframe as fallback
+        return pd.DataFrame(columns=['date', 'estimatedprice', 'amountofselloffers', 'amountofbuyoffers', 'confidencelvl'])
+
+# Cache function to load price floor data
+@st.cache_data(ttl=3600)  # Cache for 1 hour
+def load_price_floor_data():
+    """Load price floor data from Google Sheets"""
+    try:
+        # Google Sheets CSV export URL for price floor
+        sheets_url = "https://docs.google.com/spreadsheets/d/1hLOPPNUCPmBJ_IisrbCmkDJ3hjWiKG3tyx5ugtpB5cY/export?format=csv&gid=1073617241"
+        
+        # Download the CSV data
+        response = requests.get(sheets_url, timeout=10)
+        response.raise_for_status()
+        
+        # Parse CSV data
+        csv_data = StringIO(response.text)
+        df = pd.read_csv(csv_data)
+        
+        # Clean and process the data
+        df['date'] = pd.to_datetime(df['date'])
+        df['pricefloor'] = pd.to_numeric(df['pricefloor'], errors='coerce')
+        
+        # Remove any invalid rows
+        df = df.dropna(subset=['date', 'pricefloor'])
+        
+        # Sort by date
+        df = df.sort_values('date').reset_index(drop=True)
+        
+        st.success(f"✅ Loaded {len(df)} price floor data points from Google Sheets")
+        return df
+        
+    except Exception as e:
+        st.error(f"⚠️ Failed to load price floor data: {str(e)}")
+        # Return empty dataframe as fallback
+        return pd.DataFrame(columns=['date', 'pricefloor'])
+
+# Cache function to combine datasets
+@st.cache_data(ttl=3600)
+def combine_price_datasets():
+    """Combine early estimated data, price floor data, and exchange data"""
+    try:
+        # Load exchange data (your existing data)
+        exchange_df, genesis_date = kaspa_data.load_price_data()
+        
+        # Load early estimated data
+        early_df = load_google_sheets_data()
+        
+        # Load price floor data
+        floor_df = load_price_floor_data()
+        
+        if early_df.empty and floor_df.empty:
+            # If no early data, return original data
+            return exchange_df, genesis_date, pd.DataFrame(), pd.DataFrame()
+        
+        # Ensure all datetime objects are timezone-naive for consistency
+        if not early_df.empty and early_df['date'].dt.tz is not None:
+            early_df['date'] = early_df['date'].dt.tz_localize(None)
+        if not floor_df.empty and floor_df['date'].dt.tz is not None:
+            floor_df['date'] = floor_df['date'].dt.tz_localize(None)
+        if exchange_df['Date'].dt.tz is not None:
+            exchange_df['Date'] = exchange_df['Date'].dt.tz_localize(None)
+        if hasattr(genesis_date, 'tz') and genesis_date.tz is not None:
+            genesis_date = genesis_date.tz_localize(None)
+        
+        # Calculate days from genesis for early data
+        if not early_df.empty:
+            early_df['days_from_genesis'] = (early_df['date'] - genesis_date).dt.days
+        if not floor_df.empty:
+            floor_df['days_from_genesis'] = (floor_df['date'] - genesis_date).dt.days
+        
+        # Find the overlap point - where exchange data starts
+        exchange_start_date = exchange_df['Date'].min()
+        
+        # Filter early data to only include dates before exchange data starts
+        early_filtered = early_df[early_df['date'] < exchange_start_date].copy() if not early_df.empty else pd.DataFrame()
+        floor_filtered = floor_df[floor_df['date'] < exchange_start_date].copy() if not floor_df.empty else pd.DataFrame()
+        
+        # Prepare datasets in a common format
+        datasets = []
+        
+        # Add early estimates if available
+        if not early_filtered.empty:
+            early_formatted = pd.DataFrame({
+                'Date': early_filtered['date'],
+                'Price': early_filtered['estimatedprice'],
+                'days_from_genesis': early_filtered['days_from_genesis'],
+                'data_source': 'estimated',
+                'confidence': early_filtered['confidencelvl'] if 'confidencelvl' in early_filtered.columns else 'unknown'
+            })
+            datasets.append(early_formatted)
+        
+        # Add price floor if available
+        if not floor_filtered.empty:
+            floor_formatted = pd.DataFrame({
+                'Date': floor_filtered['date'],
+                'Price': floor_filtered['pricefloor'],
+                'days_from_genesis': floor_filtered['days_from_genesis'],
+                'data_source': 'price_floor',
+                'confidence': 'medium'  # Assign medium confidence to price floor data
+            })
+            datasets.append(floor_formatted)
+        
+        # Add exchange data
+        exchange_formatted = exchange_df.copy()
+        exchange_formatted['data_source'] = 'exchange'
+        exchange_formatted['confidence'] = 'high'
+        datasets.append(exchange_formatted)
+        
+        # Combine all datasets
+        combined_df = pd.concat(datasets, ignore_index=True)
+        combined_df = combined_df.sort_values('Date').reset_index(drop=True)
+        
+        # Recalculate days from genesis for the combined dataset
+        combined_df['days_from_genesis'] = (combined_df['Date'] - genesis_date).dt.days
+        
+        early_count = len(early_filtered) if not early_filtered.empty else 0
+        floor_count = len(floor_filtered) if not floor_filtered.empty else 0
+        exchange_count = len(exchange_formatted)
+        
+        st.success(f"✅ Combined dataset: {early_count} estimates + {floor_count} floor + {exchange_count} exchange = {len(combined_df)} total points")
+        
+        return combined_df, genesis_date, early_filtered, floor_filtered
+        
+    except Exception as e:
+        st.error(f"Failed to combine datasets: {str(e)}")
+        # Fallback to original data
+        original_df, genesis_date = kaspa_data.load_price_data()
+        return original_df, genesis_date, pd.DataFrame(), pd.DataFrame()
+
+# Load combined price data
+if 'combined_price_df' not in st.session_state or 'early_data_df' not in st.session_state or 'floor_data_df' not in st.session_state:
+    st.session_state.combined_price_df, st.session_state.price_genesis_date, st.session_state.early_data_df, st.session_state.floor_data_df = combine_price_datasets()
+
+combined_price_df = st.session_state.combined_price_df
+early_data_df = st.session_state.early_data_df
+floor_data_df = st.session_state.floor_data_df
+genesis_date = st.session_state.price_genesis_date
+
+# Calculate power law if we have data
+if not combined_price_df.empty:
+    try:
+        a_price, b_price, r2_price = fit_power_law(combined_price_df, y_col='Price')
+    except Exception as e:
+        st.error(f"Failed to calculate price power law: {str(e)}")
+        a_price, b_price, r2_price = 1, 1, 0
+else:
+    a_price, b_price, r2_price = 1, 1, 0
+
+# ====================== ATH CALCULATION AND LOGIC ======================
+def calculate_ath_data(price_df):
+    """Calculate All-Time High data"""
+    if price_df.empty:
+        return None, None, None
+    
+    ath_idx = price_df['Price'].idxmax()
+    ath_price = price_df.loc[ath_idx, 'Price']
+    ath_date = price_df.loc[ath_idx, 'Date']
+    ath_days = price_df.loc[ath_idx, 'days_from_genesis']
+    
+    return ath_price, ath_date, ath_days
+
+def add_ath_to_chart(fig, filtered_df, ath_price, ath_date, ath_days, x_scale_type):
+    """Add ATH point as scatter trace to the chart"""
+    if ath_price is None:
+        return fig
+    
+    if x_scale_type == "Log":
+        # Find the ATH point within the filtered dataframe
+        ath_in_filtered = filtered_df[filtered_df['days_from_genesis'] == ath_days]
+        
+        # Add ATH point as scatter trace
+        if not ath_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[ath_days],
+                y=[ath_price],
+                mode='markers+text',
+                name='ATH',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
+                ),
+                text=[f'ATH ${ath_price:.4f}'],
+                textposition='top center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    else:
+        # For linear time scale, use dates
+        ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
+        
+        # Add ATH point as scatter trace
+        if not ath_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[ath_date],
+                y=[ath_price],
+                mode='markers+text',
+                name='ATH',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
+                ),
+                text=[f'ATH ${ath_price:.4f}'],
+                textposition='top center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                hovertemplate='<b>All-Time High</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    
+    return fig
+
+# ====================== 1YL CALCULATION AND LOGIC ======================
+def calculate_1yl_data(price_df):
+    """Calculate One Year Low data"""
+    if price_df.empty:
+        return None, None, None
+    
+    # One year low (last 365 days)
+    one_year_ago = price_df['Date'].iloc[-1] - timedelta(days=365)
+    recent_year_df = price_df[price_df['Date'] >= one_year_ago]
+    
+    if not recent_year_df.empty:
+        oyl_idx = recent_year_df['Price'].idxmin()
+        oyl_price = recent_year_df.loc[oyl_idx, 'Price']
+        oyl_date = recent_year_df.loc[oyl_idx, 'Date']
+        oyl_days = recent_year_df.loc[oyl_idx, 'days_from_genesis']
+    else:
+        # Fallback to global minimum
+        oyl_idx = price_df['Price'].idxmin()
+        oyl_price = price_df.loc[oyl_idx, 'Price']
+        oyl_date = price_df.loc[oyl_idx, 'Date']
+        oyl_days = price_df.loc[oyl_idx, 'days_from_genesis']
+    
+    return oyl_price, oyl_date, oyl_days
+
+def add_1yl_to_chart(fig, filtered_df, oyl_price, oyl_date, oyl_days, x_scale_type):
+    """Add 1YL point as scatter trace to the chart"""
+    if oyl_price is None:
+        return fig
+    
+    if x_scale_type == "Log":
+        # Find the 1YL point within the filtered dataframe
+        oyl_in_filtered = filtered_df[filtered_df['days_from_genesis'] == oyl_days]
+        
+        # Add 1YL point as scatter trace
+        if not oyl_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[oyl_days],
+                y=[oyl_price],
+                mode='markers+text',
+                name='1YL',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
+                ),
+                text=[f'1YL ${oyl_price:.4f}'],
+                textposition='bottom center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    else:
+        # For linear time scale, use dates
+        oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
+        
+        # Add 1YL point as scatter trace
+        if not oyl_in_filtered.empty:
+            fig.add_trace(go.Scatter(
+                x=[oyl_date],
+                y=[oyl_price],
+                mode='markers+text',
+                name='1YL',
+                marker=dict(
+                    color='rgba(255, 255, 255, 0.9)',
+                    size=8,
+                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
+                ),
+                text=[f'1YL ${oyl_price:.4f}'],
+                textposition='bottom center',
+                textfont=dict(
+                    size=11,
+                    color='white',
+                    family='Inter'
+                ),
+                showlegend=True,
+                hovertemplate='<b>One Year Low</b><br>Price: $%{y:.4f}<extra></extra>'
+            ))
+    
+    return fig
+
+st.markdown("""
+<style>
+.big-font {
+    font-size: 50px !important;
+    font-weight: bold;
+    background: linear-gradient(90deg, #FFFFFF 0%, #A0A0B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 0.5rem 0;
+    padding: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.subtitle-enhanced {
+    font-size: 18px;
+    color: #9CA3AF;
+    margin-bottom: 2rem;
+    background: linear-gradient(90deg, #ff8c00 0%, #5B6CFF 50%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+</style>
+<div class='big-font'>Enhanced Kaspa Price History</div>
+<div class='subtitle-enhanced'>🔗 Combined Discord Estimates + Price Floor + Exchange Data | Complete Historical View</div>
+""", unsafe_allow_html=True)
+
+# Custom CSS for BetterStack-inspired dark theme with segmented controls
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Global dark theme with subtle textured background */
+.stApp {
+    background: 
+        linear-gradient(135deg, #0F0F1A 0%, #0D0D1A 100%),
+        radial-gradient(circle at 20% 20%, rgba(91, 108, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.02) 0%, transparent 50%);
+    color: #FFFFFF;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Hide default streamlit styling */
+.stApp > header {
+    background-color: transparent;
+}
+
+.stApp > .main .block-container {
+    padding-top: 0.5rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* BETTERSTACK-STYLE SEGMENTED CONTROLS */
+/* Target all segmented controls */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] {
+    background: rgba(26, 26, 46, 0.6) !important;
+    border: 1px solid rgba(54, 54, 80, 0.4) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(12px) !important;
+    padding: 2px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    display: inline-flex !important;
+}
+
+/* PROVEN SOLUTION: Make columns fit their content */
+div[data-testid="stColumn"] {
+    width: fit-content !important;
+    flex: unset !important;
+}
+
+div[data-testid="stColumn"] * {
+    width: fit-content !important;
+}
+
+/* Individual segments - inactive state */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: #9CA3AF !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding: 6px 8px !important;
+    margin: 0 1px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-family: 'Inter', sans-serif !important;
+    min-height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: fit-content !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* Active segment - BetterStack style */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button[aria-pressed="true"] {
+    background: rgba(91, 108, 255, 0.15) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(91, 108, 255, 0.3) !important;
+}
+
+/* Hover state for inactive segments */
+[data-testid="stVerticalBlock"] div[data-baseweb="segmented-control"] button:hover:not([aria-pressed="true"]) {
+    background: rgba(54, 54, 80, 0.3) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Controls container */
+.chart-controls {
+    margin: 0;
+    padding: 0;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-label {
+    color: #9CA3AF;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Enhanced metrics cards with gritty texture and animations */
+.metrics-container {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.metric-card {
+    background: 
+        /* Main gradient */
+        linear-gradient(135deg, #1A1A2E 0%, #161629 50%, #0F0F1A 100%),
+        /* Gritty noise texture */
+        radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.06) 0%, transparent 50%),
+        /* Fine grain */
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.015) 0px,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px,
+            transparent 12px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(91, 108, 255, 0.02) 0px,
+            rgba(91, 108, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 16px
+        );
+    border: 1px solid #363650;
+    border-radius: 16px;
+    padding: 1.5rem;
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    transform: translateY(0);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Hover animations */
+.metric-card:hover {
+    transform: translateY(-6px) scale(1.015);
+    border-color: rgba(91, 108, 255, 0.4);
+    box-shadow: 
+        0 12px 32px rgba(0, 0, 0, 0.4),
+        0 4px 16px rgba(91, 108, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: 
+        /* Enhanced hover gradient */
+        linear-gradient(135deg, #1F1F3A 0%, #1A1A35 50%, #12121F 100%),
+        /* Brighter glow on hover */
+        radial-gradient(circle at 30% 30%, rgba(91, 108, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+        /* Same grain patterns */
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 12px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(91, 108, 255, 0.03) 0px,
+            rgba(91, 108, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 16px
+        );
+}
+
+/* Enhanced top gradient border */
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 50%, #8B5CF6 100%);
+    transition: all 0.5s ease;
+}
+
+.metric-card:hover::before {
+    height: 4px;
+    background: linear-gradient(90deg, #5B6CFF 0%, #6366F1 30%, #8B5CF6 60%, #A855F7 100%);
+    box-shadow: 0 0 12px rgba(91, 108, 255, 0.6);
+}
+
+/* Animated shimmer effect */
+.metric-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.03),
+        transparent
+    );
+    transition: left 0.8s ease;
+    pointer-events: none;
+}
+
+.metric-card:hover::after {
+    left: 100%;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s ease;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card:hover .metric-value {
+    color: #F8FAFC;
+    text-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(91, 108, 255, 0.3);
+}
+
+.metric-label {
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover .metric-label {
+    color: #CBD5E1;
+}
+
+.metric-change {
+    color: #10B981;
+    font-size: 0.9rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card:hover .metric-change {
+    color: #34D399;
+    text-shadow: 
+        0 1px 4px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.metric-change.negative {
+    color: #ef4444;
+}
+
+.metric-card:hover .metric-change.negative {
+    color: #F87171;
+    text-shadow: 
+        0 1px 4px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Chart container */
+.chart-container {
+    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    border: 1px solid #363650;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* Analysis section */
+.analysis-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.analysis-card {
+    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
+    border: 1px solid #363650;
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.section-title {
+    color: #
