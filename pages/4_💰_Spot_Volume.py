@@ -1415,26 +1415,6 @@ elif not combined_price_df.empty:
     )
     
     st.plotly_chart(mini_fig, use_container_width=True)
-        yaxis=dict(
-            showticklabels=False,
-            showgrid=False,
-            zeroline=False,
-            range=[0.5, 1.5]
-        ),
-        showlegend=True,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=-0.3,
-            xanchor="center",
-            x=0.5,
-            bgcolor='rgba(0,0,0,0)',
-            font=dict(size=10)
-        ),
-        margin=dict(l=0, r=0, t=10, b=40)
-    )
-    
-    st.plotly_chart(mini_fig, use_container_width=True)
 
 else:
     st.info("No data available for source coverage visualization")
@@ -1500,7 +1480,9 @@ with col2:
 with col3:
     if st.button("📈 Export Chart Data", key="export_chart"):
         if not filtered_df.empty:
-            chart_data = filtered_df[['Date', 'Price', 'days_from_genesis', 'data_source']].copy()
+            chart_data = filtered_df[['Date', 'Price', 'days_from_genesis']].copy()
+            if 'data_source' in filtered_df.columns:
+                chart_data['data_source'] = filtered_df['data_source']
             csv_data = chart_data.to_csv(index=False)
             st.download_button(
                 label="💾 Download Chart CSV",
@@ -1512,7 +1494,7 @@ with col3:
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer with data source attribution
-st.markdown("""
+st.markdown(f"""
 <div style="margin-top: 3rem; padding: 1.5rem; background: rgba(26, 26, 46, 0.3); border-radius: 12px; border: 1px solid rgba(54, 54, 80, 0.4);">
     <h4 style="color: #FFFFFF; margin-bottom: 1rem;">📊 Data Sources & Credits</h4>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; color: #9CA3AF; font-size: 0.9rem;">
