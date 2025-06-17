@@ -1316,7 +1316,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Enhanced mini chart showing data source coverage
-if not combined_price_df.empty:
+if not combined_price_df.empty and 'data_source' in combined_price_df.columns:
     # Create a simple timeline showing data sources
     source_timeline = combined_price_df.groupby(['Date', 'data_source']).size().reset_index(name='count')
     
@@ -1354,6 +1354,67 @@ if not combined_price_df.empty:
             showticklabels=True,
             title="Timeline Coverage"
         ),
+        yaxis=dict(
+            showticklabels=False,
+            showgrid=False,
+            zeroline=False,
+            range=[0.5, 1.5]
+        ),
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.3,
+            xanchor="center",
+            x=0.5,
+            bgcolor='rgba(0,0,0,0)',
+            font=dict(size=10)
+        ),
+        margin=dict(l=0, r=0, t=10, b=40)
+    )
+    
+    st.plotly_chart(mini_fig, use_container_width=True)
+
+elif not combined_price_df.empty:
+    # Fallback: show simple timeline of all data points
+    mini_fig = go.Figure()
+    
+    mini_fig.add_trace(go.Scatter(
+        x=combined_price_df['Date'],
+        y=[1] * len(combined_price_df),
+        mode='markers',
+        name='Price Data',
+        marker=dict(
+            color='#5B6CFF',
+            size=6,
+            symbol='circle'
+        ),
+        hovertemplate='<b>Price Data</b><br>Date: %{x}<extra></extra>',
+        showlegend=False
+    ))
+    
+    mini_fig.update_layout(
+        height=150,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#9CA3AF', family='Inter', size=10),
+        xaxis=dict(
+            gridcolor='#363650',
+            gridwidth=1,
+            color='#9CA3AF',
+            showticklabels=True,
+            title="Data Coverage Timeline"
+        ),
+        yaxis=dict(
+            showticklabels=False,
+            showgrid=False,
+            zeroline=False,
+            range=[0.5, 1.5]
+        ),
+        margin=dict(l=0, r=0, t=10, b=40)
+    )
+    
+    st.plotly_chart(mini_fig, use_container_width=True)
         yaxis=dict(
             showticklabels=False,
             showgrid=False,
