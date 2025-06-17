@@ -40,7 +40,7 @@ db, auth_handler, payment_handler = init_handlers()
 def load_google_sheets_data():
     """Load early price data from Google Sheets"""
     try:
-        # Google Sheets CSV export URL
+        # Google Sheets CSV export URL for price estimates
         sheets_url = "https://docs.google.com/spreadsheets/d/1zwQ_Ew2G_reqTYhCCIT276ph5aG-rxNT4BRLL88c38w/export?format=csv&gid=275707638"
         
         # Download the CSV data
@@ -69,10 +69,44 @@ def load_google_sheets_data():
         # Return empty dataframe as fallback
         return pd.DataFrame(columns=['date', 'estimatedprice', 'amountofselloffers', 'amountofbuyoffers', 'confidencelvl'])
 
+# Cache function to load price floor data
+@st.cache_data(ttl=3600)  # Cache for 1 hour
+def load_price_floor_data():
+    """Load price floor data from Google Sheets"""
+    try:
+        # Google Sheets CSV export URL for price floor
+        sheets_url = "https://docs.google.com/spreadsheets/d/1hLOPPNUCPmBJ_IisrbCmkDJ3hjWiKG3tyx5ugtpB5cY/export?format=csv&gid=1073617241"
+        
+        # Download the CSV data
+        response = requests.get(sheets_url, timeout=10)
+        response.raise_for_status()
+        
+        # Parse CSV data
+        csv_data = StringIO(response.text)
+        df = pd.read_csv(csv_data)
+        
+        # Clean and process the data
+        df['date'] = pd.to_datetime(df['date'])
+        df['pricefloor'] = pd.to_numeric(df['pricefloor'], errors='coerce')
+        
+        # Remove any invalid rows
+        df = df.dropna(subset=['date', 'pricefloor'])
+        
+        # Sort by date
+        df = df.sort_values('date').reset_index(drop=True)
+        
+        st.success(f"✅ Loaded {len(df)} price floor data points from Google Sheets")
+        return df
+        
+    except Exception as e:
+        st.error(f"⚠️ Failed to load price floor data: {str(e)}")
+        # Return empty dataframe as fallback
+        return pd.DataFrame(columns=['date', 'pricefloor'])
+
 # Cache function to combine datasets
 @st.cache_data(ttl=3600)
 def combine_price_datasets():
-    """Combine early estimated data with exchange data"""
+    """Combine early estimated data, price floor data, and exchange data"""
     try:
         # Load exchange data (your existing data)
         exchange_df, genesis_date = kaspa_data.load_price_data()
@@ -80,64 +114,95 @@ def combine_price_datasets():
         # Load early estimated data
         early_df = load_google_sheets_data()
         
-        if early_df.empty:
+        # Load price floor data
+        floor_df = load_price_floor_data()
+        
+        if early_df.empty and floor_df.empty:
             # If no early data, return original data
-            return exchange_df, genesis_date, pd.DataFrame()
+            return exchange_df, genesis_date, pd.DataFrame(), pd.DataFrame()
         
         # Ensure all datetime objects are timezone-naive for consistency
-        if early_df['date'].dt.tz is not None:
+        if not early_df.empty and early_df['date'].dt.tz is not None:
             early_df['date'] = early_df['date'].dt.tz_localize(None)
+        if not floor_df.empty and floor_df['date'].dt.tz is not None:
+            floor_df['date'] = floor_df['date'].dt.tz_localize(None)
         if exchange_df['Date'].dt.tz is not None:
             exchange_df['Date'] = exchange_df['Date'].dt.tz_localize(None)
         if hasattr(genesis_date, 'tz') and genesis_date.tz is not None:
             genesis_date = genesis_date.tz_localize(None)
         
         # Calculate days from genesis for early data
-        early_df['days_from_genesis'] = (early_df['date'] - genesis_date).dt.days
+        if not early_df.empty:
+            early_df['days_from_genesis'] = (early_df['date'] - genesis_date).dt.days
+        if not floor_df.empty:
+            floor_df['days_from_genesis'] = (floor_df['date'] - genesis_date).dt.days
         
         # Find the overlap point - where exchange data starts
         exchange_start_date = exchange_df['Date'].min()
         
         # Filter early data to only include dates before exchange data starts
-        early_filtered = early_df[early_df['date'] < exchange_start_date].copy()
+        early_filtered = early_df[early_df['date'] < exchange_start_date].copy() if not early_df.empty else pd.DataFrame()
+        floor_filtered = floor_df[floor_df['date'] < exchange_start_date].copy() if not floor_df.empty else pd.DataFrame()
         
-        # Prepare early data to match exchange data format
-        early_formatted = pd.DataFrame({
-            'Date': early_filtered['date'],
-            'Price': early_filtered['estimatedprice'],
-            'days_from_genesis': early_filtered['days_from_genesis'],
-            'data_source': 'estimated',
-            'confidence': early_filtered['confidencelvl'] if 'confidencelvl' in early_filtered.columns else 'unknown'
-        })
+        # Prepare datasets in a common format
+        datasets = []
         
-        # Add data source column to exchange data
+        # Add early estimates if available
+        if not early_filtered.empty:
+            early_formatted = pd.DataFrame({
+                'Date': early_filtered['date'],
+                'Price': early_filtered['estimatedprice'],
+                'days_from_genesis': early_filtered['days_from_genesis'],
+                'data_source': 'estimated',
+                'confidence': early_filtered['confidencelvl'] if 'confidencelvl' in early_filtered.columns else 'unknown'
+            })
+            datasets.append(early_formatted)
+        
+        # Add price floor if available
+        if not floor_filtered.empty:
+            floor_formatted = pd.DataFrame({
+                'Date': floor_filtered['date'],
+                'Price': floor_filtered['pricefloor'],
+                'days_from_genesis': floor_filtered['days_from_genesis'],
+                'data_source': 'price_floor',
+                'confidence': 'medium'  # Assign medium confidence to price floor data
+            })
+            datasets.append(floor_formatted)
+        
+        # Add exchange data
         exchange_formatted = exchange_df.copy()
         exchange_formatted['data_source'] = 'exchange'
         exchange_formatted['confidence'] = 'high'
+        datasets.append(exchange_formatted)
         
-        # Combine the datasets
-        combined_df = pd.concat([early_formatted, exchange_formatted], ignore_index=True)
+        # Combine all datasets
+        combined_df = pd.concat(datasets, ignore_index=True)
         combined_df = combined_df.sort_values('Date').reset_index(drop=True)
         
         # Recalculate days from genesis for the combined dataset
         combined_df['days_from_genesis'] = (combined_df['Date'] - genesis_date).dt.days
         
-        st.success(f"✅ Combined dataset: {len(early_formatted)} early + {len(exchange_formatted)} exchange = {len(combined_df)} total points")
+        early_count = len(early_filtered) if not early_filtered.empty else 0
+        floor_count = len(floor_filtered) if not floor_filtered.empty else 0
+        exchange_count = len(exchange_formatted)
         
-        return combined_df, genesis_date, early_formatted
+        st.success(f"✅ Combined dataset: {early_count} estimates + {floor_count} floor + {exchange_count} exchange = {len(combined_df)} total points")
+        
+        return combined_df, genesis_date, early_filtered, floor_filtered
         
     except Exception as e:
         st.error(f"Failed to combine datasets: {str(e)}")
         # Fallback to original data
         original_df, genesis_date = kaspa_data.load_price_data()
-        return original_df, genesis_date, pd.DataFrame()
+        return original_df, genesis_date, pd.DataFrame(), pd.DataFrame()
 
 # Load combined price data
-if 'combined_price_df' not in st.session_state or 'early_data_df' not in st.session_state:
-    st.session_state.combined_price_df, st.session_state.price_genesis_date, st.session_state.early_data_df = combine_price_datasets()
+if 'combined_price_df' not in st.session_state or 'early_data_df' not in st.session_state or 'floor_data_df' not in st.session_state:
+    st.session_state.combined_price_df, st.session_state.price_genesis_date, st.session_state.early_data_df, st.session_state.floor_data_df = combine_price_datasets()
 
 combined_price_df = st.session_state.combined_price_df
 early_data_df = st.session_state.early_data_df
+floor_data_df = st.session_state.floor_data_df
 genesis_date = st.session_state.price_genesis_date
 
 # Calculate power law if we have data
@@ -927,8 +992,9 @@ if not filtered_df.empty:
 
     # Separate data sources or combine based on user choice
     if show_data_sources == "Separate" and 'data_source' in filtered_df.columns:
-        # Show estimated and exchange data separately
+        # Show estimated, price floor, and exchange data separately
         estimated_data = filtered_df[filtered_df['data_source'] == 'estimated']
+        floor_data = filtered_df[filtered_df['data_source'] == 'price_floor']
         exchange_data = filtered_df[filtered_df['data_source'] == 'exchange']
         
         # Add baseline for log scale
@@ -978,6 +1044,30 @@ if not filtered_df.empty:
                         text=[d.strftime('%B %d, %Y') for d in conf_data['Date']],
                         showlegend=True
                     ))
+        
+        # Add price floor data with distinctive styling
+        if not floor_data.empty:
+            floor_x = floor_data['days_from_genesis'] if x_scale_type == "Log" else floor_data['Date']
+            
+            fig.add_trace(go.Scatter(
+                x=floor_x,
+                y=floor_data['Price'],
+                mode='lines+markers',
+                name='Price Floor',
+                line=dict(
+                    color='rgba(239, 68, 68, 0.7)',  # Red color for floor
+                    width=2,
+                    dash='dash'  # Dashed line for floor
+                ),
+                marker=dict(
+                    color='rgba(239, 68, 68, 0.7)',
+                    size=3,
+                    symbol='square'  # Square markers for floor
+                ),
+                hovertemplate='<b>Price Floor</b><br>Price: $%{y:.6f}<br>Date: %{text}<extra></extra>',
+                text=[d.strftime('%B %d, %Y') for d in floor_data['Date']],
+                showlegend=True
+            ))
         
         # Add exchange data with filled area
         if not exchange_data.empty:
@@ -1217,11 +1307,13 @@ if not combined_price_df.empty:
     
     # Calculate early data coverage
     early_data_count = len(early_data_df) if not early_data_df.empty else 0
+    floor_data_count = len(floor_data_df) if not floor_data_df.empty else 0
     exchange_data_count = len(combined_price_df[combined_price_df['data_source'] == 'exchange']) if 'data_source' in combined_price_df.columns else len(combined_price_df)
     total_data_points = len(combined_price_df)
     
     # Calculate data coverage percentage
     early_coverage_pct = (early_data_count / total_data_points) * 100 if total_data_points > 0 else 0
+    floor_coverage_pct = (floor_data_count / total_data_points) * 100 if total_data_points > 0 else 0
     
     # Calculate 30-day metrics for power law slope and R² changes
     thirty_days_ago = combined_price_df['Date'].iloc[-1] - timedelta(days=30)
@@ -1257,7 +1349,9 @@ else:
     price_pct_change = 8.3
     market_cap_estimate = 3.6e9
     early_data_count = 0
+    floor_data_count = 0
     early_coverage_pct = 0
+    floor_coverage_pct = 0
 
 # Enhanced metrics cards with data coverage information
 st.markdown(f"""
@@ -1276,6 +1370,24 @@ st.markdown(f"""
         <div class="metric-label">Current Price</div>
         <div class="metric-value">${current_price:.6f}</div>
         <div class="metric-change {'positive' if price_pct_change >= 0 else 'negative'}">{price_pct_change:+.1f}%</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Discord Estimates</div>
+        <div class="metric-value">{early_data_count}</div>
+        <div class="metric-change positive">{early_coverage_pct:.1f}% coverage</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Price Floor Data</div>
+        <div class="metric-value">{floor_data_count}</div>
+        <div class="metric-change positive">{floor_coverage_pct:.1f}% coverage</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Est. Market Cap</div>
+        <div class="metric-value">${market_cap_estimate/1e9:.2f}B</div>
+        <div class="metric-change {'positive' if price_pct_change >= 0 else 'negative'}">{price_pct_change:+.1f}%</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)_change:+.1f}%</div>
     </div>
     <div class="metric-card">
         <div class="metric-label">Early Data Points</div>
@@ -1306,9 +1418,10 @@ st.markdown(f"""
         <ul class="insights-list">
             <li>Combined dataset spans <strong>{len(combined_price_df)}</strong> data points from genesis</li>
             <li>Early Discord estimates: <span class="data-quality-high">{high_confidence_count} high</span>, <span class="data-quality-medium">{medium_confidence_count} medium</span>, <span class="data-quality-low">{low_confidence_count} low</span> confidence</li>
+            <li>Price floor data provides <strong>{floor_data_count}</strong> additional early price points</li>
             <li>Power law model R² of <strong>{r2_price:.3f}</strong> shows {'strong' if r2_price > 0.8 else 'moderate' if r2_price > 0.6 else 'weak'} correlation across full history</li>
-            <li>Early data fills the critical first <strong>{early_coverage_pct:.1f}%</strong> of price history</li>
-            <li>Combined analysis reveals more accurate long-term growth patterns</li>
+            <li>Early data fills the critical first <strong>{early_coverage_pct + floor_coverage_pct:.1f}%</strong> of price history</li>
+            <li>Three-layer analysis: estimates, floor, and exchange data reveal complete price discovery</li>
         </ul>
     </div>
     <div class="analysis-card">
@@ -1325,8 +1438,19 @@ if not combined_price_df.empty and 'data_source' in combined_price_df.columns:
     # Add traces for each data source
     for source in source_timeline['data_source'].unique():
         source_data = source_timeline[source_timeline['data_source'] == source]
-        color = '#ff8c00' if source == 'estimated' else '#5B6CFF'
-        name = 'Discord Estimates' if source == 'estimated' else 'Exchange Data'
+        
+        if source == 'estimated':
+            color = '#ff8c00'
+            name = 'Discord Estimates'
+            symbol = 'circle'
+        elif source == 'price_floor':
+            color = '#ef4444'
+            name = 'Price Floor'
+            symbol = 'square'
+        else:  # exchange
+            color = '#5B6CFF'
+            name = 'Exchange Data'
+            symbol = 'circle'
         
         mini_fig.add_trace(go.Scatter(
             x=source_data['Date'],
@@ -1336,7 +1460,7 @@ if not combined_price_df.empty and 'data_source' in combined_price_df.columns:
             marker=dict(
                 color=color,
                 size=8,
-                symbol='circle'
+                symbol=symbol
             ),
             hovertemplate=f'<b>{name}</b><br>Date: %{{x}}<extra></extra>',
             showlegend=True
@@ -1431,9 +1555,10 @@ st.markdown(f"""
         <h3 class="section-title">Data Methodology</h3>
         <ul class="insights-list">
             <li><strong>Discord Estimates (2021-11-16 to 2022-08-09):</strong> Community-driven price estimates from Kaspa Discord</li>
+            <li><strong>Price Floor (2021-11-17 to 2022-05-24):</strong> Minimum price levels tracked by community</li>
             <li><strong>Confidence Levels:</strong> High, medium, and low based on market activity and offer volume</li>
             <li><strong>Exchange Data (2022-05-25+):</strong> Official trading data from cryptocurrency exchanges</li>
-            <li><strong>Transition Period:</strong> Overlapping data sources provide validation of estimate accuracy</li>
+            <li><strong>Three-Layer Analysis:</strong> Floor provides support levels, estimates show trading ranges</li>
             <li><strong>Power Law Fit:</strong> Applied across complete dataset for comprehensive trend analysis</li>
         </ul>
     </div>
@@ -1441,10 +1566,11 @@ st.markdown(f"""
         <h3 class="section-title">Historical Significance</h3>
         <ul class="insights-list">
             <li>Genesis date: <strong>November 7, 2021</strong> - Kaspa mainnet launch</li>
-            <li>First ~200 days now captured through Discord community estimates</li>
-            <li>Early price discovery period shows significant volatility and growth</li>
+            <li>First ~200 days captured through Discord community data</li>
+            <li>Price floor data shows minimum viable price levels during early adoption</li>
+            <li>Early price discovery period shows significant volatility and growth patterns</li>
             <li>Transition to exchange trading marked increased stability and volume</li>
-            <li>Combined dataset enables full-cycle analysis from launch to present</li>
+            <li>Complete dataset enables full-cycle analysis from launch to present</li>
         </ul>
     </div>
 </div>
@@ -1462,7 +1588,7 @@ with col1:
     if st.button("🔄 Refresh Google Sheets Data", key="refresh_sheets"):
         # Clear the cache and reload data
         st.cache_data.clear()
-        st.session_state.combined_price_df, st.session_state.price_genesis_date, st.session_state.early_data_df = combine_price_datasets()
+        st.session_state.combined_price_df, st.session_state.price_genesis_date, st.session_state.early_data_df, st.session_state.floor_data_df = combine_price_datasets()
         st.success("✅ Data refreshed successfully!")
         st.rerun()
 
@@ -1497,30 +1623,40 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.markdown(f"""
 <div style="margin-top: 3rem; padding: 1.5rem; background: rgba(26, 26, 46, 0.3); border-radius: 12px; border: 1px solid rgba(54, 54, 80, 0.4);">
     <h4 style="color: #FFFFFF; margin-bottom: 1rem;">📊 Data Sources & Credits</h4>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; color: #9CA3AF; font-size: 0.9rem;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; color: #9CA3AF; font-size: 0.85rem;">
         <div>
-            <strong style="color: #ff8c00;">Early Discord Estimates:</strong><br>
+            <strong style="color: #ff8c00;">Discord Estimates:</strong><br>
             • Source: Kaspa Discord Community<br>
             • Period: Nov 2021 - Aug 2022<br>
             • Data Points: {early_data_count}<br>
-            • Confidence Levels: High/Medium/Low
+            • Confidence: High/Medium/Low
+        </div>
+        <div>
+            <strong style="color: #ef4444;">Price Floor:</strong><br>
+            • Source: Kaspa Discord Community<br>
+            • Period: Nov 2021 - May 2022<br>
+            • Data Points: {floor_data_count}<br>
+            • Type: Minimum Price Levels
         </div>
         <div>
             <strong style="color: #5B6CFF;">Exchange Data:</strong><br>
-            • Source: Cryptocurrency Exchanges<br>
+            • Source: Crypto Exchanges<br>
             • Period: May 2022 - Present<br>
             • Data Points: {exchange_data_count}<br>
             • Quality: High (Official Trading)
         </div>
     </div>
     <hr style="border: none; border-top: 1px solid rgba(54, 54, 80, 0.4); margin: 1rem 0;">
-    <p style="color: #9CA3AF; font-size: 0.85rem; margin: 0; text-align: center;">
-        🔗 <strong>Google Sheets Integration:</strong> <a href="https://docs.google.com/spreadsheets/d/1zwQ_Ew2G_reqTYhCCIT276ph5aG-rxNT4BRLL88c38w/edit?gid=275707638#gid=275707638" 
-        target="_blank" style="color: #5B6CFF;">KaspaPriceHistoryFirst200days</a> | 
-        💡 <strong>Enhanced Analysis:</strong> Combined dataset provides comprehensive price history from genesis to present
+    <p style="color: #9CA3AF; font-size: 0.8rem; margin: 0; text-align: center;">
+        🔗 <strong>Google Sheets Integration:</strong> 
+        <a href="https://docs.google.com/spreadsheets/d/1zwQ_Ew2G_reqTYhCCIT276ph5aG-rxNT4BRLL88c38w/edit?gid=275707638#gid=275707638" 
+        target="_blank" style="color: #ff8c00;">Discord Estimates</a> | 
+        <a href="https://docs.google.com/spreadsheets/d/1hLOPPNUCPmBJ_IisrbCmkDJ3hjWiKG3tyx5ugtpB5cY/edit?gid=1073617241#gid=1073617241" 
+        target="_blank" style="color: #ef4444;">Price Floor</a><br>
+        💡 <strong>Three-Layer Analysis:</strong> Complete price history from genesis combining estimates, floor levels, and exchange data
     </p>
 </div>
-""".format(early_data_count=early_data_count, exchange_data_count=exchange_data_count), unsafe_allow_html=True)
+""".format(early_data_count=early_data_count, floor_data_count=floor_data_count, exchange_data_count=exchange_data_count), unsafe_allow_html=True)
 
 # At the end of each page:
 from footer import add_footer
