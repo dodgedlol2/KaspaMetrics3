@@ -329,7 +329,7 @@ def add_navigation():
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: 185px !important;
-            left: 222px !important; /* Moved 3cm (113px) to the right: 20px + 113px = 133px */
+            left: 133px !important; /* Moved 3cm (113px) to the right: 20px + 113px = 133px */
             z-index: 999999 !important;
             display: block !important;
             visibility: visible !important;
