@@ -609,22 +609,38 @@ def add_navigation():
                 }
             }
             
-            // MAXIMUM FORCE EXPAND BUTTON POSITIONING
+            // MAXIMUM FORCE EXPAND BUTTON POSITIONING - TARGET PARENT TRANSFORM
             function forceExpandButtonStyling() {
-                // Find the expand button by its specific characteristics
-                const expandBtn = document.querySelector('[data-testid="stExpandSidebarButton"]');
+                // Find all buttons and look for the off-screen one
+                const buttons = document.querySelectorAll('button');
                 
-                // Also check for any headerNoPadding button that might be off-screen
-                const allHeaderButtons = document.querySelectorAll('button[data-testid="stBaseButton-headerNoPadding"]');
-                
-                allHeaderButtons.forEach(btn => {
+                buttons.forEach((btn, i) => {
                     const rect = btn.getBoundingClientRect();
                     
-                    // If button is off-screen to the left (negative X position)
-                    if (rect.left < 0 && rect.width > 0 && rect.height > 0) {
+                    // If button is off-screen to the left
+                    if (rect.left < -100 && rect.width > 0 && rect.height > 0) {
                         console.log('Found off-screen button at:', rect.left, rect.top);
                         
-                        // FORCE position with maximum priority
+                        // Find the parent with transform and remove it
+                        let parent = btn;
+                        let level = 0;
+                        while (parent && level < 10) {
+                            const styles = getComputedStyle(parent);
+                            
+                            // Check if this parent has a transform that's moving things left
+                            if (styles.transform && styles.transform.includes('matrix') && styles.transform.includes('-')) {
+                                console.log('Found problematic transform on:', parent.tagName, styles.transform);
+                                
+                                // Remove the transform
+                                parent.style.transform = 'none !important';
+                                console.log('Removed transform from parent');
+                            }
+                            
+                            parent = parent.parentElement;
+                            level++;
+                        }
+                        
+                        // ALSO force the button position
                         btn.style.cssText = `
                             position: fixed !important; 
                             top: 185px !important; 
@@ -641,34 +657,11 @@ def add_navigation():
                             margin: 0 !important;
                         `;
                         
-                        console.log('Forced off-screen button to visible position!');
+                        console.log('Forced button styling and removed parent transform');
                     }
                 });
                 
-                if (expandBtn) {
-                    // Also force the expand button directly
-                    expandBtn.style.cssText = `
-                        position: fixed !important; 
-                        top: 185px !important; 
-                        left: 20px !important; 
-                        background: red !important; 
-                        border: 5px solid yellow !important; 
-                        width: 40px !important; 
-                        height: 40px !important; 
-                        z-index: 999999 !important; 
-                        display: block !important; 
-                        visibility: visible !important; 
-                        opacity: 1 !important;
-                        transform: none !important;
-                        margin: 0 !important;
-                    `;
-                    
-                    console.log('Expand button styling forced directly!');
-                    return true;
-                } else {
-                    console.log('Expand button not found by testid');
-                    return false;
-                }
+                return true;
             }
             
             // Initial attempt
