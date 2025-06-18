@@ -830,59 +830,87 @@ def add_navigation():
         """
     
     st.markdown(header_html, unsafe_allow_html=True)
-
-    # Add logo click handler using Streamlit's page_link (invisible button overlay)
-    # This creates an invisible clickable area over the logo
+    
+    # Add a hidden page_link that we can trigger via JavaScript
     st.markdown("""
     <style>
-    .logo-click-area {
-        position: fixed;
-        top: 8px;
-        left: 32px;
-        width: 200px;
-        height: 54px;
-        z-index: 999999;
-        cursor: pointer;
-        background: transparent;
+    .hidden-logo-link {
+        display: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        left: -9999px !important;
     }
     </style>
     """, unsafe_allow_html=True)
-
-    # Create invisible clickable area over the logo that navigates to price page
-    if st.button("", key="logo_click_invisible", help="Go to Spot Price page"):
-        st.switch_page("pages/3_💰_Spot_Price.py")
-
-    # Position the invisible button over the logo
+    
+    # Create hidden page link
+    with st.container():
+        st.markdown('<div class="hidden-logo-link">', unsafe_allow_html=True)
+        st.page_link("pages/3_💰_Spot_Price.py", label="Hidden Logo Link", help="Logo navigation")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # JavaScript to handle logo clicks by triggering the hidden page_link
     st.markdown("""
     <script>
-    // Move the invisible button to overlay the logo
-    document.addEventListener('DOMContentLoaded', function() {
-        function positionLogoButton() {
-            const logoButton = document.querySelector('button[data-testid="baseButton-secondary"][title="Go to Spot Price page"]');
-            if (logoButton) {
-                logoButton.style.position = 'fixed';
-                logoButton.style.top = '8px';
-                logoButton.style.left = '32px';
-                logoButton.style.width = '200px';
-                logoButton.style.height = '54px';
-                logoButton.style.zIndex = '999999';
-                logoButton.style.background = 'transparent';
-                logoButton.style.border = 'none';
-                logoButton.style.cursor = 'pointer';
-                logoButton.style.opacity = '0';
+        document.addEventListener('DOMContentLoaded', function() {
+            function handleLogoClick(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('Logo clicked! Looking for hidden page link...');
+                
+                // Find the hidden page_link and click it
+                const hiddenLink = document.querySelector('.hidden-logo-link a');
+                if (hiddenLink) {
+                    console.log('Found hidden link, clicking...');
+                    hiddenLink.click();
+                } else {
+                    console.log('Hidden link not found, falling back to direct navigation');
+                    // Fallback to current page approach but within same window
+                    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+                    window.location.href = baseUrl + '/pages/3_💰_Spot_Price.py';
+                }
             }
-        }
-        
-        // Position immediately and retry if needed
-        positionLogoButton();
-        
-        // Also watch for dynamic changes
-        const observer = new MutationObserver(positionLogoButton);
-        observer.observe(document.body, { childList: true, subtree: true });
-        
-        // Retry positioning after a short delay
-        setTimeout(positionLogoButton, 100);
-    });
+            
+            function addLogoClickHandler() {
+                const logo = document.querySelector('.kaspa-logo');
+                if (logo) {
+                    logo.removeEventListener('click', handleLogoClick);
+                    logo.addEventListener('click', handleLogoClick, true);
+                    logo.style.pointerEvents = 'auto';
+                    console.log('Logo click handler added successfully');
+                    return true;
+                }
+                return false;
+            }
+            
+            // Try to add handler multiple times
+            if (!addLogoClickHandler()) {
+                let attempts = 0;
+                const retryInterval = setInterval(() => {
+                    attempts++;
+                    if (addLogoClickHandler() || attempts > 30) {
+                        clearInterval(retryInterval);
+                    }
+                }, 100);
+            }
+            
+            // Watch for dynamic changes
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === 1 && 
+                                (node.classList?.contains('kaspa-logo') || 
+                                 node.querySelector?.('.kaspa-logo'))) {
+                                setTimeout(addLogoClickHandler, 10);
+                            }
+                        });
+                    }
+                });
+            });
+            
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
     </script>
     """, unsafe_allow_html=True)
 
