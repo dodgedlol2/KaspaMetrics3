@@ -117,16 +117,19 @@ def add_navigation():
         button[data-testid="stExpandSidebarButton"].st-emotion-cache-1drv5uj,
         button[data-testid="stExpandSidebarButton"][class*="st-emotion-cache"],
         .st-emotion-cache-1drv5uj[data-testid="stExpandSidebarButton"] {
-            top: 485px !important;
-            left: 420px !important;
+            position: fixed !important;
+            top: 185px !important;
+            left: 20px !important;
             z-index: 999999 !important;
+            display: block !important;
             visibility: visible !important;
-            opacity: 0 !important;
+            opacity: 1 !important;
             background: red !important;
             border: 3px solid yellow !important;
             border-radius: 8px !important;
             width: 40px !important;
             height: 40px !important;
+            transform: none !important;
             margin: 0 !important;
             right: auto !important;
             bottom: auto !important;
@@ -606,35 +609,64 @@ def add_navigation():
                 }
             }
             
-            // FORCE EXPAND BUTTON STYLING WITH JAVASCRIPT
+            // MAXIMUM FORCE EXPAND BUTTON POSITIONING
             function forceExpandButtonStyling() {
+                // Find the expand button by its specific characteristics
                 const expandBtn = document.querySelector('[data-testid="stExpandSidebarButton"]');
                 
-                if (expandBtn) {
-                    // Force styles directly via JavaScript
-                    Object.assign(expandBtn.style, {
-                        position: 'fixed',
-                        top: '185px',
-                        left: '20px',
-                        zIndex: '999999',
-                        display: 'block',
-                        visibility: 'visible',
-                        opacity: '1',
-                        background: 'red',
-                        border: '3px solid yellow',
-                        borderRadius: '8px',
-                        width: '40px',
-                        height: '40px',
-                        transform: 'none',
-                        margin: '0',
-                        right: 'auto',
-                        bottom: 'auto'
-                    });
+                // Also check for any headerNoPadding button that might be off-screen
+                const allHeaderButtons = document.querySelectorAll('button[data-testid="stBaseButton-headerNoPadding"]');
+                
+                allHeaderButtons.forEach(btn => {
+                    const rect = btn.getBoundingClientRect();
                     
-                    console.log('Expand button styling forced!');
+                    // If button is off-screen to the left (negative X position)
+                    if (rect.left < 0 && rect.width > 0 && rect.height > 0) {
+                        console.log('Found off-screen button at:', rect.left, rect.top);
+                        
+                        // FORCE position with maximum priority
+                        btn.style.cssText = `
+                            position: fixed !important; 
+                            top: 185px !important; 
+                            left: 20px !important; 
+                            background: red !important; 
+                            border: 5px solid yellow !important; 
+                            width: 40px !important; 
+                            height: 40px !important; 
+                            z-index: 999999 !important; 
+                            display: block !important; 
+                            visibility: visible !important; 
+                            opacity: 1 !important;
+                            transform: none !important;
+                            margin: 0 !important;
+                        `;
+                        
+                        console.log('Forced off-screen button to visible position!');
+                    }
+                });
+                
+                if (expandBtn) {
+                    // Also force the expand button directly
+                    expandBtn.style.cssText = `
+                        position: fixed !important; 
+                        top: 185px !important; 
+                        left: 20px !important; 
+                        background: red !important; 
+                        border: 5px solid yellow !important; 
+                        width: 40px !important; 
+                        height: 40px !important; 
+                        z-index: 999999 !important; 
+                        display: block !important; 
+                        visibility: visible !important; 
+                        opacity: 1 !important;
+                        transform: none !important;
+                        margin: 0 !important;
+                    `;
+                    
+                    console.log('Expand button styling forced directly!');
                     return true;
                 } else {
-                    console.log('Expand button not found');
+                    console.log('Expand button not found by testid');
                     return false;
                 }
             }
