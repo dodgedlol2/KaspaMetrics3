@@ -19,23 +19,23 @@ def sidebar_toggle_button():
             console.log('Sidebar toggle component loaded!');
             
             function createSidebarToggle() {
-                console.log('Creating sidebar toggle button...');
+                console.log('Creating sidebar toggle and home buttons...');
                 
-                // Remove any existing toggle button
-                const existing = window.parent.document.getElementById('unified-sidebar-toggle');
-                if (existing) {
-                    existing.remove();
-                }
+                // Remove any existing buttons
+                const existingToggle = window.parent.document.getElementById('unified-sidebar-toggle');
+                const existingHome = window.parent.document.getElementById('unified-home-button');
+                if (existingToggle) existingToggle.remove();
+                if (existingHome) existingHome.remove();
                 
-                // Create the toggle button
+                // === SIDEBAR TOGGLE BUTTON ===
                 const toggleButton = window.parent.document.createElement('button');
                 toggleButton.id = 'unified-sidebar-toggle';
                 toggleButton.innerHTML = '☰';
                 
-                // Style the button
+                // Style the toggle button
                 toggleButton.style.cssText = `
                     position: fixed !important;
-                    top: 11px !important;
+                    top: 10px !important;
                     left: 20px !important;
                     width: 40px !important;
                     height: 40px !important;
@@ -54,22 +54,51 @@ def sidebar_toggle_button():
                     transition: all 0.3s ease !important;
                 `;
                 
-                // Add hover effects
-                toggleButton.addEventListener('mouseenter', function() {
-                    this.style.background = 'rgba(91, 108, 255, 0.15)';
-                    this.style.borderColor = 'rgba(91, 108, 255, 0.4)';
-                    this.style.color = '#8b9aff';
-                    this.style.transform = 'scale(1.05)';
+                // === HOME BUTTON ===
+                const homeButton = window.parent.document.createElement('button');
+                homeButton.id = 'unified-home-button';
+                homeButton.innerHTML = '🏠'; // Home icon
+                
+                // Style the home button (next to toggle button)
+                homeButton.style.cssText = `
+                    position: fixed !important;
+                    top: 10px !important;
+                    left: 70px !important;
+                    width: 40px !important;
+                    height: 40px !important;
+                    background: rgba(54, 54, 80, 0.8) !important;
+                    border: 1px solid #363650 !important;
+                    border-radius: 8px !important;
+                    backdrop-filter: blur(10px) !important;
+                    z-index: 999999 !important;
+                    font-size: 16px !important;
+                    color: #f1f5f9 !important;
+                    cursor: pointer !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    font-family: Arial, sans-serif !important;
+                    transition: all 0.3s ease !important;
+                `;
+                
+                // === HOVER EFFECTS FOR BOTH BUTTONS ===
+                [toggleButton, homeButton].forEach(button => {
+                    button.addEventListener('mouseenter', function() {
+                        this.style.background = 'rgba(91, 108, 255, 0.15)';
+                        this.style.borderColor = 'rgba(91, 108, 255, 0.4)';
+                        this.style.color = '#8b9aff';
+                        this.style.transform = 'scale(1.05)';
+                    });
+                    
+                    button.addEventListener('mouseleave', function() {
+                        this.style.background = 'rgba(54, 54, 80, 0.8)';
+                        this.style.borderColor = '#363650';
+                        this.style.color = '#f1f5f9';
+                        this.style.transform = 'scale(1)';
+                    });
                 });
                 
-                toggleButton.addEventListener('mouseleave', function() {
-                    this.style.background = 'rgba(54, 54, 80, 0.8)';
-                    this.style.borderColor = '#363650';
-                    this.style.color = '#f1f5f9';
-                    this.style.transform = 'scale(1)';
-                });
-                
-                // Add click functionality
+                // === SIDEBAR TOGGLE FUNCTIONALITY ===
                 toggleButton.addEventListener('click', function() {
                     console.log('Sidebar toggle clicked!');
                     
@@ -88,7 +117,13 @@ def sidebar_toggle_button():
                     }
                 });
                 
-                // Monitor sidebar changes
+                // === HOME BUTTON FUNCTIONALITY ===
+                homeButton.addEventListener('click', function() {
+                    console.log('Home button clicked! Navigating to home...');
+                    window.parent.location.href = 'https://kaspametrics3test1.streamlit.app';
+                });
+                
+                // === MONITOR SIDEBAR CHANGES ===
                 const updateIcon = () => {
                     const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
                     const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
@@ -101,9 +136,10 @@ def sidebar_toggle_button():
                     observer.observe(sidebar, { attributes: true, attributeFilter: ['aria-expanded'] });
                 }
                 
-                // Add to parent document
+                // === ADD BOTH BUTTONS TO PAGE ===
                 window.parent.document.body.appendChild(toggleButton);
-                console.log('Sidebar toggle button created successfully!');
+                window.parent.document.body.appendChild(homeButton);
+                console.log('Sidebar toggle and home buttons created successfully!');
                 updateIcon();
             }
             
