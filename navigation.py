@@ -119,59 +119,76 @@ def sidebar_toggle_button():
                 
                 // === HOME BUTTON FUNCTIONALITY ===
                 homeButton.addEventListener('click', function() {
-                    console.log('Home button clicked! Looking for sidebar home button...');
+                    console.log('🏠 Home button clicked! Searching for sidebar home button...');
                     
                     const parentDoc = window.parent.document;
-                    
-                    // Try multiple approaches to find the home button
                     let sidebarHomeButton = null;
+                    let detectionMethod = null;
                     
                     // Method 1: Look for button with "Home" text
+                    console.log('🔍 Method 1: Searching by text content...');
                     const allSidebarButtons = parentDoc.querySelectorAll('[data-testid="stSidebar"] button');
                     for (let btn of allSidebarButtons) {
                         if (btn.textContent && btn.textContent.toLowerCase().includes('home')) {
                             sidebarHomeButton = btn;
-                            console.log('Found home button by text content');
+                            detectionMethod = 'Text Content ("' + btn.textContent.trim() + '")';
+                            console.log('✅ Method 1 SUCCESS: Found by text content:', btn.textContent.trim());
                             break;
                         }
                     }
                     
                     // Method 2: Look for button with home icon
                     if (!sidebarHomeButton) {
+                        console.log('🔍 Method 2: Searching by home icon...');
                         const homeIcons = parentDoc.querySelectorAll('[data-testid="stSidebar"] [data-testid="stIconMaterial"]');
                         for (let icon of homeIcons) {
                             if (icon.textContent && icon.textContent.includes('home')) {
                                 sidebarHomeButton = icon.closest('button');
-                                console.log('Found home button by icon');
+                                detectionMethod = 'Material Icon (' + icon.textContent + ')';
+                                console.log('✅ Method 2 SUCCESS: Found by home icon:', icon.textContent);
                                 break;
                             }
+                        }
+                        if (!sidebarHomeButton) {
+                            console.log('❌ Method 2 FAILED: No home icon found');
                         }
                     }
                     
                     // Method 3: Look for first sidebar button (usually Home)
                     if (!sidebarHomeButton) {
+                        console.log('🔍 Method 3: Using first sidebar button...');
                         const firstBtn = parentDoc.querySelector('[data-testid="stSidebar"] .stButton button');
                         if (firstBtn) {
                             sidebarHomeButton = firstBtn;
-                            console.log('Using first sidebar button as home');
+                            detectionMethod = 'First Sidebar Button (' + firstBtn.textContent.trim() + ')';
+                            console.log('✅ Method 3 SUCCESS: Using first button:', firstBtn.textContent.trim());
+                        } else {
+                            console.log('❌ Method 3 FAILED: No first button found');
                         }
                     }
                     
                     // Method 4: Look for button with nav_home key
                     if (!sidebarHomeButton) {
+                        console.log('🔍 Method 4: Searching by nav_home key...');
                         sidebarHomeButton = parentDoc.querySelector('[data-testid="stSidebar"] button[data-testid*="nav_home"]');
                         if (sidebarHomeButton) {
-                            console.log('Found home button by nav_home key');
+                            detectionMethod = 'Nav Home Key (data-testid)';
+                            console.log('✅ Method 4 SUCCESS: Found by nav_home key');
+                        } else {
+                            console.log('❌ Method 4 FAILED: No nav_home key found');
                         }
                     }
                     
-                    // Try to click the found button
+                    // Results and action
                     if (sidebarHomeButton) {
-                        console.log('Clicking sidebar home button...');
+                        console.log('🎯 HOME BUTTON FOUND! Detection method:', detectionMethod);
+                        console.log('📍 Button element:', sidebarHomeButton);
+                        console.log('🖱️ Clicking sidebar home button...');
                         sidebarHomeButton.click();
+                        console.log('✅ Home button clicked successfully via:', detectionMethod);
                     } else {
-                        console.log('No sidebar home button found, trying page refresh...');
-                        // Alternative: refresh the page to go "home"
+                        console.log('❌ ALL METHODS FAILED: No sidebar home button found');
+                        console.log('🔄 Fallback: Refreshing page...');
                         window.parent.location.reload();
                     }
                 });
