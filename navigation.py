@@ -119,8 +119,25 @@ def sidebar_toggle_button():
                 
                 // === HOME BUTTON FUNCTIONALITY ===
                 homeButton.addEventListener('click', function() {
-                    console.log('Home button clicked! Navigating to home...');
-                    window.parent.location.href = 'https://kaspametrics3test1.streamlit.app';
+                    console.log('Home button clicked! Looking for sidebar home button...');
+                    
+                    const parentDoc = window.parent.document;
+                    
+                    // Find the real home button in the sidebar
+                    const sidebarHomeButton = parentDoc.querySelector('[data-testid="stButton"] button[data-testid*="nav_home"]') ||
+                                            parentDoc.querySelector('[key="nav_home"] button') ||
+                                            parentDoc.querySelector('button[aria-label*="Home"]') ||
+                                            parentDoc.querySelector('[data-testid="stSidebar"] button:has([data-testid="stIconMaterial"]:contains("home"))') ||
+                                            parentDoc.querySelector('[data-testid="stSidebar"] .stButton:first-child button');
+                    
+                    if (sidebarHomeButton) {
+                        console.log('Found sidebar home button, clicking it...');
+                        sidebarHomeButton.click();
+                    } else {
+                        console.log('Sidebar home button not found, trying direct navigation...');
+                        // Fallback: try direct navigation
+                        window.parent.location.href = 'https://kaspametrics3test1.streamlit.app';
+                    }
                 });
                 
                 // === MONITOR SIDEBAR CHANGES ===
