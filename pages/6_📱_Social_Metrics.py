@@ -98,28 +98,31 @@ def load_open_interest_data():
         # Filter out any zero or invalid values
         df = df[df['Open_Interest_USD'] > 0]
         
-        # Calculate days from Kaspa genesis (Nov 7, 2021)
-        kaspa_genesis_date = datetime(2021, 11, 7)
+        # Calculate days from Kaspa genesis (Nov 28, 2022)
+        kaspa_genesis_date_v2 = datetime(2022, 11, 28)
         oi_start_date = df['Date'].iloc[0]  # First OI data point
         
-        df['days_from_kaspa_genesis'] = (df['Date'] - kaspa_genesis_date).dt.days
+        df['days_from_kaspa_genesis'] = (df['Date'] - kaspa_genesis_date).dt.days  # Keep original for first chart
+        df['days_from_kaspa_genesis_v2'] = (df['Date'] - kaspa_genesis_date_v2).dt.days  # New reference for second chart
         df['days_from_oi_start'] = (df['Date'] - oi_start_date).dt.days
         
-        return df, kaspa_genesis_date, oi_start_date
+        return df, kaspa_genesis_date, kaspa_genesis_date_v2, oi_start_date
         
     except Exception as e:
         st.error(f"Failed to load open interest data: {str(e)}")
         # Return empty dataframe with correct structure
-        empty_df = pd.DataFrame(columns=['Date', 'Open_Interest_USD', 'days_from_kaspa_genesis', 'days_from_oi_start'])
+        empty_df = pd.DataFrame(columns=['Date', 'Open_Interest_USD', 'days_from_kaspa_genesis', 'days_from_kaspa_genesis_v2', 'days_from_oi_start'])
         kaspa_genesis_date = datetime(2021, 11, 7)
-        return empty_df, kaspa_genesis_date, None
+        kaspa_genesis_date_v2 = datetime(2022, 11, 28)
+        return empty_df, kaspa_genesis_date, kaspa_genesis_date_v2, None
 
 # Load open interest data
-if 'oi_df' not in st.session_state or 'kaspa_genesis_date' not in st.session_state or 'oi_start_date' not in st.session_state:
-    st.session_state.oi_df, st.session_state.kaspa_genesis_date, st.session_state.oi_start_date = load_open_interest_data()
+if 'oi_df' not in st.session_state or 'kaspa_genesis_date' not in st.session_state or 'kaspa_genesis_date_v2' not in st.session_state or 'oi_start_date' not in st.session_state:
+    st.session_state.oi_df, st.session_state.kaspa_genesis_date, st.session_state.kaspa_genesis_date_v2, st.session_state.oi_start_date = load_open_interest_data()
 
 oi_df = st.session_state.oi_df
 kaspa_genesis_date = st.session_state.kaspa_genesis_date
+kaspa_genesis_date_v2 = st.session_state.kaspa_genesis_date_v2
 oi_start_date = st.session_state.oi_start_date
 
 # Calculate power law if we have data
@@ -825,6 +828,7 @@ if not oi_df.empty:
     
     # Calculate days since Kaspa genesis for display
     days_since_genesis = (oi_df['Date'].iloc[-1] - kaspa_genesis_date).days
+    days_since_genesis_v2 = (oi_df['Date'].iloc[-1] - kaspa_genesis_date_v2).days
     days_since_oi_start = (oi_df['Date'].iloc[-1] - oi_start_date).days
     
 else:
@@ -834,6 +838,7 @@ else:
     oi_pct_change = 15.2
     daily_growth_rate = 0.8
     days_since_genesis = 1000
+    days_since_genesis_v2 = 300
     days_since_oi_start = 500
 
 # Display data information
@@ -906,17 +911,17 @@ else:
 
 st.markdown("""
 <div style="margin-top: 4rem;">
-    <div class='big-font' style="font-size: 40px;">Open Interest vs Kaspa Genesis</div>
+    <div class='big-font' style="font-size: 40px;">Open Interest vs Kaspa Genesis V2</div>
     <p style="color: #9CA3AF; font-size: 1.1rem; margin-bottom: 2rem;">
-        Power law analysis using Kaspa's genesis date (November 7, 2021) as the reference point
+        Power law analysis using November 28, 2022 as the reference point
     </p>
 </div>
 """, unsafe_allow_html=True)
 
-# Calculate power law using days from Kaspa genesis
+# Calculate power law using days from Kaspa genesis V2 (Nov 28, 2022)
 if not oi_df.empty and len(oi_df) > 10:
     try:
-        a_genesis, b_genesis, r2_genesis = fit_power_law(oi_df, x_col='days_from_kaspa_genesis', y_col='Open_Interest_USD')
+        a_genesis, b_genesis, r2_genesis = fit_power_law(oi_df, x_col='days_from_kaspa_genesis_v2', y_col='Open_Interest_USD')
     except Exception as e:
         st.error(f"Failed to calculate genesis power law: {str(e)}")
         a_genesis, b_genesis, r2_genesis = 1, 1, 0
@@ -1001,8 +1006,8 @@ fig_genesis = go.Figure()
 
 if not filtered_df_g.empty:
     if x_scale_type_g == "Log":
-        x_values_g = filtered_df_g['days_from_kaspa_genesis']
-        x_title_g = "Days Since Kaspa Genesis (Log Scale)"
+        x_values_g = filtered_df_g['days_from_kaspa_genesis_v2']
+        x_title_g = "Days Since Nov 28, 2022 (Log Scale)"
     else:
         x_values_g = filtered_df_g['Date']
         x_title_g = "Date"
@@ -1047,9 +1052,9 @@ if not filtered_df_g.empty:
                     [1, "rgba(139, 92, 246, 0.6)"]  # Purple fill
                 ]
             ),
-            hovertemplate='<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<br>Days since Genesis: %{x}<extra></extra>' if x_scale_type_g == "Log" else '<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<extra></extra>',
+            hovertemplate='<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<br>Days since Nov 28, 2022: %{x}<extra></extra>' if x_scale_type_g == "Log" else '<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<extra></extra>',
             text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df_g['Date']] if not filtered_df_g.empty else [],
-            customdata=filtered_df_g[['Date', 'days_from_kaspa_genesis']].values if not filtered_df_g.empty else []
+            customdata=filtered_df_g[['Date', 'days_from_kaspa_genesis_v2']].values if not filtered_df_g.empty else []
         ))
     else:
         # Linear scale
@@ -1067,14 +1072,14 @@ if not filtered_df_g.empty:
                     [1, "rgba(139, 92, 246, 0.6)"]  # Purple fill
                 ]
             ),
-            hovertemplate='<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<br>Days since Genesis: %{customdata[1]}<extra></extra>' if x_scale_type_g == "Log" else '<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<extra></extra>',
+            hovertemplate='<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<br>Days since Nov 28, 2022: %{customdata[1]}<extra></extra>' if x_scale_type_g == "Log" else '<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<extra></extra>',
             text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df_g['Date']] if not filtered_df_g.empty else [],
-            customdata=filtered_df_g[['Date', 'days_from_kaspa_genesis']].values if not filtered_df_g.empty else []
+            customdata=filtered_df_g[['Date', 'days_from_kaspa_genesis_v2']].values if not filtered_df_g.empty else []
         ))
 
     # Add genesis power law if enabled
     if show_power_law_g == "Show" and not filtered_df_g.empty and len(filtered_df_g) > 10:
-        x_fit_g = filtered_df_g['days_from_kaspa_genesis']
+        x_fit_g = filtered_df_g['days_from_kaspa_genesis_v2']
         y_fit_g = a_genesis * np.power(x_fit_g, b_genesis)
         fit_x_g = x_fit_g if x_scale_type_g == "Log" else filtered_df_g['Date']
 
@@ -1082,7 +1087,7 @@ if not filtered_df_g.empty:
             x=fit_x_g,
             y=y_fit_g,
             mode='lines',
-            name='Power Law (Genesis)',
+            name='Power Law (Nov 28, 2022)',
             line=dict(color='#F59E0B', width=2, dash='solid'),  # Amber color for genesis power law
             showlegend=True,
             hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:,.0f}<extra></extra>',
@@ -1131,8 +1136,8 @@ fig_genesis.update_layout(
         color='#9CA3AF',
         hoverformat='%B %d, %Y' if x_scale_type_g == "Linear" else None,
         range=[
-            np.log10(filtered_df_g['days_from_kaspa_genesis'].min()) if x_scale_type_g == "Log" and not filtered_df_g.empty else filtered_df_g['Date'].min() if not filtered_df_g.empty else None,
-            np.log10(filtered_df_g['days_from_kaspa_genesis'].max()) if x_scale_type_g == "Log" and not filtered_df_g.empty else filtered_df_g['Date'].max() if not filtered_df_g.empty else None
+            np.log10(filtered_df_g['days_from_kaspa_genesis_v2'].min()) if x_scale_type_g == "Log" and not filtered_df_g.empty else filtered_df_g['Date'].min() if not filtered_df_g.empty else None,
+            np.log10(filtered_df_g['days_from_kaspa_genesis_v2'].max()) if x_scale_type_g == "Log" and not filtered_df_g.empty else filtered_df_g['Date'].max() if not filtered_df_g.empty else None
         ] if not filtered_df_g.empty else None
     ),
     yaxis=dict(
@@ -1194,7 +1199,7 @@ if not oi_df.empty:
     
     if len(df_30_days_ago_g) > 10:
         try:
-            a_genesis_30d, b_genesis_30d, r2_genesis_30d = fit_power_law(df_30_days_ago_g, x_col='days_from_kaspa_genesis', y_col='Open_Interest_USD')
+            a_genesis_30d, b_genesis_30d, r2_genesis_30d = fit_power_law(df_30_days_ago_g, x_col='days_from_kaspa_genesis_v2', y_col='Open_Interest_USD')
             slope_pct_change_g = ((b_genesis - b_genesis_30d) / abs(b_genesis_30d)) * 100 if b_genesis_30d != 0 else 0
             r2_pct_change_g = ((r2_genesis - r2_genesis_30d) / r2_genesis_30d) * 100 if r2_genesis_30d != 0 else 0
         except:
@@ -1205,37 +1210,37 @@ if not oi_df.empty:
         r2_pct_change_g = 0
         
     # Days from genesis metrics
-    current_days_from_genesis = days_since_genesis
-    oi_start_days_from_genesis = (oi_start_date - kaspa_genesis_date).days if oi_start_date else 0
+    current_days_from_genesis_v2 = days_since_genesis_v2
+    oi_start_days_from_genesis_v2 = (oi_start_date - kaspa_genesis_date_v2).days if oi_start_date else 0
     
 else:
     slope_pct_change_g = 1.8
     r2_pct_change_g = 2.1
-    current_days_from_genesis = 1000
-    oi_start_days_from_genesis = 600
+    current_days_from_genesis_v2 = 300
+    oi_start_days_from_genesis_v2 = 250
 
 # Genesis-based metrics cards
 st.markdown(f"""
 <div class="metrics-container">
     <div class="metric-card">
-        <div class="metric-label">Genesis Power-Law Slope</div>
+        <div class="metric-label">Genesis V2 Power-Law Slope</div>
         <div class="metric-value">{b_genesis:.4f}</div>
         <div class="metric-change {'positive' if slope_pct_change_g >= 0 else 'negative'}">{slope_pct_change_g:+.1f}% (30d)</div>
     </div>
     <div class="metric-card">
-        <div class="metric-label">Genesis Model R²</div>
+        <div class="metric-label">Genesis V2 Model R²</div>
         <div class="metric-value">{r2_genesis:.4f}</div>
         <div class="metric-change {'positive' if r2_pct_change_g >= 0 else 'negative'}">{r2_pct_change_g:+.1f}% (30d)</div>
     </div>
     <div class="metric-card">
-        <div class="metric-label">Days Since Genesis</div>
-        <div class="metric-value">{current_days_from_genesis}</div>
-        <div class="metric-change positive">Nov 7, 2021</div>
+        <div class="metric-label">Days Since Nov 28, 2022</div>
+        <div class="metric-value">{current_days_from_genesis_v2}</div>
+        <div class="metric-change positive">Reference Date</div>
     </div>
     <div class="metric-card">
         <div class="metric-label">OI Data Start</div>
-        <div class="metric-value">{oi_start_days_from_genesis}</div>
-        <div class="metric-change positive">Days from Genesis</div>
+        <div class="metric-value">{oi_start_days_from_genesis_v2}</div>
+        <div class="metric-change positive">Days from Nov 28, 2022</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1250,9 +1255,9 @@ if not oi_df.empty:
         <div style="background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%); border: 1px solid #363650; border-radius: 16px; padding: 2rem;">
             <div style="color: #9CA3AF; line-height: 1.6;">
                 <p><strong>📊 OI Start Reference:</strong> Power law slope: {b_oi:.4f}, R²: {r2_oi:.4f} (using Aug 4, 2023 as day 0)</p>
-                <p><strong>🚀 Genesis Reference:</strong> Power law slope: {b_genesis:.4f}, R²: {r2_genesis:.4f} (using Nov 7, 2021 as day 0)</p>
+                <p><strong>🚀 Genesis V2 Reference:</strong> Power law slope: {b_genesis:.4f}, R²: {r2_genesis:.4f} (using Nov 28, 2022 as day 0)</p>
                 <p><strong>🔄 Difference:</strong> Slope difference of {abs(b_oi - b_genesis):.4f}, showing {'similar' if abs(b_oi - b_genesis) < 0.1 else 'different'} growth patterns.</p>
-                <p><strong>⏰ Time Context:</strong> OI data started {oi_start_days_from_genesis} days after Kaspa's genesis, representing the emergence of futures markets.</p>
+                <p><strong>⏰ Time Context:</strong> OI data started {oi_start_days_from_genesis_v2} days after Nov 28, 2022, representing the emergence of futures markets.</p>
             </div>
         </div>
     </div>
