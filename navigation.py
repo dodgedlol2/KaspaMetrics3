@@ -123,20 +123,56 @@ def sidebar_toggle_button():
                     
                     const parentDoc = window.parent.document;
                     
-                    // Find the real home button in the sidebar
-                    const sidebarHomeButton = parentDoc.querySelector('[data-testid="stButton"] button[data-testid*="nav_home"]') ||
-                                            parentDoc.querySelector('[key="nav_home"] button') ||
-                                            parentDoc.querySelector('button[aria-label*="Home"]') ||
-                                            parentDoc.querySelector('[data-testid="stSidebar"] button:has([data-testid="stIconMaterial"]:contains("home"))') ||
-                                            parentDoc.querySelector('[data-testid="stSidebar"] .stButton:first-child button');
+                    // Try multiple approaches to find the home button
+                    let sidebarHomeButton = null;
                     
+                    // Method 1: Look for button with "Home" text
+                    const allSidebarButtons = parentDoc.querySelectorAll('[data-testid="stSidebar"] button');
+                    for (let btn of allSidebarButtons) {
+                        if (btn.textContent && btn.textContent.toLowerCase().includes('home')) {
+                            sidebarHomeButton = btn;
+                            console.log('Found home button by text content');
+                            break;
+                        }
+                    }
+                    
+                    // Method 2: Look for button with home icon
+                    if (!sidebarHomeButton) {
+                        const homeIcons = parentDoc.querySelectorAll('[data-testid="stSidebar"] [data-testid="stIconMaterial"]');
+                        for (let icon of homeIcons) {
+                            if (icon.textContent && icon.textContent.includes('home')) {
+                                sidebarHomeButton = icon.closest('button');
+                                console.log('Found home button by icon');
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Method 3: Look for first sidebar button (usually Home)
+                    if (!sidebarHomeButton) {
+                        const firstBtn = parentDoc.querySelector('[data-testid="stSidebar"] .stButton button');
+                        if (firstBtn) {
+                            sidebarHomeButton = firstBtn;
+                            console.log('Using first sidebar button as home');
+                        }
+                    }
+                    
+                    // Method 4: Look for button with nav_home key
+                    if (!sidebarHomeButton) {
+                        sidebarHomeButton = parentDoc.querySelector('[data-testid="stSidebar"] button[data-testid*="nav_home"]');
+                        if (sidebarHomeButton) {
+                            console.log('Found home button by nav_home key');
+                        }
+                    }
+                    
+                    // Try to click the found button
                     if (sidebarHomeButton) {
-                        console.log('Found sidebar home button, clicking it...');
+                        console.log('Clicking sidebar home button...');
                         sidebarHomeButton.click();
                     } else {
-                        console.log('Sidebar home button not found, trying direct navigation...');
-                        // Fallback: try direct navigation
-                        window.parent.location.href = 'https://kaspametrics3test1.streamlit.app';
+                        console.log('No sidebar home button found, trying page refresh...');
+                        // Alternative: refresh the page to go "home"
+                        window.parent.location.reload();
                     }
                 });
                 
