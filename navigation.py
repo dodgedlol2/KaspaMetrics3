@@ -829,89 +829,71 @@ def add_navigation():
         </div>
         """
     
-    st.markdown(header_html, unsafe_allow_html=True)
+    # Remove the clickable logo from header and make it display-only
+    header_html_display_only = header_html.replace('kaspa-logo', 'kaspa-logo-display')
+    st.markdown(header_html_display_only, unsafe_allow_html=True)
     
-    # Check for logo click via query params and navigate
-    if st.query_params.get("logo_nav") == "price":
-        # Clear the query param
-        st.query_params.clear()
-        st.switch_page("pages/3_💰_Spot_Price.py")
-    
-    # JavaScript to handle logo clicks using query params
+    # Add the clickable logo as the FIRST sidebar element (before Home button)
+    # This will be our functional logo navigation
     st.markdown("""
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function handleLogoClick(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                console.log('Logo clicked! Using query params navigation...');
-                
-                // Set query parameter and reload
-                const url = new URL(window.location);
-                url.searchParams.set('logo_nav', 'price');
-                
-                // Navigate to current page with query param to trigger Streamlit rerun
-                window.location.href = url.toString();
-            }
-            
-            function addLogoClickHandler() {
-                const logo = document.querySelector('.kaspa-logo');
-                if (logo) {
-                    // Remove existing handlers
-                    logo.removeEventListener('click', handleLogoClick);
-                    // Add new handler
-                    logo.addEventListener('click', handleLogoClick, true);
-                    logo.style.pointerEvents = 'auto';
-                    logo.style.cursor = 'pointer';
-                    console.log('Logo click handler added with query params method');
-                    return true;
-                }
-                return false;
-            }
-            
-            // Try immediately and with retries
-            let attempts = 0;
-            function tryAddHandler() {
-                if (addLogoClickHandler()) {
-                    console.log('Logo handler successfully added!');
-                    return;
-                }
-                
-                attempts++;
-                if (attempts < 50) {
-                    setTimeout(tryAddHandler, 100);
-                } else {
-                    console.log('Failed to add logo handler after 50 attempts');
-                }
-            }
-            
-            tryAddHandler();
-            
-            // Watch for DOM changes
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.addedNodes.length > 0) {
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1 && 
-                                (node.classList?.contains('kaspa-logo') || 
-                                 node.querySelector?.('.kaspa-logo'))) {
-                                setTimeout(() => {
-                                    addLogoClickHandler();
-                                    console.log('Re-added logo handler after DOM change');
-                                }, 50);
-                            }
-                        });
-                    }
-                });
-            });
-            
-            observer.observe(document.body, { 
-                childList: true, 
-                subtree: true 
-            });
-        });
-    </script>
+    <style>
+    /* Style the sidebar logo button to look like the header logo */
+    .sidebar-logo-button {
+        width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .sidebar-logo-button button {
+        background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%) !important;
+        border: 2px solid #5B6CFF !important;
+        border-radius: 12px !important;
+        color: #ffffff !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        padding: 12px 16px !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 
+            0 4px 16px rgba(91, 108, 255, 0.3),
+            0 0 20px rgba(91, 108, 255, 0.2) !important;
+    }
+    
+    .sidebar-logo-button button:hover {
+        background: linear-gradient(135deg, #2A2A4E 0%, #262649 100%) !important;
+        border-color: #8b9aff !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 
+            0 8px 24px rgba(91, 108, 255, 0.4),
+            0 0 30px rgba(91, 108, 255, 0.3) !important;
+    }
+    
+    /* Hide the display-only logo click effects */
+    .kaspa-logo-display {
+        pointer-events: none !important;
+        cursor: default !important;
+    }
+    
+    .kaspa-logo-display:hover {
+        background: transparent !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    </style>
     """, unsafe_allow_html=True)
+    
+    # Add functional logo button in sidebar BEFORE everything else
+    with st.sidebar:
+        st.markdown('<div class="sidebar-logo-button">', unsafe_allow_html=True)
+        if st.button("🏠 Kaspa Metrics → Price", key="sidebar_logo_nav", help="Navigate to Spot Price page", use_container_width=True):
+            st.switch_page("pages/3_💰_Spot_Price.py")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown("---")  # Separator after logo button
 
     # SIDEBAR NAVIGATION WITH MATERIAL ICONS
     # Add home button at top
