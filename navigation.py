@@ -363,7 +363,7 @@ def add_navigation():
         /* Expand button when sidebar is COLLAPSED - Clean hamburger only */
         div[data-testid="stSidebarCollapsedControl"] {
             position: fixed !important;
-            top: 85px !important;
+            top: 185px !important;
             left: 20px !important;
             z-index: 999998 !important;
             background: transparent !important;
