@@ -1,5 +1,124 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from footer import add_footer
+
+def sidebar_toggle_button():
+    """Create a unified sidebar toggle button using Streamlit components"""
+    
+    # HTML and JavaScript for the sidebar toggle button
+    component_html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body { margin: 0; padding: 0; background: transparent; }
+        </style>
+    </head>
+    <body>
+        <script>
+            console.log('Sidebar toggle component loaded!');
+            
+            function createSidebarToggle() {
+                console.log('Creating sidebar toggle button...');
+                
+                // Remove any existing toggle button
+                const existing = window.parent.document.getElementById('unified-sidebar-toggle');
+                if (existing) {
+                    existing.remove();
+                }
+                
+                // Create the toggle button
+                const toggleButton = window.parent.document.createElement('button');
+                toggleButton.id = 'unified-sidebar-toggle';
+                toggleButton.innerHTML = '☰';
+                
+                // Style the button
+                toggleButton.style.cssText = `
+                    position: fixed !important;
+                    top: 185px !important;
+                    left: 20px !important;
+                    width: 40px !important;
+                    height: 40px !important;
+                    background: rgba(54, 54, 80, 0.8) !important;
+                    border: 1px solid #363650 !important;
+                    border-radius: 8px !important;
+                    backdrop-filter: blur(10px) !important;
+                    z-index: 999999 !important;
+                    font-size: 18px !important;
+                    color: #f1f5f9 !important;
+                    cursor: pointer !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    font-family: Arial, sans-serif !important;
+                    transition: all 0.3s ease !important;
+                `;
+                
+                // Add hover effects
+                toggleButton.addEventListener('mouseenter', function() {
+                    this.style.background = 'rgba(91, 108, 255, 0.15)';
+                    this.style.borderColor = 'rgba(91, 108, 255, 0.4)';
+                    this.style.color = '#8b9aff';
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                toggleButton.addEventListener('mouseleave', function() {
+                    this.style.background = 'rgba(54, 54, 80, 0.8)';
+                    this.style.borderColor = '#363650';
+                    this.style.color = '#f1f5f9';
+                    this.style.transform = 'scale(1)';
+                });
+                
+                // Add click functionality
+                toggleButton.addEventListener('click', function() {
+                    console.log('Sidebar toggle clicked!');
+                    
+                    const parentDoc = window.parent.document;
+                    const sidebar = parentDoc.querySelector('[data-testid="stSidebar"]');
+                    const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
+                    
+                    if (isCollapsed) {
+                        this.innerHTML = '✕';
+                        const expandBtn = parentDoc.querySelector('[data-testid="stExpandSidebarButton"]');
+                        if (expandBtn) expandBtn.click();
+                    } else {
+                        this.innerHTML = '☰';
+                        const collapseBtn = parentDoc.querySelector('[data-testid="stSidebarCollapseButton"] button');
+                        if (collapseBtn) collapseBtn.click();
+                    }
+                });
+                
+                // Monitor sidebar changes
+                const updateIcon = () => {
+                    const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
+                    const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
+                    toggleButton.innerHTML = isCollapsed ? '☰' : '✕';
+                };
+                
+                const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
+                if (sidebar) {
+                    const observer = new MutationObserver(updateIcon);
+                    observer.observe(sidebar, { attributes: true, attributeFilter: ['aria-expanded'] });
+                }
+                
+                // Add to parent document
+                window.parent.document.body.appendChild(toggleButton);
+                console.log('Sidebar toggle button created successfully!');
+                updateIcon();
+            }
+            
+            // Create button with multiple attempts
+            setTimeout(createSidebarToggle, 100);
+            setTimeout(createSidebarToggle, 500);
+            setTimeout(createSidebarToggle, 1000);
+            
+        </script>
+    </body>
+    </html>
+    """
+    
+    # Create the component (invisible iframe)
+    components.html(component_html, height=0, width=0)
 
 def add_navigation():
     """Add organized navigation to sidebar AND header (shared across all pages)"""
@@ -576,97 +695,27 @@ def add_navigation():
     </style>
     
     <script>
-        // JavaScript to handle logo clicks and unified sidebar toggle
+        // Simplified JavaScript for logo functionality only
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('JavaScript loaded successfully!'); // TEST MESSAGE
+            console.log('Logo JavaScript loaded');
             
-            // Function to handle logo click - direct navigation
             function handleLogoClick(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                console.log('Logo clicked! Navigating to home...');
-                
-                // Direct navigation to your Streamlit app URL
                 window.location.href = 'https://kaspametrics3test1.streamlit.app';
             }
             
-            // Function to add click handler with better targeting
             function addLogoClickHandler() {
-                // Remove any existing handlers first
-                const existingLogos = document.querySelectorAll('.kaspa-logo');
-                existingLogos.forEach(logo => {
-                    logo.removeEventListener('click', handleLogoClick);
-                });
-                
-                // Add handler to current logo
                 const logo = document.querySelector('.kaspa-logo');
                 if (logo) {
                     logo.addEventListener('click', handleLogoClick, true);
                     logo.style.pointerEvents = 'auto';
-                    console.log('Logo click handler added successfully');
                     return true;
-                } else {
-                    console.log('Logo not found, retrying...');
-                    return false;
                 }
+                return false;
             }
             
-            // UNIFIED SIDEBAR TOGGLE BUTTON - SIMPLIFIED VERSION
-            function createUnifiedToggleButton() {
-                console.log('createUnifiedToggleButton function called!');
-                
-                try {
-                    // Remove any existing toggle button
-                    const existingToggle = document.getElementById('unified-sidebar-toggle');
-                    if (existingToggle) {
-                        existingToggle.remove();
-                        console.log('Removed existing toggle button');
-                    }
-                    
-                    console.log('Creating unified sidebar toggle button');
-                    
-                    // Create the unified toggle button
-                    const toggleButton = document.createElement('button');
-                    toggleButton.id = 'unified-sidebar-toggle';
-                    toggleButton.innerHTML = '☰'; // Start with hamburger
-                    
-                    // Style it - SIMPLIFIED
-                    toggleButton.style.cssText = 'position: fixed !important; top: 185px !important; left: 20px !important; width: 40px !important; height: 40px !important; background: rgba(54, 54, 80, 0.8) !important; border: 1px solid #363650 !important; border-radius: 8px !important; z-index: 999999 !important; font-size: 18px !important; color: #f1f5f9 !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important;';
-                    
-                    // Add click functionality
-                    toggleButton.addEventListener('click', function() {
-                        console.log('Unified toggle button clicked!');
-                        
-                        // Check current sidebar state
-                        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-                        const isCurrentlyCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
-                        
-                        if (isCurrentlyCollapsed) {
-                            console.log('Expanding sidebar...');
-                            this.innerHTML = '✕';
-                            const expandBtn = document.querySelector('[data-testid="stExpandSidebarButton"]');
-                            if (expandBtn) expandBtn.click();
-                        } else {
-                            console.log('Collapsing sidebar...');
-                            this.innerHTML = '☰';
-                            const collapseBtn = document.querySelector('[data-testid="stSidebarCollapseButton"] button');
-                            if (collapseBtn) collapseBtn.click();
-                        }
-                    });
-                    
-                    // Add to page
-                    document.body.appendChild(toggleButton);
-                    console.log('Unified sidebar toggle button created successfully');
-                    
-                    return true;
-                } catch (error) {
-                    console.error('Error creating toggle button:', error);
-                    return false;
-                }
-            }
-            
-            // Initial attempts
-            console.log('Starting logo handler setup...');
+            // Try to add logo handler
             if (!addLogoClickHandler()) {
                 let attempts = 0;
                 const retryInterval = setInterval(() => {
@@ -676,56 +725,16 @@ def add_navigation():
                     }
                 }, 100);
             }
-            
-            // Create unified toggle button with multiple attempts
-            console.log('Starting toggle button creation...');
-            createUnifiedToggleButton();
-            setTimeout(createUnifiedToggleButton, 500);
-            setTimeout(createUnifiedToggleButton, 1000);
-            setTimeout(createUnifiedToggleButton, 2000);
-            
-            // Keep trying every 3 seconds
-            setInterval(() => {
-                const existing = document.getElementById('unified-sidebar-toggle');
-                if (!existing) {
-                    console.log('Toggle button missing, recreating...');
-                    createUnifiedToggleButton();
-                }
-            }, 3000);
-            
-            // Also handle dynamic content changes
-            const observer = new MutationObserver(function(mutations) {
-                let shouldCheck = false;
-                
-                mutations.forEach(function(mutation) {
-                    if (mutation.addedNodes.length > 0) {
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1) {
-                                if (node.classList && node.classList.contains('kaspa-logo') || 
-                                    node.querySelector && node.querySelector('.kaspa-logo')) {
-                                    shouldCheck = true;
-                                }
-                            }
-                        });
-                    }
-                });
-                
-                if (shouldCheck) {
-                    setTimeout(addLogoClickHandler, 10);
-                }
-            });
-            
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-            
-            console.log('JavaScript setup completed!');
         });
     </script>
+    
+    <!-- SIDEBAR TOGGLE COMPONENT -->
     """, unsafe_allow_html=True)
     
-    # Check if logo was clicked via JavaScript
+    # Add the sidebar toggle component
+    sidebar_toggle_button()
+    
+    # Continue with header generation
     if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
         st.session_state.pop('logo_clicked', None)
         st.switch_page("Home.py")
