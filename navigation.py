@@ -35,7 +35,7 @@ def sidebar_toggle_button():
                 // Style the button
                 toggleButton.style.cssText = `
                     position: fixed !important;
-                    top: 80px !important;
+                    top: 11px !important;
                     left: 20px !important;
                     width: 40px !important;
                     height: 40px !important;
