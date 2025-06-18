@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.2 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.3 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -419,18 +419,7 @@ def add_navigation():
             cursor: pointer !important;
         }
         
-        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
-        .kaspa-logo-link {
-            text-decoration: none !important;
-            color: inherit !important;
-            display: block !important;
-        }
-        
-        .kaspa-logo-link:hover {
-            text-decoration: none !important;
-            color: inherit !important;
-        }
-        
+        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW USES STREAMLIT PAGE LINK */
         .kaspa-logo {
             display: flex;
             align-items: center;
@@ -452,7 +441,7 @@ def add_navigation():
         }
         
         /* Logo hover effect */
-        .kaspa-logo-link:hover .kaspa-logo {
+        .kaspa-logo:hover {
             background: rgba(91, 108, 255, 0.1) !important;
             transform: scale(1.02) !important;
             box-shadow: 0 0 20px rgba(91, 108, 255, 0.3) !important;
@@ -470,7 +459,7 @@ def add_navigation():
         }
         
         /* Matrix hover effect */
-        .kaspa-logo-link:hover .matrix {
+        .kaspa-logo:hover .matrix {
             transform: rotate(5deg) scale(1.05) !important;
         }
         
@@ -500,11 +489,11 @@ def add_navigation():
         }
         
         /* Enhanced pulse on logo hover */
-        .kaspa-logo-link:hover .cell:nth-child(1), 
-        .kaspa-logo-link:hover .cell:nth-child(3), 
-        .kaspa-logo-link:hover .cell:nth-child(5), 
-        .kaspa-logo-link:hover .cell:nth-child(7), 
-        .kaspa-logo-link:hover .cell:nth-child(9) {
+        .kaspa-logo:hover .cell:nth-child(1), 
+        .kaspa-logo:hover .cell:nth-child(3), 
+        .kaspa-logo:hover .cell:nth-child(5), 
+        .kaspa-logo:hover .cell:nth-child(7), 
+        .kaspa-logo:hover .cell:nth-child(9) {
             animation: cellPulseHover 1s ease infinite !important;
             box-shadow: 
                 0 0 20px rgba(91, 108, 255, 1.0), 
@@ -541,7 +530,7 @@ def add_navigation():
         }
         
         /* Logo text hover effect */
-        .kaspa-logo-link:hover .logo-text {
+        .kaspa-logo:hover .logo-text {
             color: #8b9aff !important;
         }
         
@@ -760,89 +749,9 @@ def add_navigation():
             }
         }
     </style>
-    
-    <script>
-        // JavaScript to handle logo clicks with direct URL navigation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Function to handle logo click - direct navigation
-            function handleLogoClick(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                console.log('Logo clicked! Navigating to home...');
-                
-                // Direct navigation to your Streamlit app URL
-                window.location.href = 'https://kaspametrics3test1.streamlit.app';
-            }
-            
-            // Function to add click handler with better targeting
-            function addLogoClickHandler() {
-                // Remove any existing handlers first
-                const existingLogos = document.querySelectorAll('.kaspa-logo');
-                existingLogos.forEach(logo => {
-                    logo.removeEventListener('click', handleLogoClick);
-                });
-                
-                // Add handler to current logo
-                const logo = document.querySelector('.kaspa-logo');
-                if (logo) {
-                    logo.addEventListener('click', handleLogoClick, true);
-                    logo.style.pointerEvents = 'auto';
-                    console.log('Logo click handler added successfully');
-                    return true;
-                } else {
-                    console.log('Logo not found, retrying...');
-                    return false;
-                }
-            }
-            
-            // Initial attempt
-            if (!addLogoClickHandler()) {
-                // Retry with delays if not found immediately
-                let attempts = 0;
-                const retryInterval = setInterval(() => {
-                    attempts++;
-                    if (addLogoClickHandler() || attempts > 50) {
-                        clearInterval(retryInterval);
-                    }
-                }, 100);
-            }
-            
-            // Also handle dynamic content changes
-            const observer = new MutationObserver(function(mutations) {
-                let shouldCheck = false;
-                mutations.forEach(function(mutation) {
-                    if (mutation.addedNodes.length > 0) {
-                        // Check if any added nodes contain or are the logo
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1) { // Element node
-                                if (node.classList && node.classList.contains('kaspa-logo') || 
-                                    node.querySelector && node.querySelector('.kaspa-logo')) {
-                                    shouldCheck = true;
-                                }
-                            }
-                        });
-                    }
-                });
-                
-                if (shouldCheck) {
-                    setTimeout(addLogoClickHandler, 10);
-                }
-            });
-            
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        });
-    </script>
     """, unsafe_allow_html=True)
     
-    # Check if logo was clicked via JavaScript
-    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
-        st.session_state.pop('logo_clicked', None)
-        st.switch_page("Home.py")
-    
-    # GENERATE HEADER HTML - Improved with better user status handling
+    # GENERATE HEADER HTML - Updated with st.page_link for logo navigation
     if st.session_state.get('authentication_status'):
         user_name = st.session_state.get('name', 'User')
         is_premium = st.session_state.get('is_premium', False)
@@ -873,22 +782,20 @@ def add_navigation():
         
         header_html = f"""
         <div class="kaspa-header">
-            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
+            <div class="kaspa-logo">
+                <div class="matrix">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
                 </div>
-            </a>
+                <span class="logo-text">Kaspa Metrics</span>
+            </div>
             <div class="kaspa-user-info">
                 <div>Welcome, {user_name}</div>
                 <div class="kaspa-user-status {status_class}">{status_text}</div>
@@ -898,22 +805,20 @@ def add_navigation():
     else:
         header_html = """
         <div class="kaspa-header">
-            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
+            <div class="kaspa-logo">
+                <div class="matrix">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
                 </div>
-            </a>
+                <span class="logo-text">Kaspa Metrics</span>
+            </div>
             <div class="kaspa-user-info">
                 <div>Please log in</div>
                 <div class="kaspa-user-status guest">
@@ -925,6 +830,61 @@ def add_navigation():
         """
     
     st.markdown(header_html, unsafe_allow_html=True)
+
+    # Add logo click handler using Streamlit's page_link (invisible button overlay)
+    # This creates an invisible clickable area over the logo
+    st.markdown("""
+    <style>
+    .logo-click-area {
+        position: fixed;
+        top: 8px;
+        left: 32px;
+        width: 200px;
+        height: 54px;
+        z-index: 999999;
+        cursor: pointer;
+        background: transparent;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Create invisible clickable area over the logo that navigates to price page
+    if st.button("", key="logo_click_invisible", help="Go to Spot Price page"):
+        st.switch_page("pages/3_💰_Spot_Price.py")
+
+    # Position the invisible button over the logo
+    st.markdown("""
+    <script>
+    // Move the invisible button to overlay the logo
+    document.addEventListener('DOMContentLoaded', function() {
+        function positionLogoButton() {
+            const logoButton = document.querySelector('button[data-testid="baseButton-secondary"][title="Go to Spot Price page"]');
+            if (logoButton) {
+                logoButton.style.position = 'fixed';
+                logoButton.style.top = '8px';
+                logoButton.style.left = '32px';
+                logoButton.style.width = '200px';
+                logoButton.style.height = '54px';
+                logoButton.style.zIndex = '999999';
+                logoButton.style.background = 'transparent';
+                logoButton.style.border = 'none';
+                logoButton.style.cursor = 'pointer';
+                logoButton.style.opacity = '0';
+            }
+        }
+        
+        // Position immediately and retry if needed
+        positionLogoButton();
+        
+        // Also watch for dynamic changes
+        const observer = new MutationObserver(positionLogoButton);
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        // Retry positioning after a short delay
+        setTimeout(positionLogoButton, 100);
+    });
+    </script>
+    """, unsafe_allow_html=True)
 
     # SIDEBAR NAVIGATION WITH MATERIAL ICONS
     # Add home button at top
