@@ -66,8 +66,11 @@ def add_navigation():
             padding-top: 90px !important;
         }
         
-        /* BETTERSTACK-STYLE HEADER */
+        /* BETTERSTACK-STYLE HEADER - TEMPORARILY HIDDEN FOR DEBUGGING */
         .kaspa-header {
+            /* COMMENT OUT THE HEADER TEMPORARILY */
+            display: none !important;
+            /*
             position: fixed;
             top: 0;
             left: 0;
@@ -75,7 +78,6 @@ def add_navigation():
             width: 100vw;
             height: 70px;
             z-index: 999997;
-            /* BetterStack-style black with transparency */
             background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -83,20 +85,20 @@ def add_navigation():
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            /* UPDATED: New house style border color */
             border-bottom: 1px solid #363650;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            */
         }
         
-        /* PUSH MAIN CONTENT DOWN - Critical for preventing overlap */
+        /* PUSH MAIN CONTENT DOWN - Reduced since no header */
         .main .block-container {
-            padding-top: 90px !important;
+            padding-top: 20px !important;
         }
         
         /* UPDATED SIDEBAR WITH NEW HOUSE STYLE COLORS */
         [data-testid="stSidebar"] {
-            margin-top: 70px;
-            height: calc(100vh - 70px);
+            margin-top: 0px; /* No header margin */
+            height: 100vh; /* Full height */
             /* UPDATED: Same background as header */
             background: rgba(10, 10, 10, 0.8) !important;
             backdrop-filter: blur(30px) saturate(120%) !important;
@@ -323,277 +325,19 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* ENHANCED SIDEBAR CONTROLS - AGGRESSIVE POSITION OVERRIDE */
-        
-        /* Force the toggle button to ALWAYS stay visible and in the same spot - MOVED 3CM RIGHT */
-        div[data-testid="stSidebarCollapseButton"] {
-            position: fixed !important;
-            top: 185px !important;
-            left: 133px !important; /* Moved 3cm (113px) to the right: 20px + 113px = 133px */
-            z-index: 999999 !important;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            background: rgba(54, 54, 80, 0.8) !important;
+        /* Enhanced warning/info/success boxes in sidebar with house colors */
+        [data-testid="stSidebar"] .stAlert {
+            background: linear-gradient(135deg, 
+                rgba(54, 54, 80, 0.7) 0%, 
+                rgba(31, 31, 58, 0.85) 100%) !important;
+            /* UPDATED: New house style border color */
             border: 1px solid #363650 !important;
             border-radius: 8px !important;
             backdrop-filter: blur(10px) !important;
-            width: 40px !important;
-            height: 40px !important;
-            /* AGGRESSIVE overrides to prevent Streamlit from moving it */
-            transform: translateX(0px) translateY(0px) !important;
-            margin: 0 !important;
-            right: auto !important;
-            bottom: auto !important;
-            /* Force it to stay put regardless of any Streamlit logic */
-            min-width: 40px !important;
-            max-width: 40px !important;
-            min-height: 40px !important;
-            max-height: 40px !important;
-        }
-
-        /* Override any parent container positioning that might affect this button */
-        div[data-testid="stSidebarCollapseButton"] * {
-            position: relative !important;
-        }
-
-        /* Make sure the button itself doesn't get positioned elsewhere */
-        div[data-testid="stSidebarCollapseButton"] button {
-            position: relative !important;
-            top: 0 !important;
-            left: 0 !important;
-            background: transparent !important;
-            border: none !important;
-            color: #f1f5f9 !important;
-            width: 100% !important;
-            height: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            cursor: pointer !important;
-            pointer-events: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            transform: none !important;
-        }
-
-        /* Force icon visibility and styling */
-        div[data-testid="stSidebarCollapseButton"] button span,
-        div[data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"] {
-            color: #f1f5f9 !important;
-            opacity: 1 !important;
-            display: block !important;
-            visibility: visible !important;
-            font-size: 18px !important;
-            position: relative !important;
-            transform: none !important;
-        }
-
-        /* Hover effect for the button */
-        div[data-testid="stSidebarCollapseButton"]:hover {
-            background: rgba(91, 108, 255, 0.15) !important;
-            border-color: rgba(91, 108, 255, 0.4) !important;
-            box-shadow: 0 4px 16px rgba(91, 108, 255, 0.15) !important;
-        }
-
-        /* Hover effect for the icon */
-        div[data-testid="stSidebarCollapseButton"]:hover [data-testid="stIconMaterial"] {
-            color: #8b9aff !important;
-        }
-
-        /* Additional override: Force any transitions to be instant so we can see movement */
-        div[data-testid="stSidebarCollapseButton"] {
-            transition: none !important;
-        }
-
-        div[data-testid="stSidebarCollapseButton"] * {
-            transition: none !important;
-        }
-        
-        /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
-        .kaspa-logo-link {
-            text-decoration: none !important;
-            color: inherit !important;
-            display: block !important;
-        }
-        
-        .kaspa-logo-link:hover {
-            text-decoration: none !important;
-            color: inherit !important;
-        }
-        
-        .kaspa-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: Inter, -apple-system, sans-serif;
-            font-size: 22px;
-            font-weight: 600;
-            color: #ffffff;
-            cursor: pointer !important;
-            transition: all 0.3s ease !important;
-            border-radius: 8px !important;
-            padding: 8px 12px !important;
-            margin: -8px -12px !important;
-            pointer-events: auto !important;
-            user-select: none !important;
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-        }
-        
-        /* Logo hover effect */
-        .kaspa-logo-link:hover .kaspa-logo {
-            background: rgba(91, 108, 255, 0.1) !important;
-            transform: scale(1.02) !important;
-            box-shadow: 0 0 20px rgba(91, 108, 255, 0.3) !important;
-        }
-        
-        /* Enhanced matrix with subtle animation */
-        .matrix {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            width: 29px;
-            height: 29px;
-            position: relative;
-            transition: transform 0.3s ease !important;
-        }
-        
-        /* Matrix hover effect */
-        .kaspa-logo-link:hover .matrix {
-            transform: rotate(5deg) scale(1.05) !important;
-        }
-        
-        .cell {
-            width: 7px;
-            height: 7px;
-            background: linear-gradient(45deg, #e5e7eb, #9ca3af, #6b7280);
-            border-radius: 1px;
+            color: #e2e8f0 !important;
             box-shadow: 
-                0 0 7px rgba(156, 163, 175, 0.6),
-                inset 0 1px 1px rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        /* Enhanced active cells with subtle pulse - UPDATED TO PURPLE */
-        .cell:nth-child(1), 
-        .cell:nth-child(3), 
-        .cell:nth-child(5), 
-        .cell:nth-child(7), 
-        .cell:nth-child(9) {
-            background: linear-gradient(45deg, #5B6CFF, #4c5fd7);
-            box-shadow: 
-                0 0 12px rgba(91, 108, 255, 0.8), 
-                inset 0 1px 1px rgba(255, 255, 255, 0.3);
-            animation: cellPulse 3s ease infinite;
-        }
-        
-        /* Enhanced pulse on logo hover */
-        .kaspa-logo-link:hover .cell:nth-child(1), 
-        .kaspa-logo-link:hover .cell:nth-child(3), 
-        .kaspa-logo-link:hover .cell:nth-child(5), 
-        .kaspa-logo-link:hover .cell:nth-child(7), 
-        .kaspa-logo-link:hover .cell:nth-child(9) {
-            animation: cellPulseHover 1s ease infinite !important;
-            box-shadow: 
-                0 0 20px rgba(91, 108, 255, 1.0), 
-                inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
-        }
-        
-        /* Stagger the animation */
-        .cell:nth-child(1) { animation-delay: 0s; }
-        .cell:nth-child(3) { animation-delay: 0.2s; }
-        .cell:nth-child(5) { animation-delay: 0.4s; }
-        .cell:nth-child(7) { animation-delay: 0.6s; }
-        .cell:nth-child(9) { animation-delay: 0.8s; }
-        
-        @keyframes cellPulse {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-        
-        @keyframes cellPulseHover {
-            0%, 100% { opacity: 0.7; transform: scale(1.05); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-        
-        .cell:nth-child(2) { opacity: 0.9; }
-        .cell:nth-child(4) { opacity: 0.8; }
-        .cell:nth-child(6) { opacity: 0.8; }
-        .cell:nth-child(8) { opacity: 0.9; }
-        
-        .logo-text { 
-            color: #ffffff; 
-            letter-spacing: -0.5px;
-            font-weight: 600;
-            transition: color 0.3s ease !important;
-        }
-        
-        /* Logo text hover effect */
-        .kaspa-logo-link:hover .logo-text {
-            color: #8b9aff !important;
-        }
-        
-        /* BetterStack-style user info styling */
-        .kaspa-user-info {
-            font-family: Inter, -apple-system, sans-serif;
-            color: #a3a3a3;
-            font-size: 14px;
-            text-align: right;
-            font-weight: 400;
-        }
-        
-        .kaspa-user-info > div:first-child {
-            color: #e2e8f0;
-            margin-bottom: 2px;
-        }
-        
-        .kaspa-user-status {
-            color: #a3a3a3;
-            font-size: 12px;
-            font-weight: 500;
-            margin-top: 2px;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 6px;
-        }
-        
-        .kaspa-user-status.premium {
-            color: #fbbf24;
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
-        }
-        
-        .kaspa-user-status.free {
-            color: #94a3b8;
-        }
-        
-        .kaspa-user-status.guest {
-            color: #A0A0B8;
-        }
-        
-        /* Custom guest icon styling */
-        .guest-icon {
-            font-family: 'Material Symbols Outlined';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 16px;
-            line-height: 1;
-            letter-spacing: normal;
-            text-transform: none;
-            display: inline-block;
-            white-space: nowrap;
-            word-wrap: normal;
-            direction: ltr;
-            color: #5B6CFF;
-            font-variation-settings:
-                'FILL' 0,
-                'wght' 400,
-                'GRAD' 0,
-                'opsz' 20;
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
         }
         
         /* HIDE NATIVE PAGE NAVIGATION - Your original working code */
@@ -753,213 +497,14 @@ def add_navigation():
     </style>
     
     <script>
-        // Enhanced JavaScript to handle logo clicks and find missing expand button
+        // Simple JavaScript for logo functionality only
         document.addEventListener('DOMContentLoaded', function() {
-            // Function to handle logo click - direct navigation
-            function handleLogoClick(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                console.log('Logo clicked! Navigating to home...');
-                
-                // Direct navigation to your Streamlit app URL
-                window.location.href = 'https://kaspametrics3test1.streamlit.app';
-            }
-            
-            // Function to add click handler with better targeting
-            function addLogoClickHandler() {
-                // Remove any existing handlers first
-                const existingLogos = document.querySelectorAll('.kaspa-logo');
-                existingLogos.forEach(logo => {
-                    logo.removeEventListener('click', handleLogoClick);
-                });
-                
-                // Add handler to current logo
-                const logo = document.querySelector('.kaspa-logo');
-                if (logo) {
-                    logo.addEventListener('click', handleLogoClick, true);
-                    logo.style.pointerEvents = 'auto';
-                    console.log('Logo click handler added successfully');
-                    return true;
-                } else {
-                    console.log('Logo not found, retrying...');
-                    return false;
-                }
-            }
-            
-            // DEBUG FUNCTION: Find all possible expand button selectors
-            function findExpandButton() {
-                console.log('=== SEARCHING FOR EXPAND BUTTON ===');
-                
-                // Common selectors to try
-                const selectors = [
-                    '[data-testid="stSidebarCollapsedControl"]',
-                    '[data-testid="collapsedControl"]',
-                    '[data-testid*="Sidebar"][data-testid*="Collapsed"]',
-                    '[data-testid*="sidebar"][data-testid*="collapsed"]',
-                    'button[aria-label*="expand"]',
-                    'button[aria-label*="Expand"]',
-                    '[class*="collapsed"]',
-                    '[class*="Collapsed"]'
-                ];
-                
-                selectors.forEach(selector => {
-                    const elements = document.querySelectorAll(selector);
-                    if (elements.length > 0) {
-                        console.log(`Found ${elements.length} elements with selector: ${selector}`);
-                        elements.forEach((el, index) => {
-                            console.log(`  Element ${index}:`, el);
-                            console.log(`  HTML:`, el.outerHTML.substring(0, 200) + '...');
-                        });
-                    }
-                });
-                
-                // Also search for any buttons in the top-left area
-                const allButtons = document.querySelectorAll('button');
-                allButtons.forEach((button, index) => {
-                    const rect = button.getBoundingClientRect();
-                    if (rect.left < 100 && rect.top < 300) {
-                        console.log(`Button ${index} in top-left area:`, button);
-                        console.log(`  Position: left=${rect.left}, top=${rect.top}`);
-                        console.log(`  HTML:`, button.outerHTML.substring(0, 200) + '...');
-                    }
-                });
-                
-                console.log('=== END SEARCH ===');
-            }
-            
-            // Initial attempts
-            if (!addLogoClickHandler()) {
-                // Retry with delays if not found immediately
-                let attempts = 0;
-                const retryInterval = setInterval(() => {
-                    attempts++;
-                    if (addLogoClickHandler() || attempts > 50) {
-                        clearInterval(retryInterval);
-                    }
-                }, 100);
-            }
-            
-            // Run expand button search every 3 seconds
-            setInterval(findExpandButton, 3000);
-            
-            // Also handle dynamic content changes
-            const observer = new MutationObserver(function(mutations) {
-                let shouldCheck = false;
-                mutations.forEach(function(mutation) {
-                    if (mutation.addedNodes.length > 0) {
-                        // Check if any added nodes contain or are the logo
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1) { // Element node
-                                if (node.classList && node.classList.contains('kaspa-logo') || 
-                                    node.querySelector && node.querySelector('.kaspa-logo')) {
-                                    shouldCheck = true;
-                                }
-                            }
-                        });
-                    }
-                });
-                
-                if (shouldCheck) {
-                    setTimeout(addLogoClickHandler, 10);
-                }
-            });
-            
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
+            console.log('Navigation loaded - Header temporarily hidden for debugging');
         });
     </script>
     """, unsafe_allow_html=True)
     
-    # Check if logo was clicked via JavaScript
-    if 'logo_clicked' in st.session_state or st.query_params.get('logo_clicked') == 'true':
-        st.session_state.pop('logo_clicked', None)
-        st.switch_page("Home.py")
-    
-    # GENERATE HEADER HTML - Improved with better user status handling
-    if st.session_state.get('authentication_status'):
-        user_name = st.session_state.get('name', 'User')
-        is_premium = st.session_state.get('is_premium', False)
-        
-        # Better status display with expiration info
-        if is_premium:
-            status_text = "👑 PREMIUM"
-            status_class = "premium"
-            
-            # Add expiration info if available
-            if st.session_state.get('premium_expires_at'):
-                try:
-                    from datetime import datetime
-                    expires = datetime.fromisoformat(str(st.session_state['premium_expires_at']).replace('Z', '+00:00'))
-                    days_left = (expires - datetime.now()).days
-                    if days_left > 0:
-                        status_text += f" ({days_left}d left)"
-                    elif days_left == 0:
-                        status_text += " (Expires today)"
-                    else:
-                        status_text = "🔒 EXPIRED"
-                        status_class = "free"
-                except:
-                    pass
-        else:
-            status_text = "🔒 FREE TIER"
-            status_class = "free"
-        
-        header_html = f"""
-        <div class="kaspa-header">
-            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
-                </div>
-            </a>
-            <div class="kaspa-user-info">
-                <div>Welcome, {user_name}</div>
-                <div class="kaspa-user-status {status_class}">{status_text}</div>
-            </div>
-        </div>
-        """
-    else:
-        header_html = """
-        <div class="kaspa-header">
-            <a href="https://kaspametrics3test1.streamlit.app" class="kaspa-logo-link" style="text-decoration: none; color: inherit;">
-                <div class="kaspa-logo">
-                    <div class="matrix">
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                        <div class="cell"></div>
-                    </div>
-                    <span class="logo-text">Kaspa Metrics</span>
-                </div>
-            </a>
-            <div class="kaspa-user-info">
-                <div>Please log in</div>
-                <div class="kaspa-user-status guest">
-                    <span class="guest-icon">person</span>
-                    GUEST
-                </div>
-            </div>
-        </div>
-        """
-    
-    st.markdown(header_html, unsafe_allow_html=True)
+    # NO HEADER HTML GENERATION - Temporarily disabled for debugging
 
     # SIDEBAR NAVIGATION WITH MATERIAL ICONS
     # Add home button at top
