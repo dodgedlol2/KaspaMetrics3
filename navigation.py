@@ -323,26 +323,87 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* ENHANCED SIDEBAR CONTROLS - Single functional button */
+        /* ENHANCED SIDEBAR CONTROLS - FORCED VISIBILITY FOR BOTH BUTTONS */
         
-        /* Collapse button when sidebar is OPEN - Move it down by 100px */
+        /* Collapse button when sidebar is OPEN - Force visibility and position */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: 185px !important;
             left: calc(21rem - 2cm) !important;
             z-index: 999999 !important;
-            background: transparent !important;
-            border: none !important;
-            backdrop-filter: none !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: rgba(54, 54, 80, 0.8) !important;
+            border: 1px solid #363650 !important;
+            border-radius: 8px !important;
+            backdrop-filter: blur(10px) !important;
+            width: 40px !important;
+            height: 40px !important;
         }
 
-        /* Make the collapse button completely invisible */
+        /* Style the collapse button */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
-            opacity: 0 !important;
-            pointer-events: auto !important;
+            color: #f1f5f9 !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             cursor: pointer !important;
+            pointer-events: auto !important;
+        }
+
+        /* Force expand button visibility when sidebar is COLLAPSED */
+        div[data-testid="stSidebarCollapsedControl"] {
+            position: fixed !important;
+            top: 185px !important;
+            left: 20px !important;
+            z-index: 999999 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: rgba(54, 54, 80, 0.8) !important;
+            border: 1px solid #363650 !important;
+            border-radius: 8px !important;
+            backdrop-filter: blur(10px) !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+
+        /* Style the expand button */
+        div[data-testid="stSidebarCollapsedControl"] button {
+            background: transparent !important;
+            border: none !important;
+            color: #f1f5f9 !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+        }
+
+        /* Hover effects for both buttons */
+        div[data-testid="stSidebarCollapseButton"]:hover,
+        div[data-testid="stSidebarCollapsedControl"]:hover {
+            background: rgba(91, 108, 255, 0.15) !important;
+            border-color: rgba(91, 108, 255, 0.4) !important;
+            box-shadow: 0 4px 16px rgba(91, 108, 255, 0.15) !important;
+        }
+
+        /* Force icon visibility */
+        div[data-testid="stSidebarCollapseButton"] button span,
+        div[data-testid="stSidebarCollapsedControl"] button span,
+        div[data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"],
+        div[data-testid="stSidebarCollapsedControl"] [data-testid="stIconMaterial"] {
+            color: #f1f5f9 !important;
+            opacity: 1 !important;
+            display: block !important;
+            visibility: visible !important;
         }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
