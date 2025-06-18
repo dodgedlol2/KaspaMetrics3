@@ -576,8 +576,10 @@ def add_navigation():
     </style>
     
     <script>
-        // JavaScript to handle logo clicks with direct URL navigation
+        // JavaScript to handle logo clicks and unified sidebar toggle
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('JavaScript loaded successfully!'); // TEST MESSAGE
+            
             // Function to handle logo click - direct navigation
             function handleLogoClick(event) {
                 event.preventDefault();
@@ -609,126 +611,63 @@ def add_navigation():
                 }
             }
             
-            // UNIFIED SIDEBAR TOGGLE BUTTON - ONE BUTTON FOR BOTH FUNCTIONS
+            // UNIFIED SIDEBAR TOGGLE BUTTON - SIMPLIFIED VERSION
             function createUnifiedToggleButton() {
-                console.log('createUnifiedToggleButton function called!'); // DEBUG
+                console.log('createUnifiedToggleButton function called!');
                 
-                // Remove any existing toggle button
-                const existingToggle = document.getElementById('unified-sidebar-toggle');
-                if (existingToggle) {
-                    existingToggle.remove();
-                    console.log('Removed existing toggle button'); // DEBUG
-                }
-                
-                console.log('Creating unified sidebar toggle button');
-                
-                // Create the unified toggle button
-                const toggleButton = document.createElement('button');
-                toggleButton.id = 'unified-sidebar-toggle';
-                
-                // Check sidebar state to determine initial icon
-                const sidebar = document.querySelector('[data-testid="stSidebar"]');
-                const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
-                
-                console.log('Sidebar collapsed state:', isCollapsed); // DEBUG
-                
-                // Set initial icon based on state
-                toggleButton.innerHTML = isCollapsed ? '☰' : '✕'; // Hamburger or X
-                
-                // Style it to match your theme - ALWAYS VISIBLE
-                toggleButton.style.cssText = `
-                    position: fixed !important;
-                    top: 185px !important;
-                    left: 20px !important;
-                    width: 40px !important;
-                    height: 40px !important;
-                    background: rgba(54, 54, 80, 0.8) !important;
-                    border: 1px solid #363650 !important;
-                    border-radius: 8px !important;
-                    backdrop-filter: blur(10px) !important;
-                    z-index: 999999 !important;
-                    font-size: 18px !important;
-                    color: #f1f5f9 !important;
-                    cursor: pointer !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    font-family: Arial, sans-serif !important;
-                    transition: all 0.3s ease !important;
-                    user-select: none !important;
-                `;
-                
-                // Add hover effects
-                toggleButton.addEventListener('mouseenter', function() {
-                    this.style.background = 'rgba(91, 108, 255, 0.15)';
-                    this.style.borderColor = 'rgba(91, 108, 255, 0.4)';
-                    this.style.boxShadow = '0 4px 16px rgba(91, 108, 255, 0.15)';
-                    this.style.color = '#8b9aff';
-                    this.style.transform = 'scale(1.05)';
-                });
-                
-                toggleButton.addEventListener('mouseleave', function() {
-                    this.style.background = 'rgba(54, 54, 80, 0.8)';
-                    this.style.borderColor = '#363650';
-                    this.style.boxShadow = 'none';
-                    this.style.color = '#f1f5f9';
-                    this.style.transform = 'scale(1)';
-                });
-                
-                // Add click functionality - SMART TOGGLE
-                toggleButton.addEventListener('click', function() {
-                    console.log('Unified toggle button clicked!');
-                    
-                    // Check current sidebar state
-                    const sidebar = document.querySelector('[data-testid="stSidebar"]');
-                    const isCurrentlyCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
-                    
-                    if (isCurrentlyCollapsed) {
-                        // Sidebar is collapsed, need to expand
-                        console.log('Expanding sidebar...');
-                        this.innerHTML = '✕'; // Change to X for next click
-                        
-                        // Click the original expand button
-                        const expandBtn = document.querySelector('[data-testid="stExpandSidebarButton"]');
-                        if (expandBtn) {
-                            expandBtn.click();
-                        }
-                    } else {
-                        // Sidebar is expanded, need to collapse  
-                        console.log('Collapsing sidebar...');
-                        this.innerHTML = '☰'; // Change to hamburger for next click
-                        
-                        // Click the original collapse button
-                        const collapseBtn = document.querySelector('[data-testid="stSidebarCollapseButton"] button');
-                        if (collapseBtn) {
-                            collapseBtn.click();
-                        }
+                try {
+                    // Remove any existing toggle button
+                    const existingToggle = document.getElementById('unified-sidebar-toggle');
+                    if (existingToggle) {
+                        existingToggle.remove();
+                        console.log('Removed existing toggle button');
                     }
-                });
-                
-                // Update icon when sidebar state changes (backup)
-                const updateIcon = () => {
-                    const sidebar = document.querySelector('[data-testid="stSidebar"]');
-                    const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
-                    toggleButton.innerHTML = isCollapsed ? '☰' : '✕';
-                };
-                
-                // Monitor sidebar changes
-                const sidebarObserver = new MutationObserver(updateIcon);
-                if (sidebar) {
-                    sidebarObserver.observe(sidebar, { attributes: true, attributeFilter: ['aria-expanded'] });
+                    
+                    console.log('Creating unified sidebar toggle button');
+                    
+                    // Create the unified toggle button
+                    const toggleButton = document.createElement('button');
+                    toggleButton.id = 'unified-sidebar-toggle';
+                    toggleButton.innerHTML = '☰'; // Start with hamburger
+                    
+                    // Style it - SIMPLIFIED
+                    toggleButton.style.cssText = 'position: fixed !important; top: 185px !important; left: 20px !important; width: 40px !important; height: 40px !important; background: rgba(54, 54, 80, 0.8) !important; border: 1px solid #363650 !important; border-radius: 8px !important; z-index: 999999 !important; font-size: 18px !important; color: #f1f5f9 !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important;';
+                    
+                    // Add click functionality
+                    toggleButton.addEventListener('click', function() {
+                        console.log('Unified toggle button clicked!');
+                        
+                        // Check current sidebar state
+                        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+                        const isCurrentlyCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
+                        
+                        if (isCurrentlyCollapsed) {
+                            console.log('Expanding sidebar...');
+                            this.innerHTML = '✕';
+                            const expandBtn = document.querySelector('[data-testid="stExpandSidebarButton"]');
+                            if (expandBtn) expandBtn.click();
+                        } else {
+                            console.log('Collapsing sidebar...');
+                            this.innerHTML = '☰';
+                            const collapseBtn = document.querySelector('[data-testid="stSidebarCollapseButton"] button');
+                            if (collapseBtn) collapseBtn.click();
+                        }
+                    });
+                    
+                    // Add to page
+                    document.body.appendChild(toggleButton);
+                    console.log('Unified sidebar toggle button created successfully');
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Error creating toggle button:', error);
+                    return false;
                 }
-                
-                // Add to page
-                document.body.appendChild(toggleButton);
-                console.log('Unified sidebar toggle button created successfully');
-                
-                return true;
             }
             
-            // Initial attempts with multiple timing strategies
+            // Initial attempts
+            console.log('Starting logo handler setup...');
             if (!addLogoClickHandler()) {
-                // Retry with delays if not found immediately
                 let attempts = 0;
                 const retryInterval = setInterval(() => {
                     attempts++;
@@ -739,12 +678,13 @@ def add_navigation():
             }
             
             // Create unified toggle button with multiple attempts
-            createUnifiedToggleButton(); // Immediate attempt
-            setTimeout(createUnifiedToggleButton, 500); // Half second delay
-            setTimeout(createUnifiedToggleButton, 1000); // 1 second delay
-            setTimeout(createUnifiedToggleButton, 2000); // 2 second delay
+            console.log('Starting toggle button creation...');
+            createUnifiedToggleButton();
+            setTimeout(createUnifiedToggleButton, 500);
+            setTimeout(createUnifiedToggleButton, 1000);
+            setTimeout(createUnifiedToggleButton, 2000);
             
-            // Also try every 3 seconds in case page changes
+            // Keep trying every 3 seconds
             setInterval(() => {
                 const existing = document.getElementById('unified-sidebar-toggle');
                 if (!existing) {
@@ -759,9 +699,8 @@ def add_navigation():
                 
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes.length > 0) {
-                        // Check if any added nodes contain or are the logo
                         mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1) { // Element node
+                            if (node.nodeType === 1) {
                                 if (node.classList && node.classList.contains('kaspa-logo') || 
                                     node.querySelector && node.querySelector('.kaspa-logo')) {
                                     shouldCheck = true;
@@ -780,6 +719,8 @@ def add_navigation():
                 childList: true,
                 subtree: true
             });
+            
+            console.log('JavaScript setup completed!');
         });
     </script>
     """, unsafe_allow_html=True)
