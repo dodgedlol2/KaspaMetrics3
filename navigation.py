@@ -63,7 +63,7 @@ def sidebar_toggle_button():
                 homeButton.style.cssText = `
                     position: fixed !important;
                     top: 10px !important;
-                    left: 70px !important;
+                    left: 570px !important;
                     width: 40px !important;
                     height: 40px !important;
                     background: rgba(54, 54, 80, 0.8) !important;
