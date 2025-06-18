@@ -8,7 +8,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.2 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.4 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -338,9 +338,9 @@ def add_navigation():
                 inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
         }
         
-        /* ENHANCED SIDEBAR CONTROLS - Single functional button */
+        /* ENHANCED SIDEBAR CONTROLS - ROBUST HAMBURGER MENU FIX */
         
-        /* Collapse button when sidebar is OPEN - Make it invisible */
+        /* Collapse button when sidebar is OPEN - Make it invisible but functional */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: calc(85px - 2cm) !important;
@@ -360,8 +360,11 @@ def add_navigation():
             cursor: pointer !important;
         }
 
-        /* Expand button when sidebar is COLLAPSED - Clean hamburger only */
-        div[data-testid="stSidebarCollapsedControl"] {
+        /* ROBUST HAMBURGER MENU - Multiple targeting strategies for new Streamlit versions */
+        
+        /* Primary targeting - Standard selectors */
+        div[data-testid="stSidebarCollapsedControl"],
+        button[data-testid="collapsedControl"] {
             position: fixed !important;
             top: 85px !important;
             left: 20px !important;
@@ -372,11 +375,37 @@ def add_navigation():
             box-shadow: none !important;
             width: 40px !important;
             height: 40px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
 
-        /* Style the expand button - clean and minimal */
+        /* Enhanced targeting with higher specificity */
+        .stApp div[data-testid="stSidebarCollapsedControl"],
+        .stApp button[data-testid="collapsedControl"],
+        html body .stApp div[data-testid="stSidebarCollapsedControl"],
+        html body .stApp button[data-testid="collapsedControl"] {
+            position: fixed !important;
+            top: 85px !important;
+            left: 20px !important;
+            z-index: 999998 !important;
+            background: transparent !important;
+            border: none !important;
+            width: 40px !important;
+            height: 40px !important;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Button styling - Multiple approaches */
         div[data-testid="stSidebarCollapsedControl"] button,
-        button[data-testid="collapsedControl"] {
+        button[data-testid="collapsedControl"],
+        .stApp div[data-testid="stSidebarCollapsedControl"] button,
+        .stApp button[data-testid="collapsedControl"] {
             background: transparent !important;
             border: none !important;
             width: 100% !important;
@@ -388,35 +417,108 @@ def add_navigation():
             cursor: pointer !important;
             position: relative !important;
             color: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
-        /* Add custom hamburger icon - grey by default, purple on hover */
+        /* HAMBURGER ICON - Multiple fallback approaches */
+        
+        /* Primary approach - ::before pseudo-element */
         div[data-testid="stSidebarCollapsedControl"] button::before,
-        button[data-testid="collapsedControl"]::before {
+        button[data-testid="collapsedControl"]::before,
+        .stApp div[data-testid="stSidebarCollapsedControl"] button::before,
+        .stApp button[data-testid="collapsedControl"]::before {
             content: "☰" !important;
             font-size: 18px !important;
             color: #9ca3af !important;
             transition: all 0.3s ease !important;
             display: block !important;
             line-height: 1 !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            z-index: 1000000 !important;
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-weight: normal !important;
         }
 
-        /* Purple glow on hover and click - updated to match theme */
+        /* Fallback approach - ::after pseudo-element with different Unicode */
+        div[data-testid="stSidebarCollapsedControl"] button::after,
+        button[data-testid="collapsedControl"]::after,
+        .stApp div[data-testid="stSidebarCollapsedControl"] button::after,
+        .stApp button[data-testid="collapsedControl"]::after {
+            content: "\2261" !important; /* Mathematical triple bar */
+            font-size: 16px !important;
+            color: #9ca3af !important;
+            display: block !important;
+            position: absolute !important;
+            top: 52% !important;
+            left: 52% !important;
+            transform: translate(-50%, -50%) !important;
+            z-index: 1000001 !important;
+            font-family: monospace !important;
+            opacity: 0 !important; /* Hidden by default, shows if ::before fails */
+        }
+
+        /* Show ::after if ::before is not working */
+        div[data-testid="stSidebarCollapsedControl"] button:not(:has(::before))::after,
+        button[data-testid="collapsedControl"]:not(:has(::before))::after {
+            opacity: 1 !important;
+        }
+
+        /* Hover effects for hamburger menu - Multiple selectors */
         div[data-testid="stSidebarCollapsedControl"]:hover button::before,
         div[data-testid="stSidebarCollapsedControl"]:active button::before,
         button[data-testid="collapsedControl"]:hover::before,
-        button[data-testid="collapsedControl"]:active::before {
+        button[data-testid="collapsedControl"]:active::before,
+        .stApp div[data-testid="stSidebarCollapsedControl"]:hover button::before,
+        .stApp button[data-testid="collapsedControl"]:hover::before {
             color: #8b9aff !important;
             text-shadow: 0 0 8px rgba(139, 154, 255, 0.8) !important;
-            transform: scale(1.1) !important;
+            transform: translate(-50%, -50%) scale(1.1) !important;
             transition: all 0.2s ease !important;
         }
 
-        /* Ensure the functional button remains clickable */
+        /* Alternative CSS-drawn hamburger lines approach */
+        div[data-testid="stSidebarCollapsedControl"] button.css-hamburger::before,
+        button[data-testid="collapsedControl"].css-hamburger::before {
+            content: "" !important;
+            width: 18px !important;
+            height: 12px !important;
+            background-image: 
+                linear-gradient(#9ca3af, #9ca3af),
+                linear-gradient(#9ca3af, #9ca3af),
+                linear-gradient(#9ca3af, #9ca3af) !important;
+            background-size: 18px 2px !important;
+            background-position: 0 0, 0 5px, 0 10px !important;
+            background-repeat: no-repeat !important;
+            display: block !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+        }
+
+        /* Ensure the functional button remains clickable - Comprehensive */
+        div[data-testid="stSidebarCollapsedControl"] button,
+        button[data-testid="collapsedControl"],
+        .stApp div[data-testid="stSidebarCollapsedControl"] button,
+        .stApp button[data-testid="collapsedControl"] {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            touch-action: manipulation !important;
+        }
+        
+        /* Force override any Streamlit styles that might interfere */
+        div[data-testid="stSidebarCollapsedControl"] *,
+        button[data-testid="collapsedControl"] * {
+            pointer-events: none !important;
+        }
+        
         div[data-testid="stSidebarCollapsedControl"] button,
         button[data-testid="collapsedControl"] {
             pointer-events: auto !important;
-            cursor: pointer !important;
         }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
@@ -762,7 +864,7 @@ def add_navigation():
     </style>
     
     <script>
-        // JavaScript to handle logo clicks with direct URL navigation
+        // Enhanced JavaScript to handle logo clicks and hamburger menu fixes
         document.addEventListener('DOMContentLoaded', function() {
             // Function to handle logo click - direct navigation
             function handleLogoClick(event) {
@@ -795,7 +897,56 @@ def add_navigation():
                 }
             }
             
-            // Initial attempt
+            // ENHANCED HAMBURGER MENU FIX - JavaScript fallback
+            function fixHamburgerMenu() {
+                const hamburgerButtons = document.querySelectorAll(
+                    '[data-testid="stSidebarCollapsedControl"] button, button[data-testid="collapsedControl"]'
+                );
+                
+                hamburgerButtons.forEach(button => {
+                    if (!button.dataset.hamburgerFixed) {
+                        // Clear any existing content
+                        button.innerHTML = '';
+                        
+                        // Create hamburger icon element
+                        const icon = document.createElement('span');
+                        icon.textContent = '☰';
+                        icon.style.cssText = `
+                            font-size: 18px !important;
+                            color: #9ca3af !important;
+                            position: absolute !important;
+                            top: 50% !important;
+                            left: 50% !important;
+                            transform: translate(-50%, -50%) !important;
+                            z-index: 1000000 !important;
+                            font-family: Arial, sans-serif !important;
+                            transition: all 0.3s ease !important;
+                            pointer-events: none !important;
+                        `;
+                        
+                        // Add hover effects
+                        button.addEventListener('mouseenter', () => {
+                            icon.style.color = '#8b9aff';
+                            icon.style.textShadow = '0 0 8px rgba(139, 154, 255, 0.8)';
+                            icon.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                        });
+                        
+                        button.addEventListener('mouseleave', () => {
+                            icon.style.color = '#9ca3af';
+                            icon.style.textShadow = 'none';
+                            icon.style.transform = 'translate(-50%, -50%) scale(1)';
+                        });
+                        
+                        button.appendChild(icon);
+                        button.dataset.hamburgerFixed = 'true';
+                        console.log('Hamburger menu fixed via JavaScript');
+                    }
+                });
+                
+                return hamburgerButtons.length > 0;
+            }
+            
+            // Initial attempts
             if (!addLogoClickHandler()) {
                 // Retry with delays if not found immediately
                 let attempts = 0;
@@ -807,25 +958,41 @@ def add_navigation():
                 }, 100);
             }
             
-            // Also handle dynamic content changes
+            // Fix hamburger menu immediately and on changes
+            fixHamburgerMenu();
+            
+            // Monitor for DOM changes and fix issues
             const observer = new MutationObserver(function(mutations) {
-                let shouldCheck = false;
+                let shouldCheckLogo = false;
+                let shouldCheckHamburger = false;
+                
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes.length > 0) {
-                        // Check if any added nodes contain or are the logo
                         mutation.addedNodes.forEach(node => {
                             if (node.nodeType === 1) { // Element node
+                                // Check for logo
                                 if (node.classList && node.classList.contains('kaspa-logo') || 
                                     node.querySelector && node.querySelector('.kaspa-logo')) {
-                                    shouldCheck = true;
+                                    shouldCheckLogo = true;
+                                }
+                                
+                                // Check for hamburger menu
+                                if (node.dataset && (node.dataset.testid === 'stSidebarCollapsedControl' || 
+                                    node.dataset.testid === 'collapsedControl') ||
+                                    node.querySelector && node.querySelector('[data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]')) {
+                                    shouldCheckHamburger = true;
                                 }
                             }
                         });
                     }
                 });
                 
-                if (shouldCheck) {
+                if (shouldCheckLogo) {
                     setTimeout(addLogoClickHandler, 10);
+                }
+                
+                if (shouldCheckHamburger) {
+                    setTimeout(fixHamburgerMenu, 10);
                 }
             });
             
@@ -833,6 +1000,14 @@ def add_navigation():
                 childList: true,
                 subtree: true
             });
+            
+            // Periodic check for hamburger menu (fallback)
+            setInterval(() => {
+                const visibleButtons = document.querySelectorAll('[data-testid="stSidebarCollapsedControl"]:not([style*="display: none"]), [data-testid="collapsedControl"]:not([style*="display: none"])');
+                if (visibleButtons.length > 0) {
+                    fixHamburgerMenu();
+                }
+            }, 2000);
         });
     </script>
     """, unsafe_allow_html=True)
