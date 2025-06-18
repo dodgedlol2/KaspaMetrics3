@@ -771,7 +771,7 @@ def add_navigation():
                 console.log('Logo clicked! Navigating to home...');
                 
                 // Direct navigation to your Streamlit app URL
-                window.location.href = 'https://kaspametrics3test1.streamlit.app';
+                window.location.href = 'https://kaspametrics3test1.streamlit.app/?embed=true" target="_self">click</a>', unsafe_allow_html=True)
             }
             
             // Function to add click handler with better targeting
