@@ -323,13 +323,13 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* ENHANCED SIDEBAR CONTROLS - FORCED VISIBILITY FOR BOTH BUTTONS */
+        /* ENHANCED SIDEBAR CONTROLS - UNIFIED BUTTON CONTROL */
         
-        /* Collapse button when sidebar is OPEN - Force visibility and position */
+        /* Single toggle button that handles both collapse and expand - Force fixed position */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: 185px !important;
-            left: calc(21rem - 2cm) !important;
+            left: 20px !important; /* Always on the left side */
             z-index: 999999 !important;
             display: block !important;
             visibility: visible !important;
@@ -340,9 +340,11 @@ def add_navigation():
             backdrop-filter: blur(10px) !important;
             width: 40px !important;
             height: 40px !important;
+            transform: none !important; /* Prevent any transforms */
+            margin: 0 !important; /* Remove any margins */
         }
 
-        /* Style the collapse button */
+        /* Style the unified toggle button */
         div[data-testid="stSidebarCollapseButton"] button {
             background: transparent !important;
             border: none !important;
@@ -354,57 +356,34 @@ def add_navigation():
             justify-content: center !important;
             cursor: pointer !important;
             pointer-events: auto !important;
+            position: relative !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        /* Force expand button visibility when sidebar is COLLAPSED */
-        div[data-testid="stSidebarCollapsedControl"] {
-            position: fixed !important;
-            top: 185px !important;
-            left: 20px !important;
-            z-index: 999999 !important;
+        /* Force icon visibility and styling */
+        div[data-testid="stSidebarCollapseButton"] button span,
+        div[data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"] {
+            color: #f1f5f9 !important;
+            opacity: 1 !important;
             display: block !important;
             visibility: visible !important;
-            opacity: 1 !important;
-            background: rgba(54, 54, 80, 0.8) !important;
-            border: 1px solid #363650 !important;
-            border-radius: 8px !important;
-            backdrop-filter: blur(10px) !important;
-            width: 40px !important;
-            height: 40px !important;
+            font-size: 18px !important;
         }
 
-        /* Style the expand button */
-        div[data-testid="stSidebarCollapsedControl"] button {
-            background: transparent !important;
-            border: none !important;
-            color: #f1f5f9 !important;
-            width: 100% !important;
-            height: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            cursor: pointer !important;
-            pointer-events: auto !important;
-        }
-
-        /* Hover effects for both buttons */
-        div[data-testid="stSidebarCollapseButton"]:hover,
-        div[data-testid="stSidebarCollapsedControl"]:hover {
+        /* Hover effect for the unified button */
+        div[data-testid="stSidebarCollapseButton"]:hover {
             background: rgba(91, 108, 255, 0.15) !important;
             border-color: rgba(91, 108, 255, 0.4) !important;
             box-shadow: 0 4px 16px rgba(91, 108, 255, 0.15) !important;
         }
 
-        /* Force icon visibility */
-        div[data-testid="stSidebarCollapseButton"] button span,
-        div[data-testid="stSidebarCollapsedControl"] button span,
-        div[data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"],
-        div[data-testid="stSidebarCollapsedControl"] [data-testid="stIconMaterial"] {
-            color: #f1f5f9 !important;
-            opacity: 1 !important;
-            display: block !important;
-            visibility: visible !important;
+        /* Hover effect for the icon */
+        div[data-testid="stSidebarCollapseButton"]:hover [data-testid="stIconMaterial"] {
+            color: #8b9aff !important;
         }
+
+        /* Remove the old expand button styling since it's the same element */
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
         .kaspa-logo-link {
@@ -749,7 +728,7 @@ def add_navigation():
     </style>
     
     <script>
-        // JavaScript to handle logo clicks with direct URL navigation
+        // Enhanced JavaScript to handle logo clicks and find missing expand button
         document.addEventListener('DOMContentLoaded', function() {
             // Function to handle logo click - direct navigation
             function handleLogoClick(event) {
@@ -782,7 +761,48 @@ def add_navigation():
                 }
             }
             
-            // Initial attempt
+            // DEBUG FUNCTION: Find all possible expand button selectors
+            function findExpandButton() {
+                console.log('=== SEARCHING FOR EXPAND BUTTON ===');
+                
+                // Common selectors to try
+                const selectors = [
+                    '[data-testid="stSidebarCollapsedControl"]',
+                    '[data-testid="collapsedControl"]',
+                    '[data-testid*="Sidebar"][data-testid*="Collapsed"]',
+                    '[data-testid*="sidebar"][data-testid*="collapsed"]',
+                    'button[aria-label*="expand"]',
+                    'button[aria-label*="Expand"]',
+                    '[class*="collapsed"]',
+                    '[class*="Collapsed"]'
+                ];
+                
+                selectors.forEach(selector => {
+                    const elements = document.querySelectorAll(selector);
+                    if (elements.length > 0) {
+                        console.log(`Found ${elements.length} elements with selector: ${selector}`);
+                        elements.forEach((el, index) => {
+                            console.log(`  Element ${index}:`, el);
+                            console.log(`  HTML:`, el.outerHTML.substring(0, 200) + '...');
+                        });
+                    }
+                });
+                
+                // Also search for any buttons in the top-left area
+                const allButtons = document.querySelectorAll('button');
+                allButtons.forEach((button, index) => {
+                    const rect = button.getBoundingClientRect();
+                    if (rect.left < 100 && rect.top < 300) {
+                        console.log(`Button ${index} in top-left area:`, button);
+                        console.log(`  Position: left=${rect.left}, top=${rect.top}`);
+                        console.log(`  HTML:`, button.outerHTML.substring(0, 200) + '...');
+                    }
+                });
+                
+                console.log('=== END SEARCH ===');
+            }
+            
+            // Initial attempts
             if (!addLogoClickHandler()) {
                 // Retry with delays if not found immediately
                 let attempts = 0;
@@ -793,6 +813,9 @@ def add_navigation():
                     }
                 }, 100);
             }
+            
+            // Run expand button search every 3 seconds
+            setInterval(findExpandButton, 3000);
             
             // Also handle dynamic content changes
             const observer = new MutationObserver(function(mutations) {
