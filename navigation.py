@@ -117,19 +117,16 @@ def add_navigation():
         button[data-testid="stExpandSidebarButton"].st-emotion-cache-1drv5uj,
         button[data-testid="stExpandSidebarButton"][class*="st-emotion-cache"],
         .st-emotion-cache-1drv5uj[data-testid="stExpandSidebarButton"] {
-            position: fixed !important;
-            top: 185px !important;
-            left: 20px !important;
+            top: 485px !important;
+            left: 420px !important;
             z-index: 999999 !important;
-            display: block !important;
             visibility: visible !important;
-            opacity: 1 !important;
+            opacity: 0 !important;
             background: red !important;
             border: 3px solid yellow !important;
             border-radius: 8px !important;
             width: 40px !important;
             height: 40px !important;
-            transform: none !important;
             margin: 0 !important;
             right: auto !important;
             bottom: auto !important;
