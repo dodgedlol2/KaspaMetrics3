@@ -393,7 +393,8 @@ def add_navigation():
         /* Add custom hamburger icon - grey by default, purple on hover */
         div[data-testid="stSidebarCollapsedControl"] button::before,
         button[data-testid="collapsedControl"]::before {
-            content: "☰" !important;
+            content: "menu" !important;
+            font-family: 'Material Symbols Outlined' !important;
             font-size: 18px !important;
             color: #9ca3af !important;
             transition: all 0.3s ease !important;
