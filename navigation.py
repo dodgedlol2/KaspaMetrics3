@@ -112,21 +112,27 @@ def add_navigation():
             height: 40px !important;
         }
 
-        /* Expand button (>>) - When sidebar is collapsed */
-        button[data-testid="stExpandSidebarButton"] {
+        /* Expand button (>>) - MAXIMUM SPECIFICITY APPROACH */
+        html body .stApp button[data-testid="stExpandSidebarButton"],
+        button[data-testid="stExpandSidebarButton"].st-emotion-cache-1drv5uj,
+        button[data-testid="stExpandSidebarButton"][class*="st-emotion-cache"],
+        .st-emotion-cache-1drv5uj[data-testid="stExpandSidebarButton"] {
             position: fixed !important;
             top: 185px !important;
-            left: 120px !important; /* Position when sidebar is collapsed */
-            z-index: 99999999 !important;
+            left: 20px !important;
+            z-index: 999999 !important;
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
-            background: rgba(54, 54, 80, 0.8) !important;
-            border: 1px solid #363650 !important;
+            background: red !important;
+            border: 3px solid yellow !important;
             border-radius: 8px !important;
-            backdrop-filter: blur(10px) !important;
             width: 40px !important;
             height: 40px !important;
+            transform: none !important;
+            margin: 0 !important;
+            right: auto !important;
+            bottom: auto !important;
         }
 
         /* Style both buttons */
@@ -603,6 +609,39 @@ def add_navigation():
                 }
             }
             
+            // FORCE EXPAND BUTTON STYLING WITH JAVASCRIPT
+            function forceExpandButtonStyling() {
+                const expandBtn = document.querySelector('[data-testid="stExpandSidebarButton"]');
+                
+                if (expandBtn) {
+                    // Force styles directly via JavaScript
+                    Object.assign(expandBtn.style, {
+                        position: 'fixed',
+                        top: '185px',
+                        left: '20px',
+                        zIndex: '999999',
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: '1',
+                        background: 'red',
+                        border: '3px solid yellow',
+                        borderRadius: '8px',
+                        width: '40px',
+                        height: '40px',
+                        transform: 'none',
+                        margin: '0',
+                        right: 'auto',
+                        bottom: 'auto'
+                    });
+                    
+                    console.log('Expand button styling forced!');
+                    return true;
+                } else {
+                    console.log('Expand button not found');
+                    return false;
+                }
+            }
+            
             // Initial attempt
             if (!addLogoClickHandler()) {
                 // Retry with delays if not found immediately
@@ -615,9 +654,14 @@ def add_navigation():
                 }, 100);
             }
             
+            // Force expand button styling constantly
+            setInterval(forceExpandButtonStyling, 200);
+            
             // Also handle dynamic content changes
             const observer = new MutationObserver(function(mutations) {
                 let shouldCheck = false;
+                let shouldForceButton = false;
+                
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes.length > 0) {
                         // Check if any added nodes contain or are the logo
@@ -627,6 +671,12 @@ def add_navigation():
                                     node.querySelector && node.querySelector('.kaspa-logo')) {
                                     shouldCheck = true;
                                 }
+                                
+                                // Check for expand button
+                                if (node.dataset && node.dataset.testid === 'stExpandSidebarButton' ||
+                                    node.querySelector && node.querySelector('[data-testid="stExpandSidebarButton"]')) {
+                                    shouldForceButton = true;
+                                }
                             }
                         });
                     }
@@ -634,6 +684,10 @@ def add_navigation():
                 
                 if (shouldCheck) {
                     setTimeout(addLogoClickHandler, 10);
+                }
+                
+                if (shouldForceButton) {
+                    setTimeout(forceExpandButtonStyling, 10);
                 }
             });
             
