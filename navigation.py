@@ -831,70 +831,63 @@ def add_navigation():
     
     st.markdown(header_html, unsafe_allow_html=True)
     
-    # Add a hidden page_link that we can trigger via JavaScript
-    st.markdown("""
-    <style>
-    .hidden-logo-link {
-        display: none !important;
-        visibility: hidden !important;
-        position: absolute !important;
-        left: -9999px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    # Check for logo click via query params and navigate
+    if st.query_params.get("logo_nav") == "price":
+        # Clear the query param
+        st.query_params.clear()
+        st.switch_page("pages/3_💰_Spot_Price.py")
     
-    # Create hidden page link
-    with st.container():
-        st.markdown('<div class="hidden-logo-link">', unsafe_allow_html=True)
-        st.page_link("pages/3_💰_Spot_Price.py", label="Hidden Logo Link", help="Logo navigation")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    # JavaScript to handle logo clicks by triggering the hidden page_link
+    # JavaScript to handle logo clicks using query params
     st.markdown("""
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             function handleLogoClick(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                console.log('Logo clicked! Looking for hidden page link...');
+                console.log('Logo clicked! Using query params navigation...');
                 
-                // Find the hidden page_link and click it
-                const hiddenLink = document.querySelector('.hidden-logo-link a');
-                if (hiddenLink) {
-                    console.log('Found hidden link, clicking...');
-                    hiddenLink.click();
-                } else {
-                    console.log('Hidden link not found, falling back to direct navigation');
-                    // Fallback to current page approach but within same window
-                    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
-                    window.location.href = baseUrl + '/pages/3_💰_Spot_Price.py';
-                }
+                // Set query parameter and reload
+                const url = new URL(window.location);
+                url.searchParams.set('logo_nav', 'price');
+                
+                // Navigate to current page with query param to trigger Streamlit rerun
+                window.location.href = url.toString();
             }
             
             function addLogoClickHandler() {
                 const logo = document.querySelector('.kaspa-logo');
                 if (logo) {
+                    // Remove existing handlers
                     logo.removeEventListener('click', handleLogoClick);
+                    // Add new handler
                     logo.addEventListener('click', handleLogoClick, true);
                     logo.style.pointerEvents = 'auto';
-                    console.log('Logo click handler added successfully');
+                    logo.style.cursor = 'pointer';
+                    console.log('Logo click handler added with query params method');
                     return true;
                 }
                 return false;
             }
             
-            // Try to add handler multiple times
-            if (!addLogoClickHandler()) {
-                let attempts = 0;
-                const retryInterval = setInterval(() => {
-                    attempts++;
-                    if (addLogoClickHandler() || attempts > 30) {
-                        clearInterval(retryInterval);
-                    }
-                }, 100);
+            // Try immediately and with retries
+            let attempts = 0;
+            function tryAddHandler() {
+                if (addLogoClickHandler()) {
+                    console.log('Logo handler successfully added!');
+                    return;
+                }
+                
+                attempts++;
+                if (attempts < 50) {
+                    setTimeout(tryAddHandler, 100);
+                } else {
+                    console.log('Failed to add logo handler after 50 attempts');
+                }
             }
             
-            // Watch for dynamic changes
+            tryAddHandler();
+            
+            // Watch for DOM changes
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes.length > 0) {
@@ -902,14 +895,20 @@ def add_navigation():
                             if (node.nodeType === 1 && 
                                 (node.classList?.contains('kaspa-logo') || 
                                  node.querySelector?.('.kaspa-logo'))) {
-                                setTimeout(addLogoClickHandler, 10);
+                                setTimeout(() => {
+                                    addLogoClickHandler();
+                                    console.log('Re-added logo handler after DOM change');
+                                }, 50);
                             }
                         });
                     }
                 });
             });
             
-            observer.observe(document.body, { childList: true, subtree: true });
+            observer.observe(document.body, { 
+                childList: true, 
+                subtree: true 
+            });
         });
     </script>
     """, unsafe_allow_html=True)
