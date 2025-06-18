@@ -98,10 +98,12 @@ def load_open_interest_data():
         # Filter out any zero or invalid values
         df = df[df['Open_Interest_USD'] > 0]
         
-        # Calculate days from Kaspa genesis (Nov 28, 2022)
-        kaspa_genesis_date_v2 = datetime(2022, 11, 28)
+        # Define genesis dates
+        kaspa_genesis_date = datetime(2021, 11, 7)  # Original Kaspa genesis
+        kaspa_genesis_date_v2 = datetime(2022, 11, 28)  # Custom reference date
         oi_start_date = df['Date'].iloc[0]  # First OI data point
         
+        # Calculate days from different reference points
         df['days_from_kaspa_genesis'] = (df['Date'] - kaspa_genesis_date).dt.days  # Keep original for first chart
         df['days_from_kaspa_genesis_v2'] = (df['Date'] - kaspa_genesis_date_v2).dt.days  # New reference for second chart
         df['days_from_oi_start'] = (df['Date'] - oi_start_date).dt.days
@@ -911,9 +913,10 @@ else:
 
 st.markdown("""
 <div style="margin-top: 4rem;">
-    <div class='big-font' style="font-size: 40px;">Open Interest vs Kaspa Genesis V2</div>
+    <div class='big-font' style="font-size: 40px;">Open Interest vs Nov 28, 2022 Reference</div>
     <p style="color: #9CA3AF; font-size: 1.1rem; margin-bottom: 2rem;">
-        Power law analysis using November 28, 2022 as the reference point
+        Power law analysis using November 28, 2022 as reference point<br>
+        <span style="color: #F59E0B; font-size: 0.9rem;">⚠️ Note: No OI data exists between Nov 28, 2022 and Aug 4, 2023 (249-day gap)</span>
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -1008,9 +1011,12 @@ if not filtered_df_g.empty:
     if x_scale_type_g == "Log":
         x_values_g = filtered_df_g['days_from_kaspa_genesis_v2']
         x_title_g = "Days Since Nov 28, 2022 (Log Scale)"
+        # Add annotation about data gap
+        gap_note = f" | Gap: {249} days before first OI data"
     else:
         x_values_g = filtered_df_g['Date']
         x_title_g = "Date"
+        gap_note = ""
 
     # Calculate Y-axis range for genesis chart
     y_min_data_g = filtered_df_g['Open_Interest_USD'].min()
@@ -1088,9 +1094,9 @@ if not filtered_df_g.empty:
             y=y_fit_g,
             mode='lines',
             name='Power Law (Nov 28, 2022)',
-            line=dict(color='#F59E0B', width=2, dash='solid'),  # Amber color for genesis power law
+            line=dict(color='#F59E0B', width=2, dash='dot'),  # Dotted line to indicate gap
             showlegend=True,
-            hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:,.0f}<extra></extra>',
+            hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:,.0f}<br><i>Extrapolated from OI data</i><extra></extra>',
             hoverinfo='y+name' if x_scale_type_g == "Log" else 'x+y+name'
         ))
 
@@ -1106,7 +1112,7 @@ else:
 
 # Update genesis chart layout
 fig_genesis.update_layout(
-    xaxis_title=x_title_g if not filtered_df_g.empty else "Date",
+    xaxis_title=x_title_g + gap_note if not filtered_df_g.empty else "Date",
     yaxis_title="Open Interest (USD)",
     height=650,
     plot_bgcolor='rgba(0,0,0,0)',
@@ -1238,9 +1244,9 @@ st.markdown(f"""
         <div class="metric-change positive">Reference Date</div>
     </div>
     <div class="metric-card">
-        <div class="metric-label">OI Data Start</div>
-        <div class="metric-value">{oi_start_days_from_genesis_v2}</div>
-        <div class="metric-change positive">Days from Nov 28, 2022</div>
+        <div class="metric-label">Data Gap Period</div>
+        <div class="metric-value">249</div>
+        <div class="metric-change neutral" style="color: #F59E0B;">Days w/o OI data</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1250,14 +1256,15 @@ if not oi_df.empty:
     st.markdown(f"""
     <div style="margin-top: 3rem;">
         <h3 style="color: #FFFFFF; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; font-family: 'Inter', sans-serif;">
-            🔍 Power Law Comparison
+            🔍 Power Law Comparison & Data Gap Analysis
         </h3>
         <div style="background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%); border: 1px solid #363650; border-radius: 16px; padding: 2rem;">
             <div style="color: #9CA3AF; line-height: 1.6;">
                 <p><strong>📊 OI Start Reference:</strong> Power law slope: {b_oi:.4f}, R²: {r2_oi:.4f} (using Aug 4, 2023 as day 0)</p>
-                <p><strong>🚀 Genesis V2 Reference:</strong> Power law slope: {b_genesis:.4f}, R²: {r2_genesis:.4f} (using Nov 28, 2022 as day 0)</p>
+                <p><strong>🚀 Nov 28, 2022 Reference:</strong> Power law slope: {b_genesis:.4f}, R²: {r2_genesis:.4f} (using Nov 28, 2022 as day 0)</p>
                 <p><strong>🔄 Difference:</strong> Slope difference of {abs(b_oi - b_genesis):.4f}, showing {'similar' if abs(b_oi - b_genesis) < 0.1 else 'different'} growth patterns.</p>
-                <p><strong>⏰ Time Context:</strong> OI data started {oi_start_days_from_genesis_v2} days after Nov 28, 2022, representing the emergence of futures markets.</p>
+                <p><strong>⚠️ Data Gap:</strong> There is a 249-day gap between Nov 28, 2022 and Aug 4, 2023 with no OI data. The power law for the second chart is extrapolated.</p>
+                <p><strong>⏰ Time Context:</strong> OI data started {oi_start_days_from_genesis_v2} days after Nov 28, 2022. The second chart shows theoretical relationship if OI existed from Nov 28, 2022.</p>
             </div>
         </div>
     </div>
