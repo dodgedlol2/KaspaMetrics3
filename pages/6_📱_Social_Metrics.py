@@ -10,6 +10,8 @@ import sys
 import os
 from datetime import datetime, timedelta
 import re
+import requests
+from io import StringIO
 
 # Add parent directory to path for imports
 parent_dir = os.path.dirname(os.path.dirname(__file__))
@@ -40,10 +42,10 @@ def parse_currency(value_str):
     if not isinstance(value_str, str):
         return float(value_str) if pd.notna(value_str) else 0
     
-    # Remove currency symbol and quotes
+    # Remove currency symbol and trailing quotes/apostrophes
     clean_str = value_str.replace('$', '').replace("'", '').strip()
     
-    # Handle millions and thousands
+    # Handle millions, billions, and thousands
     if clean_str.endswith('M'):
         return float(clean_str[:-1]) * 1e6
     elif clean_str.endswith('K'):
@@ -57,173 +59,67 @@ def parse_currency(value_str):
         except:
             return 0
 
-# Function to load open interest data
+# Function to load open interest data from Google Sheets
 @st.cache_data
 def load_open_interest_data():
-    """Load and process open interest data from Google Sheets"""
+    """Load and process open interest data from Google Sheets CSV export"""
     try:
-        # For demo purposes, creating sample data based on the structure you provided
-        # In production, you would fetch from the Google Sheets API or CSV export
+        # Google Sheets CSV export URL
+        sheet_id = "1F9VGnVr3zdZF-6da4JuKG6KxQe5hGtph6xhB4vhu394"
+        gid = "0"  # Blad1 sheet
+        csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
         
-        # Sample data based on what was shown in the sheet
-        sample_data = [
-            ('4 Aug 2023, 02:00', '$548.54K'),
-            ('5 Aug 2023, 02:00', '$1.21M'),
-            ('6 Aug 2023, 02:00', '$1.33M'),
-            ('7 Aug 2023, 02:00', '$1.64M'),
-            ('8 Aug 2023, 02:00', '$2.07M'),
-            ('9 Aug 2023, 02:00', '$1.80M'),
-            ('10 Aug 2023, 02:00', '$1.92M'),
-            ('11 Aug 2023, 02:00', '$1.62M'),
-            ('12 Aug 2023, 02:00', '$1.86M'),
-            ('13 Aug 2023, 02:00', '$2.02M'),
-            ('14 Aug 2023, 02:00', '$2.28M'),
-            ('15 Aug 2023, 02:00', '$2.34M'),
-            ('16 Aug 2023, 02:00', '$1.98M'),
-            ('17 Aug 2023, 02:00', '$1.69M'),
-            ('18 Aug 2023, 02:00', '$1.52M'),
-            ('19 Aug 2023, 02:00', '$1.44M'),
-            ('20 Aug 2023, 02:00', '$1.70M'),
-            ('21 Aug 2023, 02:00', '$1.58M'),
-            ('22 Aug 2023, 02:00', '$1.60M'),
-            ('23 Aug 2023, 02:00', '$1.63M'),
-            ('24 Aug 2023, 02:00', '$1.51M'),
-            ('25 Aug 2023, 02:00', '$1.71M'),
-            ('26 Aug 2023, 02:00', '$1.51M'),
-            ('27 Aug 2023, 02:00', '$1.50M'),
-            ('28 Aug 2023, 02:00', '$1.55M'),
-            ('29 Aug 2023, 02:00', '$1.54M'),
-            ('30 Aug 2023, 02:00', '$1.53M'),
-            ('31 Aug 2023, 02:00', '$1.44M'),
-            ('1 Sep 2023, 02:00', '$1.39M'),
-            ('2 Sep 2023, 02:00', '$1.85M'),
-            ('3 Sep 2023, 02:00', '$2.19M'),
-            ('4 Sep 2023, 02:00', '$1.67M'),
-            ('5 Sep 2023, 02:00', '$1.94M'),
-            ('6 Sep 2023, 02:00', '$2.12M'),
-            ('7 Sep 2023, 02:00', '$2.86M'),
-            ('8 Sep 2023, 02:00', '$2.79M'),
-            ('9 Sep 2023, 02:00', '$2.36M'),
-            ('10 Sep 2023, 02:00', '$2.54M'),
-            ('11 Sep 2023, 02:00', '$2.61M'),
-            ('12 Sep 2023, 02:00', '$2.25M'),
-            ('13 Sep 2023, 02:00', '$2.76M'),
-            ('14 Sep 2023, 02:00', '$3.71M'),
-            ('15 Sep 2023, 02:00', '$3.13M'),
-            ('16 Sep 2023, 02:00', '$3.49M'),
-            ('17 Sep 2023, 02:00', '$3.14M'),
-            ('18 Sep 2023, 02:00', '$2.86M'),
-            ('19 Sep 2023, 02:00', '$3.44M'),
-            ('20 Sep 2023, 02:00', '$5.05M'),
-            ('21 Sep 2023, 02:00', '$4.22M'),
-            ('22 Sep 2023, 02:00', '$3.45M'),
-            ('23 Sep 2023, 02:00', '$3.54M'),
-            ('24 Sep 2023, 02:00', '$3.57M'),
-            ('25 Sep 2023, 02:00', '$4.21M'),
-            ('26 Sep 2023, 02:00', '$3.93M'),
-            ('27 Sep 2023, 02:00', '$3.97M'),
-            ('28 Sep 2023, 02:00', '$3.85M'),
-            ('29 Sep 2023, 02:00', '$3.99M'),
-            ('30 Sep 2023, 02:00', '$5.09M'),
-            ('1 Oct 2023, 02:00', '$5.15M'),
-            ('2 Oct 2023, 02:00', '$5.59M'),
-            ('3 Oct 2023, 02:00', '$4.92M'),
-            ('4 Oct 2023, 02:00', '$5.08M'),
-            ('5 Oct 2023, 02:00', '$4.69M'),
-            ('6 Oct 2023, 02:00', '$4.39M'),
-            ('7 Oct 2023, 02:00', '$4.13M'),
-            ('8 Oct 2023, 02:00', '$4.14M'),
-            ('9 Oct 2023, 02:00', '$4.09M'),
-            ('10 Oct 2023, 02:00', '$3.66M'),
-            ('11 Oct 2023, 02:00', '$5.04M'),
-            ('12 Oct 2023, 02:00', '$5.08M'),
-            ('13 Oct 2023, 02:00', '$5.56M'),
-            ('14 Oct 2023, 02:00', '$5.01M'),
-            ('15 Oct 2023, 02:00', '$5.21M'),
-            ('16 Oct 2023, 02:00', '$4.84M'),
-            ('17 Oct 2023, 02:00', '$5.14M'),
-            ('18 Oct 2023, 02:00', '$5.46M'),
-            ('19 Oct 2023, 02:00', '$4.87M'),
-            ('20 Oct 2023, 02:00', '$4.96M'),
-            ('21 Oct 2023, 02:00', '$5.18M'),
-            ('22 Oct 2023, 02:00', '$5.28M'),
-            ('23 Oct 2023, 02:00', '$5.42M'),
-            ('24 Oct 2023, 02:00', '$5.33M'),
-            ('25 Oct 2023, 02:00', '$5.44M'),
-            ('26 Oct 2023, 02:00', '$5.08M'),
-            ('27 Oct 2023, 02:00', '$5.02M'),
-            ('28 Oct 2023, 02:00', '$5.61M'),
-            ('29 Oct 2023, 02:00', '$5.58M'),
-            ('30 Oct 2023, 01:00', '$6.62M'),
-            ('31 Oct 2023, 01:00', '$6.57M'),
-            ('1 Nov 2023, 01:00', '$5.29M'),
-            ('2 Nov 2023, 01:00', '$6.93M'),
-            ('3 Nov 2023, 01:00', '$6.24M'),
-            ('4 Nov 2023, 01:00', '$6.84M'),
-            ('5 Nov 2023, 01:00', '$7.56M'),
-            ('6 Nov 2023, 01:00', '$7.20M'),
-            ('7 Nov 2023, 01:00', '$7.05M'),
-            ('8 Nov 2023, 01:00', '$7.69M'),
-            ('9 Nov 2023, 01:00', '$9.06M'),
-            ('10 Nov 2023, 01:00', '$12.72M'),
-        ]
+        # Fetch the CSV data
+        response = requests.get(csv_url)
+        response.raise_for_status()
         
-        # Extend with more recent data (simulated growth pattern)
-        current_date = datetime(2023, 11, 11)
-        last_value = 12.72e6
+        # Read CSV into DataFrame
+        csv_data = StringIO(response.text)
+        df = pd.read_csv(csv_data)
         
-        extended_data = []
-        for i in range(590):  # Extend to June 2025
-            # Simulate realistic growth with volatility
-            growth_factor = 1 + np.random.normal(0.002, 0.1)  # 0.2% daily growth with 10% volatility
-            last_value *= growth_factor
-            
-            # Add some trend - overall growth but with cycles
-            trend_factor = 1 + 0.001 * np.sin(i / 30.0)  # Monthly cycles
-            last_value *= trend_factor
-            
-            # Cap at reasonable values
-            last_value = max(1e6, min(last_value, 200e6))
-            
-            formatted_date = (current_date + timedelta(days=i)).strftime('%d %b %Y, %H:%M')
-            if last_value >= 1e6:
-                formatted_value = f"${last_value/1e6:.2f}M"
-            else:
-                formatted_value = f"${last_value/1e3:.2f}K"
-            
-            extended_data.append((formatted_date, formatted_value))
+        # Clean column names
+        df.columns = df.columns.str.strip()
         
-        # Combine all data
-        all_data = sample_data + extended_data
+        # Remove empty rows and clean data
+        df = df.dropna(subset=['date', 'Total_open_interest'])
         
-        # Create DataFrame
-        df = pd.DataFrame(all_data, columns=['Date', 'Open_Interest'])
+        # Clean date strings - remove time and trailing quotes
+        df['date'] = df['date'].str.replace(', 02:00\'', '').str.replace(', 01:00\'', '').str.replace('\'', '').str.strip()
         
         # Parse dates
-        df['Date'] = pd.to_datetime(df['Date'].str.replace("'", ""), format='%d %b %Y, %H:%M')
+        df['Date'] = pd.to_datetime(df['date'], format='%d %b %Y')
         
-        # Parse open interest values
-        df['Open_Interest_USD'] = df['Open_Interest'].apply(parse_currency)
+        # Parse open interest values and clean
+        df['Open_Interest_USD'] = df['Total_open_interest'].apply(parse_currency)
         
         # Remove duplicates and sort
         df = df.drop_duplicates(subset=['Date']).sort_values('Date').reset_index(drop=True)
         
-        # Calculate days from OI start (Aug 4, 2023)
-        oi_start_date = df['Date'].iloc[0]
+        # Filter out any zero or invalid values
+        df = df[df['Open_Interest_USD'] > 0]
+        
+        # Calculate days from Kaspa genesis (Nov 7, 2021)
+        kaspa_genesis_date = datetime(2021, 11, 7)
+        oi_start_date = df['Date'].iloc[0]  # First OI data point
+        
+        df['days_from_kaspa_genesis'] = (df['Date'] - kaspa_genesis_date).dt.days
         df['days_from_oi_start'] = (df['Date'] - oi_start_date).dt.days
         
-        return df, oi_start_date
+        return df, kaspa_genesis_date, oi_start_date
         
     except Exception as e:
         st.error(f"Failed to load open interest data: {str(e)}")
-        # Return empty dataframe
-        return pd.DataFrame(), None
+        # Return empty dataframe with correct structure
+        empty_df = pd.DataFrame(columns=['Date', 'Open_Interest_USD', 'days_from_kaspa_genesis', 'days_from_oi_start'])
+        kaspa_genesis_date = datetime(2021, 11, 7)
+        return empty_df, kaspa_genesis_date, None
 
 # Load open interest data
-if 'oi_df' not in st.session_state or 'oi_start_date' not in st.session_state:
-    st.session_state.oi_df, st.session_state.oi_start_date = load_open_interest_data()
+if 'oi_df' not in st.session_state or 'kaspa_genesis_date' not in st.session_state or 'oi_start_date' not in st.session_state:
+    st.session_state.oi_df, st.session_state.kaspa_genesis_date, st.session_state.oi_start_date = load_open_interest_data()
 
 oi_df = st.session_state.oi_df
+kaspa_genesis_date = st.session_state.kaspa_genesis_date
 oi_start_date = st.session_state.oi_start_date
 
 # Calculate power law if we have data
@@ -235,163 +131,6 @@ if not oi_df.empty and len(oi_df) > 10:
         a_oi, b_oi, r2_oi = 1, 1, 0
 else:
     a_oi, b_oi, r2_oi = 1, 1, 0
-
-# ====================== ATH CALCULATION AND LOGIC ======================
-def calculate_oi_ath_data(oi_df):
-    """Calculate All-Time High data for Open Interest"""
-    if oi_df.empty:
-        return None, None, None
-    
-    ath_idx = oi_df['Open_Interest_USD'].idxmax()
-    ath_oi = oi_df.loc[ath_idx, 'Open_Interest_USD']
-    ath_date = oi_df.loc[ath_idx, 'Date']
-    ath_days = oi_df.loc[ath_idx, 'days_from_oi_start']
-    
-    return ath_oi, ath_date, ath_days
-
-def add_oi_ath_to_chart(fig, filtered_df, ath_oi, ath_date, ath_days, x_scale_type):
-    """Add ATH point as scatter trace to the chart"""
-    if ath_oi is None:
-        return fig
-    
-    if x_scale_type == "Log":
-        # Find the ATH point within the filtered dataframe
-        ath_in_filtered = filtered_df[filtered_df['days_from_oi_start'] == ath_days]
-        
-        # Add ATH point as scatter trace
-        if not ath_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[ath_days],
-                y=[ath_oi],
-                mode='markers+text',
-                name='ATH',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
-                ),
-                text=[f'ATH ${ath_oi/1e6:.1f}M'],
-                textposition='top center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>All-Time High</b><br>Open Interest: $%{y:,.0f}<extra></extra>'
-            ))
-    else:
-        # For linear time scale, use dates
-        ath_in_filtered = filtered_df[filtered_df['Date'] == ath_date]
-        
-        # Add ATH point as scatter trace
-        if not ath_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[ath_date],
-                y=[ath_oi],
-                mode='markers+text',
-                name='ATH',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(91, 108, 255, 0.8)', width=2)
-                ),
-                text=[f'ATH ${ath_oi/1e6:.1f}M'],
-                textposition='top center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>All-Time High</b><br>Open Interest: $%{y:,.0f}<extra></extra>'
-            ))
-    
-    return fig
-
-# ====================== 1YL CALCULATION AND LOGIC ======================
-def calculate_oi_1yl_data(oi_df):
-    """Calculate One Year Low data for Open Interest"""
-    if oi_df.empty:
-        return None, None, None
-    
-    # One year low (last 365 days)
-    one_year_ago = oi_df['Date'].iloc[-1] - timedelta(days=365)
-    recent_year_df = oi_df[oi_df['Date'] >= one_year_ago]
-    
-    if not recent_year_df.empty:
-        oyl_idx = recent_year_df['Open_Interest_USD'].idxmin()
-        oyl_oi = recent_year_df.loc[oyl_idx, 'Open_Interest_USD']
-        oyl_date = recent_year_df.loc[oyl_idx, 'Date']
-        oyl_days = recent_year_df.loc[oyl_idx, 'days_from_oi_start']
-    else:
-        # Fallback to global minimum
-        oyl_idx = oi_df['Open_Interest_USD'].idxmin()
-        oyl_oi = oi_df.loc[oyl_idx, 'Open_Interest_USD']
-        oyl_date = oi_df.loc[oyl_idx, 'Date']
-        oyl_days = oi_df.loc[oyl_idx, 'days_from_oi_start']
-    
-    return oyl_oi, oyl_date, oyl_days
-
-def add_oi_1yl_to_chart(fig, filtered_df, oyl_oi, oyl_date, oyl_days, x_scale_type):
-    """Add 1YL point as scatter trace to the chart"""
-    if oyl_oi is None:
-        return fig
-    
-    if x_scale_type == "Log":
-        # Find the 1YL point within the filtered dataframe
-        oyl_in_filtered = filtered_df[filtered_df['days_from_oi_start'] == oyl_days]
-        
-        # Add 1YL point as scatter trace
-        if not oyl_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[oyl_days],
-                y=[oyl_oi],
-                mode='markers+text',
-                name='1YL',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
-                ),
-                text=[f'1YL ${oyl_oi/1e6:.1f}M'],
-                textposition='bottom center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>One Year Low</b><br>Open Interest: $%{y:,.0f}<extra></extra>'
-            ))
-    else:
-        # For linear time scale, use dates
-        oyl_in_filtered = filtered_df[filtered_df['Date'] == oyl_date]
-        
-        # Add 1YL point as scatter trace
-        if not oyl_in_filtered.empty:
-            fig.add_trace(go.Scatter(
-                x=[oyl_date],
-                y=[oyl_oi],
-                mode='markers+text',
-                name='1YL',
-                marker=dict(
-                    color='rgba(255, 255, 255, 0.9)',
-                    size=8,
-                    line=dict(color='rgba(239, 68, 68, 0.8)', width=2)
-                ),
-                text=[f'1YL ${oyl_oi/1e6:.1f}M'],
-                textposition='bottom center',
-                textfont=dict(
-                    size=11,
-                    color='white',
-                    family='Inter'
-                ),
-                showlegend=True,
-                hovertemplate='<b>One Year Low</b><br>Open Interest: $%{y:,.0f}<extra></extra>'
-            ))
-    
-    return fig
 
 st.markdown("""
 <style>
@@ -709,98 +448,6 @@ div[data-testid="stColumn"] * {
     margin-bottom: 3rem;
 }
 
-/* Analysis section */
-.analysis-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.analysis-card {
-    background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%);
-    border: 1px solid #363650;
-    border-radius: 16px;
-    padding: 2rem;
-}
-
-.section-title {
-    color: #FFFFFF;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    font-family: 'Inter', sans-serif;
-}
-
-/* Custom bullet points */
-.insights-list {
-    list-style: none;
-    padding: 0;
-}
-
-.insights-list li {
-    color: #9CA3AF;
-    margin-bottom: 0.75rem;
-    padding-left: 1.5rem;
-    position: relative;
-    line-height: 1.6;
-}
-
-.insights-list li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: #5B6CFF;
-    font-weight: 600;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .chart-controls {
-        flex-direction: column;
-        gap: 1.5rem;
-        padding: 1rem;
-    }
-    
-    .control-group {
-        width: 100%;
-    }
-    
-    .analysis-section {
-        grid-template-columns: 1fr;
-    }
-    
-    .metrics-container {
-        flex-direction: column;
-    }
-}
-
-# Override Streamlit's default styling */
-.stMetric {
-    background: none !important;
-}
-
-.stMetric > div {
-    background: none !important;
-}
-
-/* Custom modebar positioning - lower by 10px and left by 10px */
-.js-plotly-plot .plotly .modebar {
-    top: 10px !important;
-    right: 10px !important;
-}
-
-/* Make hover line thinner and more subtle */
-.js-plotly-plot .plotly .hoverline {
-    stroke-width: 1px !important;
-    opacity: 0.6 !important;
-}
-
-.js-plotly-plot .plotly .spikeline {
-    stroke-width: 1px !important;
-    opacity: 0.6 !important;
-}
-
 /* Hide Streamlit branding */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
@@ -925,10 +572,6 @@ def generate_oi_log_ticks(data_min, data_max):
     
     return major_ticks, intermediate_ticks, minor_ticks
 
-# Calculate ATH and 1YL data using separated functions
-ath_oi, ath_date, ath_days = calculate_oi_ath_data(oi_df)
-oyl_oi, oyl_date, oyl_days = calculate_oi_1yl_data(oi_df)
-
 # Enhanced chart with power law functionality and custom log grid lines
 fig = go.Figure()
 
@@ -936,35 +579,23 @@ if not filtered_df.empty:
     if x_scale_type == "Log":
         x_values = filtered_df['days_from_oi_start']
         x_title = "Days Since Open Interest Start (Log Scale)"
-        # For annotations
-        ath_x = ath_days
-        oyl_x = oyl_days
     else:
         x_values = filtered_df['Date']
         x_title = "Date"
-        # For annotations
-        ath_x = ath_date
-        oyl_x = oyl_date
 
-    # Calculate Y-axis range to eliminate gaps and accommodate ATH/1YL labels
+    # Calculate Y-axis range to eliminate gaps
     y_min_data = filtered_df['Open_Interest_USD'].min()
     y_max_data = filtered_df['Open_Interest_USD'].max()
-    
-    # Check if ATH/1YL points are in the current view to add extra padding for text
-    ath_in_view = ath_oi is not None and ath_days >= filtered_df['days_from_oi_start'].min() and ath_days <= filtered_df['days_from_oi_start'].max() if x_scale_type == "Log" else ath_oi is not None and ath_date >= filtered_df['Date'].min() and ath_date <= filtered_df['Date'].max()
-    oyl_in_view = oyl_oi is not None and oyl_days >= filtered_df['days_from_oi_start'].min() and oyl_days <= filtered_df['days_from_oi_start'].max() if x_scale_type == "Log" else oyl_oi is not None and oyl_date >= filtered_df['Date'].min() and oyl_date <= filtered_df['Date'].max()
     
     # Set manual minimum values for different scales
     if y_scale == "Log":
         # For log scale, set a sensible minimum that's lower than data min but not too extreme
         y_min_chart = y_min_data * 0.8  # 20% below minimum data point
-        # Add extra padding at top if ATH is visible (for text label)
-        y_max_chart = y_max_data * (1.50 if ath_in_view else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * 1.05  # 5% above maximum
     else:
-        # For linear scale, start from zero or slightly below data minimum
+        # For linear scale, start from zero
         y_min_chart = 0
-        # Add extra padding at top if ATH is visible (for text label) 
-        y_max_chart = y_max_data * (1.15 if ath_in_view else 1.05)  # Extra padding for ATH text
+        y_max_chart = y_max_data * 1.05  # 5% above maximum
 
     # Add open interest trace with appropriate fill method for each scale
     if y_scale == "Log" and not filtered_df.empty:
@@ -1020,7 +651,7 @@ if not filtered_df.empty:
             customdata=filtered_df[['Date', 'days_from_oi_start']].values if not filtered_df.empty else []
         ))
 
-    # Add power law if enabled with thinner line
+    # Add power law if enabled
     if show_power_law == "Show" and not filtered_df.empty and len(filtered_df) > 10:
         x_fit = filtered_df['days_from_oi_start']
         y_fit = a_oi * np.power(x_fit, b_oi)
@@ -1036,12 +667,6 @@ if not filtered_df.empty:
             hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:,.0f}<extra></extra>' if x_scale_type == "Linear" else '<b>%{fullData.name}</b><br>Fit: $%{y:,.0f}<extra></extra>',
             hoverinfo='y+name' if x_scale_type == "Log" else 'x+y+name'
         ))
-
-    # Add ATH using separated function
-    fig = add_oi_ath_to_chart(fig, filtered_df, ath_oi, ath_date, ath_days, x_scale_type)
-    
-    # Add 1YL using separated function
-    fig = add_oi_1yl_to_chart(fig, filtered_df, oyl_oi, oyl_date, oyl_days, x_scale_type)
 
 # Enhanced chart layout with custom logarithmic grid lines
 x_axis_config = dict(
@@ -1078,9 +703,6 @@ if x_scale_type == "Log" and not filtered_df.empty:
 elif x_scale_type == "Log":
     x_axis_config['type'] = 'log'
 
-# Empty annotations array since we're using scatter traces
-annotations = []
-
 fig.update_layout(
     xaxis_title=x_title if not filtered_df.empty else "Date",
     yaxis_title="Open Interest (USD)",
@@ -1096,7 +718,6 @@ fig.update_layout(
         align='left',
         namelength=-1
     ),
-    annotations=annotations,
     xaxis=dict(
         type="log" if x_scale_type == "Log" else None,
         showgrid=True,
@@ -1106,7 +727,7 @@ fig.update_layout(
             ticklen=6,
             gridcolor='rgba(255, 255, 255, 0.05)',
             gridwidth=0.5
-        ),
+        ) if x_scale_type == "Log" else dict(),
         tickformat="%b %Y" if x_scale_type == "Linear" else None,
         linecolor='#3A3C4A',
         zerolinecolor='#3A3C4A',
@@ -1202,12 +823,29 @@ if not oi_df.empty:
     total_days = (oi_df['Date'].iloc[-1] - oi_df['Date'].iloc[0]).days
     daily_growth_rate = ((current_oi / first_oi) ** (1/total_days) - 1) * 100 if total_days > 0 else 0
     
+    # Calculate days since Kaspa genesis for display
+    days_since_genesis = (oi_df['Date'].iloc[-1] - kaspa_genesis_date).days
+    days_since_oi_start = (oi_df['Date'].iloc[-1] - oi_start_date).days
+    
 else:
     current_oi = 50e6  # $50M fallback
     slope_pct_change = 2.5
     r2_pct_change = 1.8
     oi_pct_change = 15.2
     daily_growth_rate = 0.8
+    days_since_genesis = 1000
+    days_since_oi_start = 500
+
+# Display data information
+if not oi_df.empty and oi_start_date:
+    st.markdown(f"""
+    <div style="color: #9CA3AF; font-size: 0.9rem; margin-bottom: 2rem; text-align: center;">
+        📊 <strong>Data Range:</strong> {oi_start_date.strftime('%B %d, %Y')} to {oi_df['Date'].iloc[-1].strftime('%B %d, %Y')} 
+        | 🚀 <strong>Kaspa Genesis:</strong> {kaspa_genesis_date.strftime('%B %d, %Y')} 
+        | 📈 <strong>Total Data Points:</strong> {len(oi_df)}
+        | ⏱️ <strong>Days Since OI Start:</strong> {days_since_oi_start}
+    </div>
+    """, unsafe_allow_html=True)
 
 # Custom metrics cards with real OI data
 st.markdown(f"""
@@ -1215,22 +853,51 @@ st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Power-Law Slope</div>
         <div class="metric-value">{b_oi:.4f}</div>
-        <div class="metric-change {'positive' if slope_pct_change >= 0 else 'negative'}">{slope_pct_change:+.1f}%</div>
+        <div class="metric-change {'positive' if slope_pct_change >= 0 else 'negative'}">{slope_pct_change:+.1f}% (30d)</div>
     </div>
     <div class="metric-card">
         <div class="metric-label">Model Accuracy (R²)</div>
         <div class="metric-value">{r2_oi:.4f}</div>
-        <div class="metric-change {'positive' if r2_pct_change >= 0 else 'negative'}">{r2_pct_change:+.1f}%</div>
+        <div class="metric-change {'positive' if r2_pct_change >= 0 else 'negative'}">{r2_pct_change:+.1f}% (30d)</div>
     </div>
     <div class="metric-card">
         <div class="metric-label">Current Open Interest</div>
         <div class="metric-value">${current_oi/1e6:.1f}M</div>
-        <div class="metric-change {'positive' if oi_pct_change >= 0 else 'negative'}">{oi_pct_change:+.1f}%</div>
+        <div class="metric-change {'positive' if oi_pct_change >= 0 else 'negative'}">{oi_pct_change:+.1f}% (30d)</div>
     </div>
     <div class="metric-card">
         <div class="metric-label">Daily Growth Rate</div>
         <div class="metric-value">{daily_growth_rate:.2f}%</div>
-        <div class="metric-change {'positive' if daily_growth_rate >= 0 else 'negative'}">Since Aug '23</div>
+        <div class="metric-change {'positive' if daily_growth_rate >= 0 else 'negative'}">Since Start</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Data quality and insights section
+if not oi_df.empty:
+    st.markdown("""
+    <div style="margin-top: 3rem;">
+        <h3 style="color: #FFFFFF; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; font-family: 'Inter', sans-serif;">
+            📊 Data Insights
+        </h3>
+        <div style="background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%); border: 1px solid #363650; border-radius: 16px; padding: 2rem;">
+            <div style="color: #9CA3AF; line-height: 1.6;">
+    """, unsafe_allow_html=True)
+    
+    # Calculate some interesting statistics
+    max_oi = oi_df['Open_Interest_USD'].max()
+    min_oi = oi_df['Open_Interest_USD'].min()
+    avg_oi = oi_df['Open_Interest_USD'].mean()
+    growth_multiple = current_oi / oi_df['Open_Interest_USD'].iloc[0]
+    
+    st.markdown(f"""
+                <p><strong>📈 Growth Analysis:</strong> Open Interest has grown {growth_multiple:.1f}x from ${oi_df['Open_Interest_USD'].iloc[0]/1e6:.2f}M to ${current_oi/1e6:.1f}M over {days_since_oi_start} days.</p>
+                <p><strong>📊 Range:</strong> Minimum OI was ${min_oi/1e6:.2f}M, maximum reached ${max_oi/1e6:.1f}M, with an average of ${avg_oi/1e6:.1f}M.</p>
+                <p><strong>🔗 Power Law:</strong> The relationship follows a power law with exponent {b_oi:.4f} and R² of {r2_oi:.4f}, indicating {'strong' if r2_oi > 0.8 else 'moderate' if r2_oi > 0.6 else 'weak'} correlation.</p>
+                <p><strong>🚀 Since Kaspa Genesis:</strong> {days_since_genesis} days have passed since Kaspa's genesis block on November 7, 2021.</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.warning("⚠️ No data available. Please check the Google Sheets connection and data format.")
