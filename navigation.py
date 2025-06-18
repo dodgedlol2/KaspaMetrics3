@@ -323,13 +323,13 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* ENHANCED SIDEBAR CONTROLS - UNIFIED BUTTON CONTROL */
+        /* ENHANCED SIDEBAR CONTROLS - AGGRESSIVE POSITION OVERRIDE */
         
-        /* Single toggle button that handles both collapse and expand - Force fixed position */
+        /* Force the toggle button to ALWAYS stay visible and in the same spot */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: 185px !important;
-            left: 20px !important; /* Always on the left side */
+            left: 20px !important;
             z-index: 999999 !important;
             display: block !important;
             visibility: visible !important;
@@ -340,12 +340,28 @@ def add_navigation():
             backdrop-filter: blur(10px) !important;
             width: 40px !important;
             height: 40px !important;
-            transform: none !important; /* Prevent any transforms */
-            margin: 0 !important; /* Remove any margins */
+            /* AGGRESSIVE overrides to prevent Streamlit from moving it */
+            transform: translateX(0px) translateY(0px) !important;
+            margin: 0 !important;
+            right: auto !important;
+            bottom: auto !important;
+            /* Force it to stay put regardless of any Streamlit logic */
+            min-width: 40px !important;
+            max-width: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
         }
 
-        /* Style the unified toggle button */
+        /* Override any parent container positioning that might affect this button */
+        div[data-testid="stSidebarCollapseButton"] * {
+            position: relative !important;
+        }
+
+        /* Make sure the button itself doesn't get positioned elsewhere */
         div[data-testid="stSidebarCollapseButton"] button {
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
             background: transparent !important;
             border: none !important;
             color: #f1f5f9 !important;
@@ -356,9 +372,9 @@ def add_navigation():
             justify-content: center !important;
             cursor: pointer !important;
             pointer-events: auto !important;
-            position: relative !important;
             margin: 0 !important;
             padding: 0 !important;
+            transform: none !important;
         }
 
         /* Force icon visibility and styling */
@@ -369,9 +385,11 @@ def add_navigation():
             display: block !important;
             visibility: visible !important;
             font-size: 18px !important;
+            position: relative !important;
+            transform: none !important;
         }
 
-        /* Hover effect for the unified button */
+        /* Hover effect for the button */
         div[data-testid="stSidebarCollapseButton"]:hover {
             background: rgba(91, 108, 255, 0.15) !important;
             border-color: rgba(91, 108, 255, 0.4) !important;
@@ -383,7 +401,14 @@ def add_navigation():
             color: #8b9aff !important;
         }
 
-        /* Remove the old expand button styling since it's the same element */
+        /* Additional override: Force any transitions to be instant so we can see movement */
+        div[data-testid="stSidebarCollapseButton"] {
+            transition: none !important;
+        }
+
+        div[data-testid="stSidebarCollapseButton"] * {
+            transition: none !important;
+        }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
         .kaspa-logo-link {
