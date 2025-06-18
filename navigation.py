@@ -116,8 +116,8 @@ def add_navigation():
         button[data-testid="stExpandSidebarButton"] {
             position: fixed !important;
             top: 185px !important;
-            left: 20px !important; /* Position when sidebar is collapsed */
-            z-index: 999999 !important;
+            left: 120px !important; /* Position when sidebar is collapsed */
+            z-index: 99999999 !important;
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
