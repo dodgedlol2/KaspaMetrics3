@@ -325,11 +325,11 @@ def add_navigation():
         
         /* ENHANCED SIDEBAR CONTROLS - AGGRESSIVE POSITION OVERRIDE */
         
-        /* Force the toggle button to ALWAYS stay visible and in the same spot */
+        /* Force the toggle button to ALWAYS stay visible and in the same spot - MOVED 3CM RIGHT */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: 185px !important;
-            left: 20px !important;
+            left: 133px !important; /* Moved 3cm (113px) to the right: 20px + 113px = 133px */
             z-index: 999999 !important;
             display: block !important;
             visibility: visible !important;
