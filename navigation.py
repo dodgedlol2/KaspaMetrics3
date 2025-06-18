@@ -609,59 +609,85 @@ def add_navigation():
                 }
             }
             
-            // MAXIMUM FORCE EXPAND BUTTON POSITIONING - TARGET PARENT TRANSFORM
-            function forceExpandButtonStyling() {
-                // Find all buttons and look for the off-screen one
-                const buttons = document.querySelectorAll('button');
+            // CREATE CUSTOM EXPAND BUTTON - BYPASS STREAMLIT'S BROKEN BUTTON
+            function createCustomExpandButton() {
+                // Remove any existing custom expand button
+                const existingCustomBtn = document.getElementById('custom-expand-button');
+                if (existingCustomBtn) {
+                    existingCustomBtn.remove();
+                }
                 
-                buttons.forEach((btn, i) => {
-                    const rect = btn.getBoundingClientRect();
+                // Only create if sidebar is collapsed (original button should be invisible)
+                const originalExpandBtn = document.querySelector('[data-testid="stExpandSidebarButton"]');
+                if (originalExpandBtn) {
+                    const rect = originalExpandBtn.getBoundingClientRect();
                     
-                    // If button is off-screen to the left
-                    if (rect.left < -100 && rect.width > 0 && rect.height > 0) {
-                        console.log('Found off-screen button at:', rect.left, rect.top);
+                    // If original button has zero dimensions, it's collapsed - create our custom one
+                    if (rect.width === 0 && rect.height === 0) {
+                        console.log('Sidebar is collapsed, creating custom expand button');
                         
-                        // Find the parent with transform and remove it
-                        let parent = btn;
-                        let level = 0;
-                        while (parent && level < 10) {
-                            const styles = getComputedStyle(parent);
-                            
-                            // Check if this parent has a transform that's moving things left
-                            if (styles.transform && styles.transform.includes('matrix') && styles.transform.includes('-')) {
-                                console.log('Found problematic transform on:', parent.tagName, styles.transform);
-                                
-                                // Remove the transform
-                                parent.style.transform = 'none !important';
-                                console.log('Removed transform from parent');
-                            }
-                            
-                            parent = parent.parentElement;
-                            level++;
-                        }
+                        // Create our custom expand button
+                        const customExpandButton = document.createElement('button');
+                        customExpandButton.id = 'custom-expand-button';
+                        customExpandButton.innerHTML = '&gt;&gt;'; // >> symbol
                         
-                        // ALSO force the button position
-                        btn.style.cssText = `
-                            position: fixed !important; 
-                            top: 185px !important; 
-                            left: 20px !important; 
-                            background: red !important; 
-                            border: 5px solid yellow !important; 
-                            width: 40px !important; 
-                            height: 40px !important; 
-                            z-index: 999999 !important; 
-                            display: block !important; 
-                            visibility: visible !important; 
-                            opacity: 1 !important;
-                            transform: none !important;
-                            margin: 0 !important;
+                        // Style it to match your theme
+                        customExpandButton.style.cssText = `
+                            position: fixed !important;
+                            top: 185px !important;
+                            left: 20px !important;
+                            width: 40px !important;
+                            height: 40px !important;
+                            background: rgba(54, 54, 80, 0.8) !important;
+                            border: 1px solid #363650 !important;
+                            border-radius: 8px !important;
+                            backdrop-filter: blur(10px) !important;
+                            z-index: 999999 !important;
+                            font-size: 16px !important;
+                            color: #f1f5f9 !important;
+                            cursor: pointer !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            font-family: monospace !important;
+                            transition: all 0.3s ease !important;
                         `;
                         
-                        console.log('Forced button styling and removed parent transform');
+                        // Add hover effect
+                        customExpandButton.addEventListener('mouseenter', function() {
+                            this.style.background = 'rgba(91, 108, 255, 0.15)';
+                            this.style.borderColor = 'rgba(91, 108, 255, 0.4)';
+                            this.style.boxShadow = '0 4px 16px rgba(91, 108, 255, 0.15)';
+                            this.style.color = '#8b9aff';
+                        });
+                        
+                        customExpandButton.addEventListener('mouseleave', function() {
+                            this.style.background = 'rgba(54, 54, 80, 0.8)';
+                            this.style.borderColor = '#363650';
+                            this.style.boxShadow = 'none';
+                            this.style.color = '#f1f5f9';
+                        });
+                        
+                        // Add click functionality
+                        customExpandButton.addEventListener('click', function() {
+                            console.log('Custom expand button clicked!');
+                            
+                            // Click the original hidden button
+                            if (originalExpandBtn) {
+                                originalExpandBtn.click();
+                                console.log('Triggered original expand button');
+                            }
+                        });
+                        
+                        // Add to page
+                        document.body.appendChild(customExpandButton);
+                        console.log('Custom expand button created successfully');
+                        
+                        return true;
                     }
-                });
+                }
                 
-                return true;
+                return false;
             }
             
             // Initial attempt
@@ -676,13 +702,13 @@ def add_navigation():
                 }, 100);
             }
             
-            // Force expand button styling constantly
-            setInterval(forceExpandButtonStyling, 200);
+            // Create custom expand button when needed
+            setInterval(createCustomExpandButton, 500);
             
             // Also handle dynamic content changes
             const observer = new MutationObserver(function(mutations) {
                 let shouldCheck = false;
-                let shouldForceButton = false;
+                let shouldCheckButton = false;
                 
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes.length > 0) {
@@ -694,10 +720,10 @@ def add_navigation():
                                     shouldCheck = true;
                                 }
                                 
-                                // Check for expand button
+                                // Check for expand button changes
                                 if (node.dataset && node.dataset.testid === 'stExpandSidebarButton' ||
                                     node.querySelector && node.querySelector('[data-testid="stExpandSidebarButton"]')) {
-                                    shouldForceButton = true;
+                                    shouldCheckButton = true;
                                 }
                             }
                         });
@@ -708,8 +734,8 @@ def add_navigation():
                     setTimeout(addLogoClickHandler, 10);
                 }
                 
-                if (shouldForceButton) {
-                    setTimeout(forceExpandButtonStyling, 10);
+                if (shouldCheckButton) {
+                    setTimeout(createCustomExpandButton, 10);
                 }
             });
             
