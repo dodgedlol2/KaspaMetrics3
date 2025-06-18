@@ -611,10 +611,13 @@ def add_navigation():
             
             // UNIFIED SIDEBAR TOGGLE BUTTON - ONE BUTTON FOR BOTH FUNCTIONS
             function createUnifiedToggleButton() {
+                console.log('createUnifiedToggleButton function called!'); // DEBUG
+                
                 // Remove any existing toggle button
                 const existingToggle = document.getElementById('unified-sidebar-toggle');
                 if (existingToggle) {
                     existingToggle.remove();
+                    console.log('Removed existing toggle button'); // DEBUG
                 }
                 
                 console.log('Creating unified sidebar toggle button');
@@ -626,6 +629,8 @@ def add_navigation():
                 // Check sidebar state to determine initial icon
                 const sidebar = document.querySelector('[data-testid="stSidebar"]');
                 const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
+                
+                console.log('Sidebar collapsed state:', isCollapsed); // DEBUG
                 
                 // Set initial icon based on state
                 toggleButton.innerHTML = isCollapsed ? '☰' : '✕'; // Hamburger or X
@@ -721,7 +726,7 @@ def add_navigation():
                 return true;
             }
             
-            // Initial attempt
+            // Initial attempts with multiple timing strategies
             if (!addLogoClickHandler()) {
                 // Retry with delays if not found immediately
                 let attempts = 0;
@@ -733,8 +738,20 @@ def add_navigation():
                 }, 100);
             }
             
-            // Create unified toggle button once
-            setTimeout(createUnifiedToggleButton, 1000);
+            // Create unified toggle button with multiple attempts
+            createUnifiedToggleButton(); // Immediate attempt
+            setTimeout(createUnifiedToggleButton, 500); // Half second delay
+            setTimeout(createUnifiedToggleButton, 1000); // 1 second delay
+            setTimeout(createUnifiedToggleButton, 2000); // 2 second delay
+            
+            // Also try every 3 seconds in case page changes
+            setInterval(() => {
+                const existing = document.getElementById('unified-sidebar-toggle');
+                if (!existing) {
+                    console.log('Toggle button missing, recreating...');
+                    createUnifiedToggleButton();
+                }
+            }, 3000);
             
             // Also handle dynamic content changes
             const observer = new MutationObserver(function(mutations) {
