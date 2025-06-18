@@ -323,19 +323,26 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* Enhanced warning/info/success boxes in sidebar with house colors */
-        [data-testid="stSidebar"] .stAlert {
-            background: linear-gradient(135deg, 
-                rgba(54, 54, 80, 0.7) 0%, 
-                rgba(31, 31, 58, 0.85) 100%) !important;
-            /* UPDATED: New house style border color */
-            border: 1px solid #363650 !important;
-            border-radius: 8px !important;
-            backdrop-filter: blur(10px) !important;
-            color: #e2e8f0 !important;
-            box-shadow: 
-                0 2px 8px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+        /* ENHANCED SIDEBAR CONTROLS - Single functional button */
+        
+        /* Collapse button when sidebar is OPEN - Move it down by 100px */
+        div[data-testid="stSidebarCollapseButton"] {
+            position: fixed !important;
+            top: 185px !important;
+            left: calc(21rem - 2cm) !important;
+            z-index: 999999 !important;
+            background: transparent !important;
+            border: none !important;
+            backdrop-filter: none !important;
+        }
+
+        /* Make the collapse button completely invisible */
+        div[data-testid="stSidebarCollapseButton"] button {
+            background: transparent !important;
+            border: none !important;
+            opacity: 0 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
         
         /* ENHANCED HEADER STYLING WITH DATA MATRIX LOGO - NOW CLICKABLE */
