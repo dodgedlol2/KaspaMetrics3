@@ -901,3 +901,359 @@ if not oi_df.empty:
     """, unsafe_allow_html=True)
 else:
     st.warning("⚠️ No data available. Please check the Google Sheets connection and data format.")
+
+# ====================== SECOND CHART: GENESIS-BASED POWER LAW ======================
+
+st.markdown("""
+<div style="margin-top: 4rem;">
+    <div class='big-font' style="font-size: 40px;">Open Interest vs Kaspa Genesis</div>
+    <p style="color: #9CA3AF; font-size: 1.1rem; margin-bottom: 2rem;">
+        Power law analysis using Kaspa's genesis date (November 7, 2021) as the reference point
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+# Calculate power law using days from Kaspa genesis
+if not oi_df.empty and len(oi_df) > 10:
+    try:
+        a_genesis, b_genesis, r2_genesis = fit_power_law(oi_df, x_col='days_from_kaspa_genesis', y_col='Open_Interest_USD')
+    except Exception as e:
+        st.error(f"Failed to calculate genesis power law: {str(e)}")
+        a_genesis, b_genesis, r2_genesis = 1, 1, 0
+else:
+    a_genesis, b_genesis, r2_genesis = 1, 1, 0
+
+# GENESIS CHART CONTROLS
+st.markdown('<div class="chart-controls">', unsafe_allow_html=True)
+
+# Create the layout with proper spacing for genesis chart
+col1_g, col2_g, col3_g, spacer_g, col4_g = st.columns([0.8, 0.8, 0.8, 4, 1.2])
+
+with col1_g:
+    st.markdown('<div class="control-group"><div class="control-label">OI Scale</div>', unsafe_allow_html=True)
+    y_scale_g = st.segmented_control(
+        label="OI Scale Genesis",
+        options=["Linear", "Log"],
+        default="Log",
+        label_visibility="collapsed",
+        key="genesis_y_scale_segment"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col2_g:
+    st.markdown('<div class="control-group"><div class="control-label">Time Scale</div>', unsafe_allow_html=True)
+    x_scale_type_g = st.segmented_control(
+        label="Time Scale Genesis",
+        options=["Linear", "Log"],
+        default="Log",  # Default to Log for genesis chart
+        label_visibility="collapsed",
+        key="genesis_x_scale_segment"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col3_g:
+    st.markdown('<div class="control-group"><div class="control-label">Power Law</div>', unsafe_allow_html=True)
+    show_power_law_g = st.segmented_control(
+        label="Power Law Genesis",
+        options=["Hide", "Show"],
+        default="Show",
+        label_visibility="collapsed",
+        key="genesis_power_law_segment"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with spacer_g:
+    st.empty()
+
+with col4_g:
+    st.markdown('<div class="control-group"><div class="control-label">Time Period</div>', unsafe_allow_html=True)
+    time_range_g = st.segmented_control(
+        label="Time Period Genesis",
+        options=["1M", "3M", "6M", "1Y", "All"],
+        default="All",
+        label_visibility="collapsed",
+        key="genesis_time_range_segment"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Data filtering for genesis chart based on time range
+if not oi_df.empty:
+    last_date_g = oi_df['Date'].iloc[-1]
+    if time_range_g == "1M":
+        start_date_g = last_date_g - timedelta(days=30)
+    elif time_range_g == "3M":
+        start_date_g = last_date_g - timedelta(days=90)
+    elif time_range_g == "6M":
+        start_date_g = last_date_g - timedelta(days=180)
+    elif time_range_g == "1Y":
+        start_date_g = last_date_g - timedelta(days=365)
+    else:  # "All"
+        start_date_g = oi_df['Date'].iloc[0]
+
+    filtered_df_g = oi_df[oi_df['Date'] >= start_date_g]
+else:
+    filtered_df_g = oi_df
+
+# Create the genesis chart
+fig_genesis = go.Figure()
+
+if not filtered_df_g.empty:
+    if x_scale_type_g == "Log":
+        x_values_g = filtered_df_g['days_from_kaspa_genesis']
+        x_title_g = "Days Since Kaspa Genesis (Log Scale)"
+    else:
+        x_values_g = filtered_df_g['Date']
+        x_title_g = "Date"
+
+    # Calculate Y-axis range for genesis chart
+    y_min_data_g = filtered_df_g['Open_Interest_USD'].min()
+    y_max_data_g = filtered_df_g['Open_Interest_USD'].max()
+    
+    if y_scale_g == "Log":
+        y_min_chart_g = y_min_data_g * 0.8
+        y_max_chart_g = y_max_data_g * 1.05
+    else:
+        y_min_chart_g = 0
+        y_max_chart_g = y_max_data_g * 1.05
+
+    # Add open interest trace for genesis chart
+    if y_scale_g == "Log" and not filtered_df_g.empty:
+        # Invisible baseline for log scale
+        fig_genesis.add_trace(go.Scatter(
+            x=x_values_g,
+            y=[y_min_chart_g] * len(x_values_g),
+            mode='lines',
+            name='baseline',
+            line=dict(color='rgba(0,0,0,0)', width=0),
+            showlegend=False,
+            hoverinfo='skip',
+            fill=None
+        ))
+        
+        # Open Interest trace
+        fig_genesis.add_trace(go.Scatter(
+            x=x_values_g,
+            y=filtered_df_g['Open_Interest_USD'],
+            mode='lines',
+            name='Kaspa Open Interest',
+            line=dict(color='#8B5CF6', width=2),  # Purple color for genesis chart
+            fill='tonexty',
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(13, 13, 26, 0.01)"],
+                    [1, "rgba(139, 92, 246, 0.6)"]  # Purple fill
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<br>Days since Genesis: %{x}<extra></extra>' if x_scale_type_g == "Log" else '<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<extra></extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df_g['Date']] if not filtered_df_g.empty else [],
+            customdata=filtered_df_g[['Date', 'days_from_kaspa_genesis']].values if not filtered_df_g.empty else []
+        ))
+    else:
+        # Linear scale
+        fig_genesis.add_trace(go.Scatter(
+            x=x_values_g,
+            y=filtered_df_g['Open_Interest_USD'],
+            mode='lines',
+            name='Kaspa Open Interest',
+            line=dict(color='#8B5CF6', width=2),  # Purple color
+            fill='tozeroy',
+            fillgradient=dict(
+                type="vertical",
+                colorscale=[
+                    [0, "rgba(13, 13, 26, 0.01)"],
+                    [1, "rgba(139, 92, 246, 0.6)"]  # Purple fill
+                ]
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<br>Days since Genesis: %{customdata[1]}<extra></extra>' if x_scale_type_g == "Log" else '<b>%{fullData.name}</b><br>Open Interest: $%{y:,.0f}<extra></extra>',
+            text=[f"{d.strftime('%B %d, %Y')}" for d in filtered_df_g['Date']] if not filtered_df_g.empty else [],
+            customdata=filtered_df_g[['Date', 'days_from_kaspa_genesis']].values if not filtered_df_g.empty else []
+        ))
+
+    # Add genesis power law if enabled
+    if show_power_law_g == "Show" and not filtered_df_g.empty and len(filtered_df_g) > 10:
+        x_fit_g = filtered_df_g['days_from_kaspa_genesis']
+        y_fit_g = a_genesis * np.power(x_fit_g, b_genesis)
+        fit_x_g = x_fit_g if x_scale_type_g == "Log" else filtered_df_g['Date']
+
+        fig_genesis.add_trace(go.Scatter(
+            x=fit_x_g,
+            y=y_fit_g,
+            mode='lines',
+            name='Power Law (Genesis)',
+            line=dict(color='#F59E0B', width=2, dash='solid'),  # Amber color for genesis power law
+            showlegend=True,
+            hovertemplate='<b>%{fullData.name}</b><br>Fit: $%{y:,.0f}<extra></extra>',
+            hoverinfo='y+name' if x_scale_type_g == "Log" else 'x+y+name'
+        ))
+
+# Generate custom ticks for genesis chart Y-axis if log scale
+if y_scale_g == "Log" and not filtered_df_g.empty:
+    y_major_ticks_g, y_intermediate_ticks_g, y_minor_ticks_g = generate_oi_log_ticks(y_min_chart_g, y_max_chart_g)
+    y_tick_vals_g = sorted(y_major_ticks_g + y_intermediate_ticks_g)
+    y_tick_text_g = [format_oi(val) for val in y_tick_vals_g]
+else:
+    y_tick_vals_g = None
+    y_tick_text_g = None
+    y_minor_ticks_g = []
+
+# Update genesis chart layout
+fig_genesis.update_layout(
+    xaxis_title=x_title_g if not filtered_df_g.empty else "Date",
+    yaxis_title="Open Interest (USD)",
+    height=650,
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='#9CA3AF', family='Inter'),
+    hovermode='x unified',
+    hoverlabel=dict(
+        bgcolor='rgba(15, 20, 25, 0.95)',
+        bordercolor='rgba(139, 92, 246, 0.5)',  # Purple border for genesis
+        font=dict(color='#e2e8f0', size=11),
+        align='left',
+        namelength=-1
+    ),
+    xaxis=dict(
+        type="log" if x_scale_type_g == "Log" else None,
+        showgrid=True,
+        gridwidth=1,
+        gridcolor='rgba(255, 255, 255, 0.1)',
+        minor=dict(
+            ticklen=6,
+            gridcolor='rgba(255, 255, 255, 0.05)',
+            gridwidth=0.5
+        ) if x_scale_type_g == "Log" else dict(),
+        tickformat="%b %Y" if x_scale_type_g == "Linear" else None,
+        linecolor='#3A3C4A',
+        zerolinecolor='#3A3C4A',
+        color='#9CA3AF',
+        hoverformat='%B %d, %Y' if x_scale_type_g == "Linear" else None,
+        range=[
+            np.log10(filtered_df_g['days_from_kaspa_genesis'].min()) if x_scale_type_g == "Log" and not filtered_df_g.empty else filtered_df_g['Date'].min() if not filtered_df_g.empty else None,
+            np.log10(filtered_df_g['days_from_kaspa_genesis'].max()) if x_scale_type_g == "Log" and not filtered_df_g.empty else filtered_df_g['Date'].max() if not filtered_df_g.empty else None
+        ] if not filtered_df_g.empty else None
+    ),
+    yaxis=dict(
+        gridcolor='#363650',
+        gridwidth=1,
+        color='#9CA3AF',
+        type="log" if y_scale_g == "Log" else "linear",
+        range=[np.log10(y_min_chart_g), np.log10(y_max_chart_g)] if y_scale_g == "Log" and not filtered_df_g.empty else [y_min_chart_g, y_max_chart_g] if not filtered_df_g.empty else None,
+        tickmode='array' if y_scale_g == "Log" and y_tick_vals_g else 'auto',
+        tickvals=y_tick_vals_g,
+        ticktext=y_tick_text_g,
+        minor=dict(
+            showgrid=True,
+            gridwidth=0.5,
+            gridcolor='rgba(54, 54, 80, 0.3)',
+            tickmode='array',
+            tickvals=y_minor_ticks_g if y_scale_g == "Log" else []
+        ) if y_scale_g == "Log" else dict()
+    ),
+    showlegend=True,
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="left",
+        x=0,
+        bgcolor='rgba(0,0,0,0)',
+        bordercolor='rgba(0,0,0,0)',
+        borderwidth=0,
+        font=dict(size=11)
+    ),
+    margin=dict(l=50, r=20, t=20, b=50),
+    modebar=dict(
+        orientation="h",
+        bgcolor="rgba(0,0,0,0)",
+        color="#9CA3AF",
+        activecolor="#8B5CF6"  # Purple for genesis theme
+    )
+)
+
+st.plotly_chart(fig_genesis, use_container_width=True, config={
+    'displayModeBar': True,
+    'displaylogo': False,
+    'modeBarButtonsToRemove': ['lasso2d', 'select2d'],
+    'modeBarButtonsToAdd': ['hoverclosest', 'hovercompare'],
+    'toImageButtonOptions': {
+        'format': 'png',
+        'filename': f'kaspa_oi_genesis_analysis_{datetime.now().strftime("%Y%m%d_%H%M")}',
+        'height': 650,
+        'width': 1400,
+        'scale': 2
+    }
+})
+
+# Genesis-based metrics
+if not oi_df.empty:
+    # Calculate 30-day metrics for genesis power law
+    df_30_days_ago_g = oi_df[oi_df['Date'] <= thirty_days_ago]
+    
+    if len(df_30_days_ago_g) > 10:
+        try:
+            a_genesis_30d, b_genesis_30d, r2_genesis_30d = fit_power_law(df_30_days_ago_g, x_col='days_from_kaspa_genesis', y_col='Open_Interest_USD')
+            slope_pct_change_g = ((b_genesis - b_genesis_30d) / abs(b_genesis_30d)) * 100 if b_genesis_30d != 0 else 0
+            r2_pct_change_g = ((r2_genesis - r2_genesis_30d) / r2_genesis_30d) * 100 if r2_genesis_30d != 0 else 0
+        except:
+            slope_pct_change_g = 0
+            r2_pct_change_g = 0
+    else:
+        slope_pct_change_g = 0
+        r2_pct_change_g = 0
+        
+    # Days from genesis metrics
+    current_days_from_genesis = days_since_genesis
+    oi_start_days_from_genesis = (oi_start_date - kaspa_genesis_date).days if oi_start_date else 0
+    
+else:
+    slope_pct_change_g = 1.8
+    r2_pct_change_g = 2.1
+    current_days_from_genesis = 1000
+    oi_start_days_from_genesis = 600
+
+# Genesis-based metrics cards
+st.markdown(f"""
+<div class="metrics-container">
+    <div class="metric-card">
+        <div class="metric-label">Genesis Power-Law Slope</div>
+        <div class="metric-value">{b_genesis:.4f}</div>
+        <div class="metric-change {'positive' if slope_pct_change_g >= 0 else 'negative'}">{slope_pct_change_g:+.1f}% (30d)</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Genesis Model R²</div>
+        <div class="metric-value">{r2_genesis:.4f}</div>
+        <div class="metric-change {'positive' if r2_pct_change_g >= 0 else 'negative'}">{r2_pct_change_g:+.1f}% (30d)</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Days Since Genesis</div>
+        <div class="metric-value">{current_days_from_genesis}</div>
+        <div class="metric-change positive">Nov 7, 2021</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">OI Data Start</div>
+        <div class="metric-value">{oi_start_days_from_genesis}</div>
+        <div class="metric-change positive">Days from Genesis</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Comparison analysis
+if not oi_df.empty:
+    st.markdown(f"""
+    <div style="margin-top: 3rem;">
+        <h3 style="color: #FFFFFF; font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; font-family: 'Inter', sans-serif;">
+            🔍 Power Law Comparison
+        </h3>
+        <div style="background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%); border: 1px solid #363650; border-radius: 16px; padding: 2rem;">
+            <div style="color: #9CA3AF; line-height: 1.6;">
+                <p><strong>📊 OI Start Reference:</strong> Power law slope: {b_oi:.4f}, R²: {r2_oi:.4f} (using Aug 4, 2023 as day 0)</p>
+                <p><strong>🚀 Genesis Reference:</strong> Power law slope: {b_genesis:.4f}, R²: {r2_genesis:.4f} (using Nov 7, 2021 as day 0)</p>
+                <p><strong>🔄 Difference:</strong> Slope difference of {abs(b_oi - b_genesis):.4f}, showing {'similar' if abs(b_oi - b_genesis) < 0.1 else 'different'} growth patterns.</p>
+                <p><strong>⏰ Time Context:</strong> OI data started {oi_start_days_from_genesis} days after Kaspa's genesis, representing the emergence of futures markets.</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
