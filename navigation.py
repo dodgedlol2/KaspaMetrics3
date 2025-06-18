@@ -323,13 +323,13 @@ def add_navigation():
             color: #cbd5e1 !important;
         }
         
-        /* ENHANCED SIDEBAR CONTROLS - AGGRESSIVE POSITION OVERRIDE */
+        /* ENHANCED SIDEBAR CONTROLS - SEPARATE CONTROL FOR BOTH BUTTONS */
         
-        /* Force the toggle button to ALWAYS stay visible and in the same spot - MOVED 3CM RIGHT */
+        /* Collapse button (<<) - Force position when sidebar is open */
         div[data-testid="stSidebarCollapseButton"] {
             position: fixed !important;
             top: 185px !important;
-            left: 133px !important; /* Moved 3cm (113px) to the right: 20px + 113px = 133px */
+            left: 133px !important;
             z-index: 999999 !important;
             display: block !important;
             visibility: visible !important;
@@ -340,16 +340,64 @@ def add_navigation():
             backdrop-filter: blur(10px) !important;
             width: 40px !important;
             height: 40px !important;
-            /* AGGRESSIVE overrides to prevent Streamlit from moving it */
             transform: translateX(0px) translateY(0px) !important;
             margin: 0 !important;
             right: auto !important;
             bottom: auto !important;
-            /* Force it to stay put regardless of any Streamlit logic */
             min-width: 40px !important;
             max-width: 40px !important;
             min-height: 40px !important;
             max-height: 40px !important;
+        }
+
+        /* EXPAND BUTTON (>>) - Target it when hidden behind header */
+        
+        /* Try multiple selectors for the expand button */
+        div[data-testid="stSidebarCollapsedControl"],
+        button[data-testid="collapsedControl"],
+        div[data-testid="stSidebarCollapseButton"][style*="left: 0"],
+        div[data-testid="stSidebarCollapseButton"][style*="left: -"],
+        div[data-testid="stSidebarCollapseButton"][style*="top: 0"],
+        div[data-testid="stSidebarCollapseButton"][style*="top: 1"],
+        div[data-testid="stSidebarCollapseButton"][style*="top: 2"],
+        div[data-testid="stSidebarCollapseButton"][style*="top: 3"],
+        div[data-testid="stSidebarCollapseButton"][style*="top: 4"],
+        div[data-testid="stSidebarCollapseButton"][style*="top: 5"] {
+            position: fixed !important;
+            top: 185px !important;
+            left: 20px !important;
+            z-index: 999999 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: rgba(54, 54, 80, 0.8) !important;
+            border: 1px solid #363650 !important;
+            border-radius: 8px !important;
+            backdrop-filter: blur(10px) !important;
+            width: 40px !important;
+            height: 40px !important;
+            transform: none !important;
+            margin: 0 !important;
+        }
+
+        /* Force any button that's positioned at the very top to move down */
+        div[data-testid*="Sidebar"]:not([data-testid="stSidebar"]) {
+            position: fixed !important;
+            top: 185px !important;
+            left: 20px !important;
+            z-index: 999999 !important;
+        }
+
+        /* Target any element that might be the expand button based on position */
+        div[style*="position: fixed"][style*="top: 0"],
+        div[style*="position: fixed"][style*="top: 1"],
+        div[style*="position: fixed"][style*="top: 2"],
+        div[style*="position: fixed"][style*="top: 3"],
+        div[style*="position: fixed"][style*="top: 4"],
+        div[style*="position: fixed"][style*="top: 5"] {
+            top: 185px !important;
+            left: 20px !important;
+            z-index: 999999 !important;
         }
 
         /* Override any parent container positioning that might affect this button */
