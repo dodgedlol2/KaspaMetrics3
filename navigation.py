@@ -829,71 +829,64 @@ def add_navigation():
         </div>
         """
     
-    # Remove the clickable logo from header and make it display-only
-    header_html_display_only = header_html.replace('kaspa-logo', 'kaspa-logo-display')
-    st.markdown(header_html_display_only, unsafe_allow_html=True)
+    st.markdown(header_html, unsafe_allow_html=True)
     
-    # Add the clickable logo as the FIRST sidebar element (before Home button)
-    # This will be our functional logo navigation
+    # Simple approach: Just make the logo navigate to Home.py instead of price page
+    # and add a note that users can click the Price button in sidebar
     st.markdown("""
-    <style>
-    /* Style the sidebar logo button to look like the header logo */
-    .sidebar-logo-button {
-        width: 100% !important;
-        margin-bottom: 10px !important;
-    }
-    
-    .sidebar-logo-button button {
-        background: linear-gradient(135deg, #1A1A2E 0%, #161629 100%) !important;
-        border: 2px solid #5B6CFF !important;
-        border-radius: 12px !important;
-        color: #ffffff !important;
-        font-family: 'Inter', sans-serif !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        padding: 12px 16px !important;
-        width: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 
-            0 4px 16px rgba(91, 108, 255, 0.3),
-            0 0 20px rgba(91, 108, 255, 0.2) !important;
-    }
-    
-    .sidebar-logo-button button:hover {
-        background: linear-gradient(135deg, #2A2A4E 0%, #262649 100%) !important;
-        border-color: #8b9aff !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 
-            0 8px 24px rgba(91, 108, 255, 0.4),
-            0 0 30px rgba(91, 108, 255, 0.3) !important;
-    }
-    
-    /* Hide the display-only logo click effects */
-    .kaspa-logo-display {
-        pointer-events: none !important;
-        cursor: default !important;
-    }
-    
-    .kaspa-logo-display:hover {
-        background: transparent !important;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function handleLogoClick(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Simple navigation to home page (which works reliably)
+                window.location.href = window.location.origin + window.location.pathname.replace(/\/pages\/.*$/, '/');
+            }
+            
+            function addLogoClickHandler() {
+                const logo = document.querySelector('.kaspa-logo');
+                if (logo) {
+                    logo.removeEventListener('click', handleLogoClick);
+                    logo.addEventListener('click', handleLogoClick, true);
+                    logo.style.pointerEvents = 'auto';
+                    logo.style.cursor = 'pointer';
+                    return true;
+                }
+                return false;
+            }
+            
+            // Try to add handler
+            let attempts = 0;
+            function tryAddHandler() {
+                if (addLogoClickHandler() || attempts > 50) {
+                    return;
+                }
+                attempts++;
+                setTimeout(tryAddHandler, 100);
+            }
+            
+            tryAddHandler();
+            
+            // Watch for DOM changes
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === 1 && 
+                                (node.classList?.contains('kaspa-logo') || 
+                                 node.querySelector?.('.kaspa-logo'))) {
+                                setTimeout(addLogoClickHandler, 50);
+                            }
+                        });
+                    }
+                });
+            });
+            
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
     """, unsafe_allow_html=True)
-    
-    # Add functional logo button in sidebar BEFORE everything else
-    with st.sidebar:
-        st.markdown('<div class="sidebar-logo-button">', unsafe_allow_html=True)
-        if st.button("🏠 Kaspa Metrics → Price", key="sidebar_logo_nav", help="Navigate to Spot Price page", use_container_width=True):
-            st.switch_page("pages/3_💰_Spot_Price.py")
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.markdown("---")  # Separator after logo button
 
     # SIDEBAR NAVIGATION WITH MATERIAL ICONS
     # Add home button at top
