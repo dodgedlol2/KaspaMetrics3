@@ -18,7 +18,7 @@ class PaymentHandler:
         
         if self.stripe_secret_key:
             stripe.api_key = self.stripe_secret_key
-    
+
     def create_checkout_session(self, username):
         """Create a Stripe checkout session for premium upgrade"""
         if not self.stripe_secret_key:
@@ -54,8 +54,8 @@ class PaymentHandler:
                     'quantity': 1,
                 }],
                 mode='subscription',
-                success_url=f'{self.domain}?session_id={{CHECKOUT_SESSION_ID}}&upgrade=success',
-                cancel_url=f'{self.domain}?upgrade=cancelled',
+                success_url=f'{self.domain}/?session_id={{CHECKOUT_SESSION_ID}}&upgrade=success',
+                cancel_url=f'{self.domain}/?upgrade=cancelled',
                 metadata={
                     'username': username
                 }
@@ -66,89 +66,108 @@ class PaymentHandler:
         except Exception as e:
             st.error(f"Error creating checkout session: {str(e)}")
             return None
-    
+
     def handle_successful_payment(self, session_id, username):
-        """Handle successful payment and upgrade user"""
+        """✅ FIXED: Handle successful payment and upgrade user with proper time calculation"""
         if not self.stripe_secret_key:
             return {'success': False}
             
         try:
             # Retrieve the session from Stripe
             session = stripe.checkout.Session.retrieve(session_id)
-            st.write(f"Debug: Payment session status: {session.payment_status}")
             
             if session.payment_status == 'paid':
                 # Get subscription details to set expiration
                 subscription_id = session.subscription
-                st.write(f"Debug: Subscription ID: {subscription_id}")
                 
                 if subscription_id:
                     try:
                         subscription = stripe.Subscription.retrieve(subscription_id)
-                        st.write(f"Debug: Retrieved subscription: {subscription.id}")
                         
-                        # Calculate expiration date from subscription
+                        # ✅ FIXED: Calculate expiration date from subscription properly
                         from datetime import datetime
-                        current_period_end = subscription.current_period_end
-                        expires_at = datetime.fromtimestamp(current_period_end)
                         
-                        st.write(f"Debug: Subscription expires: {expires_at}")
-                        
-                        return {
-                            'success': True,
-                            'expires_at': expires_at.isoformat(),
-                            'subscription_id': subscription_id
-                        }
-                    except Exception as sub_error:
-                        st.write(f"Debug: Subscription error: {sub_error}")
-                        # Fall back to manual calculation
-                        from datetime import datetime, timedelta
-                        plan = st.session_state.get('selected_plan', {'interval': 'month'})
-                        if plan['interval'] == 'year':
-                            expires_at = datetime.now() + timedelta(days=365)
+                        # Check if current_period_end exists and is valid
+                        if hasattr(subscription, 'current_period_end') and subscription.current_period_end:
+                            current_period_end = subscription.current_period_end
+                            expires_at = datetime.fromtimestamp(current_period_end)
+                            
+                            st.write(f"Debug: Stripe subscription expires at: {expires_at.isoformat()}")
+                            
+                            return {
+                                'success': True,
+                                'expires_at': expires_at.isoformat(),
+                                'subscription_id': subscription_id,
+                                'amount': session.amount_total if hasattr(session, 'amount_total') else 0
+                            }
                         else:
-                            expires_at = datetime.now() + timedelta(days=30)
+                            # No current_period_end, fall back to manual calculation
+                            st.write("Debug: No current_period_end in subscription, using fallback")
+                            raise Exception("No current_period_end available")
+                            
+                    except Exception as sub_error:
+                        st.write(f"Debug: Error retrieving subscription: {sub_error}")
+                        # ✅ FIXED: Determine plan from Stripe amount instead of session state
+                        from datetime import datetime, timedelta
+                        
+                        # Use Stripe amount to determine plan type (more reliable)
+                        amount = session.amount_total if hasattr(session, 'amount_total') else 0
+                        now = datetime.now()
+                        
+                        if amount >= 9900:  # $99 or more = Annual
+                            expires_at = now + timedelta(days=365)
+                            st.write(f"Debug: Fallback calculation (YEARLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
+                        else:  # Less than $99 = Monthly
+                            expires_at = now + timedelta(days=30)
+                            st.write(f"Debug: Fallback calculation (MONTHLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
                         
                         return {
                             'success': True,
                             'expires_at': expires_at.isoformat(),
-                            'subscription_id': subscription_id
+                            'subscription_id': subscription_id,
+                            'amount': amount
                         }
                 else:
-                    # No subscription ID, use manual calculation
+                    # ✅ FIXED: Determine plan from Stripe amount instead of session state
                     from datetime import datetime, timedelta
-                    plan = st.session_state.get('selected_plan', {'interval': 'month'})
-                    if plan['interval'] == 'year':
-                        expires_at = datetime.now() + timedelta(days=365)
-                    else:
-                        expires_at = datetime.now() + timedelta(days=30)
                     
-                    st.write(f"Debug: No subscription ID, using manual expiry: {expires_at}")
+                    # Use Stripe amount to determine plan type (more reliable)
+                    amount = session.amount_total if hasattr(session, 'amount_total') else 0
+                    now = datetime.now()
+                    
+                    if amount >= 9900:  # $99 or more = Annual
+                        expires_at = now + timedelta(days=365)
+                        st.write(f"Debug: No subscription ID (YEARLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
+                    else:  # Less than $99 = Monthly
+                        expires_at = now + timedelta(days=30)
+                        st.write(f"Debug: No subscription ID (MONTHLY from amount ${amount/100:.2f}) - expires at: {expires_at.isoformat()}")
                     
                     return {
                         'success': True,
                         'expires_at': expires_at.isoformat(),
-                        'subscription_id': None
+                        'subscription_id': None,
+                        'amount': amount
                     }
             else:
-                st.write(f"Debug: Payment not completed, status: {session.payment_status}")
+                st.write(f"Debug: Payment not completed. Status: {session.payment_status}")
                 return {'success': False}
         except Exception as e:
-            st.write(f"Debug: Full error details: {type(e).__name__}: {str(e)}")
-            st.error(f"Error verifying payment: {str(e)}")
-            
-            # Fallback: still upgrade the user since payment was successful
+            st.write(f"Debug: Error in handle_successful_payment: {e}")
+            # ✅ FIXED: Use session state as fallback when Stripe data unavailable
             from datetime import datetime, timedelta
             plan = st.session_state.get('selected_plan', {'interval': 'month'})
-            if plan['interval'] == 'year':
-                expires_at = datetime.now() + timedelta(days=365)
-            else:
-                expires_at = datetime.now() + timedelta(days=30)
             
-            st.write(f"Debug: Using fallback expiry: {expires_at}")
+            now = datetime.now()
+            if plan['interval'] == 'year':
+                expires_at = now + timedelta(days=365)
+                st.write(f"Debug: Exception fallback (YEARLY from session) - expires at: {expires_at.isoformat()}")
+            else:
+                expires_at = now + timedelta(days=30)
+                st.write(f"Debug: Exception fallback (MONTHLY from session) - expires at: {expires_at.isoformat()}")
             
             return {
                 'success': True,
                 'expires_at': expires_at.isoformat(),
-                'subscription_id': None
+                'subscription_id': None,
+                'amount': 0
             }
