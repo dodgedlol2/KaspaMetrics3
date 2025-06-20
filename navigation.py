@@ -27,6 +27,46 @@ def sidebar_toggle_button():
                 if (existingToggle) existingToggle.remove();
                 if (existingHome) existingHome.remove();
                 
+                // === ADD SIDEBAR STATE TRACKING ===
+                let sidebarState = 'expanded'; // Track current state
+                
+                function updateSidebarState() {
+                    const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
+                    const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
+                    sidebarState = isCollapsed ? 'collapsed' : 'expanded';
+                    console.log('Sidebar state updated to:', sidebarState);
+                    return sidebarState;
+                }
+                
+                // === FORCE PAGE REFRESH APPROACH ===
+                function forcePageRefresh() {
+                    console.log('Forcing page refresh to fix chart sizing...');
+                    try {
+                        // Method 1: Try to trigger Streamlit's internal refresh
+                        const stApp = window.parent.document.querySelector('.stApp');
+                        if (stApp) {
+                            stApp.style.transform = 'scale(1.001)';
+                            setTimeout(() => {
+                                stApp.style.transform = 'scale(1)';
+                            }, 100);
+                        }
+                        
+                        // Method 2: Force browser reflow
+                        window.parent.document.body.style.display = 'none';
+                        window.parent.document.body.offsetHeight; // Trigger reflow
+                        window.parent.document.body.style.display = '';
+                        
+                    } catch (error) {
+                        console.log('Error in force refresh:', error);
+                    }
+                }
+                
+                // Remove any existing buttons
+                const existingToggle = window.parent.document.getElementById('unified-sidebar-toggle');
+                const existingHome = window.parent.document.getElementById('unified-home-button');
+                if (existingToggle) existingToggle.remove();
+                if (existingHome) existingHome.remove();
+                
                 // === SIDEBAR TOGGLE BUTTON ===
                 const toggleButton = window.parent.document.createElement('button');
                 toggleButton.id = 'unified-sidebar-toggle';
@@ -98,112 +138,141 @@ def sidebar_toggle_button():
                     });
                 });
                 
-                // === ENHANCED PLOTLY RESIZE FUNCTION ===
+                // === STREAMLIT-SPECIFIC PLOTLY RESIZE FUNCTION ===
                 function resizePlotlyCharts() {
-                    console.log('Resizing Plotly charts...');
-                    // Find all Plotly charts
-                    const plotlyCharts = window.parent.document.querySelectorAll('.js-plotly-plot');
-                    console.log('Found', plotlyCharts.length, 'Plotly charts');
+                    console.log('Attempting Streamlit-specific Plotly resize...');
                     
-                    plotlyCharts.forEach((chart, index) => {
-                        try {
-                            console.log('Resizing chart', index + 1);
+                    try {
+                        // Method 1: Force Streamlit to recalculate container sizes
+                        const mainContainer = window.parent.document.querySelector('.main .block-container');
+                        if (mainContainer) {
+                            // Force container recalculation
+                            const originalWidth = mainContainer.style.width;
+                            mainContainer.style.width = 'calc(100% - 1px)';
                             
-                            // Method 1: Force container width recalculation
-                            const chartContainer = chart.closest('.stPlotlyChart') || chart.parentElement;
-                            if (chartContainer) {
-                                const originalWidth = chartContainer.style.width;
-                                chartContainer.style.width = '99%';
-                                setTimeout(() => {
-                                    chartContainer.style.width = '100%';
-                                }, 10);
-                            }
-                            
-                            // Method 2: Use Plotly resize with forced dimensions
-                            if (window.parent.Plotly && window.parent.Plotly.Plots) {
-                                window.parent.Plotly.Plots.resize(chart);
-                            }
-                            
-                            // Method 3: Force relayout with autosize
-                            if (window.parent.Plotly && window.parent.Plotly.relayout) {
-                                window.parent.Plotly.relayout(chart, {
-                                    'xaxis.autorange': true,
-                                    'yaxis.autorange': true,
-                                    autosize: true
-                                });
-                            }
-                            
-                            // Method 4: Trigger multiple resize events
                             setTimeout(() => {
-                                const resizeEvent = new Event('resize');
-                                window.parent.dispatchEvent(resizeEvent);
+                                mainContainer.style.width = originalWidth || '100%';
                                 
-                                // Also try to manually recalculate chart size
-                                if (window.parent.Plotly && window.parent.Plotly.Plots) {
-                                    window.parent.Plotly.Plots.resize(chart);
-                                }
-                            }, 50);
+                                // Method 2: Find and force resize all Plotly charts
+                                const plotlyCharts = window.parent.document.querySelectorAll('.js-plotly-plot');
+                                console.log('Found', plotlyCharts.length, 'Plotly charts to resize');
+                                
+                                plotlyCharts.forEach((chart, index) => {
+                                    try {
+                                        // Get the Streamlit container
+                                        const stContainer = chart.closest('[data-testid="element-container"]') || 
+                                                          chart.closest('.stPlotlyChart') || 
+                                                          chart.parentElement;
+                                        
+                                        if (stContainer) {
+                                            // Force container width recalculation
+                                            const currentWidth = stContainer.offsetWidth;
+                                            stContainer.style.width = (currentWidth - 1) + 'px';
+                                            
+                                            setTimeout(() => {
+                                                stContainer.style.width = '100%';
+                                                
+                                                // Now resize the Plotly chart
+                                                if (window.parent.Plotly) {
+                                                    if (window.parent.Plotly.Plots && window.parent.Plotly.Plots.resize) {
+                                                        window.parent.Plotly.Plots.resize(chart);
+                                                    } else if (window.parent.Plotly.relayout) {
+                                                        window.parent.Plotly.relayout(chart, {
+                                                            autosize: true,
+                                                            'xaxis.autorange': true,
+                                                            'yaxis.autorange': true
+                                                        });
+                                                    }
+                                                }
+                                            }, 50);
+                                        }
+                                        
+                                    } catch (error) {
+                                        console.log('Error resizing individual chart:', error);
+                                    }
+                                });
+                                
+                            }, 100);
+                        }
+                        
+                        // Method 3: Trigger Streamlit's resize detection
+                        setTimeout(() => {
+                            // Dispatch resize event to window
+                            const resizeEvent = new Event('resize', { bubbles: true });
+                            window.parent.dispatchEvent(resizeEvent);
                             
-                        } catch (error) {
-                            console.log('Error resizing chart', index + 1, ':', error);
-                        }
-                    });
-                    
-                    // Additional fallback: Force Streamlit to recalculate layout
-                    setTimeout(() => {
-                        try {
-                            const streamlitElements = window.parent.document.querySelectorAll('[data-testid="element-container"]');
-                            streamlitElements.forEach(el => {
-                                el.style.width = '99.9%';
-                                setTimeout(() => {
-                                    el.style.width = '100%';
-                                }, 10);
-                            });
-                        } catch (error) {
-                            console.log('Error with Streamlit layout recalculation:', error);
-                        }
-                    }, 100);
+                            // Also try dispatching to document
+                            window.parent.document.dispatchEvent(resizeEvent);
+                            
+                            // Force one more Plotly resize after all DOM manipulations
+                            setTimeout(() => {
+                                const charts = window.parent.document.querySelectorAll('.js-plotly-plot');
+                                charts.forEach(chart => {
+                                    if (window.parent.Plotly && window.parent.Plotly.Plots) {
+                                        window.parent.Plotly.Plots.resize(chart);
+                                    }
+                                });
+                            }, 100);
+                            
+                        }, 200);
+                        
+                    } catch (error) {
+                        console.log('Error in Streamlit-specific resize:', error);
+                    }
                 }
                 
-                // === SIDEBAR TOGGLE FUNCTIONALITY ===
+                // === ALTERNATIVE: Try to trigger Streamlit rerun ===
+                function triggerStreamlitRerun() {
+                    try {
+                        // Look for Streamlit's internal rerun mechanism
+                        const streamlitConnection = window.parent.window.streamlitDebug;
+                        if (streamlitConnection) {
+                            console.log('Attempting to trigger Streamlit rerun...');
+                            // This is experimental - might not work in all versions
+                        }
+                        
+                        // Alternative: Try to trigger resize on all Streamlit elements
+                        const allElements = window.parent.document.querySelectorAll('[data-testid*="element"]');
+                        allElements.forEach(el => {
+                            el.dispatchEvent(new Event('resize', { bubbles: true }));
+                        });
+                        
+                    } catch (error) {
+                        console.log('Could not trigger Streamlit rerun:', error);
+                    }
+                }
+                
+                // === SIDEBAR TOGGLE FUNCTIONALITY WITH STATE TRACKING ===
                 toggleButton.addEventListener('click', function() {
-                    console.log('Sidebar toggle clicked!');
+                    console.log('Sidebar toggle clicked! Current state:', sidebarState);
                     
                     const parentDoc = window.parent.document;
                     const sidebar = parentDoc.querySelector('[data-testid="stSidebar"]');
                     const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
                     
                     if (isCollapsed) {
+                        console.log('Opening sidebar...');
                         this.innerHTML = '✕';
                         const expandBtn = parentDoc.querySelector('[data-testid="stExpandSidebarButton"]');
                         if (expandBtn) {
                             expandBtn.click();
-                            // Enhanced resize for sidebar opening (multiple attempts)
+                            // Critical: Force refresh after opening sidebar (this is when charts need to shrink)
                             setTimeout(() => {
-                                resizePlotlyCharts();
-                            }, 200);
-                            setTimeout(() => {
-                                resizePlotlyCharts();
-                            }, 400);
-                            setTimeout(() => {
-                                resizePlotlyCharts();
-                            }, 600);
+                                forcePageRefresh();
+                                updateSidebarState();
+                            }, 500);
                         }
                     } else {
+                        console.log('Closing sidebar...');
                         this.innerHTML = '☰';
                         const collapseBtn = parentDoc.querySelector('[data-testid="stSidebarCollapseButton"] button');
                         if (collapseBtn) {
                             collapseBtn.click();
-                            // Enhanced resize for sidebar closing (multiple attempts)
+                            // Charts usually auto-expand correctly, but let's be safe
                             setTimeout(() => {
                                 resizePlotlyCharts();
-                            }, 200);
-                            setTimeout(() => {
-                                resizePlotlyCharts();
-                            }, 400);
-                            setTimeout(() => {
-                                resizePlotlyCharts();
-                            }, 600);
+                                updateSidebarState();
+                            }, 300);
                         }
                     }
                 });
@@ -420,9 +489,31 @@ def add_navigation():
             display: none !important;
         }
         
-        /* REMOVE ANY MARGIN/PADDING FROM TOP */
+        /* STREAMLIT CONTAINER FORCE RESIZE - More aggressive approach */
         .main .block-container {
             padding-top: 90px !important;
+            transition: width 0.1s ease !important;
+        }
+        
+        /* Force all Streamlit containers to respond to width changes */
+        [data-testid="element-container"],
+        [data-testid="column"],
+        .stPlotlyChart,
+        .js-plotly-plot {
+            transition: width 0.1s ease !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Force Plotly charts to recalculate on container size change */
+        .js-plotly-plot .plotly-graph-div {
+            width: 100% !important;
+            transition: width 0.1s ease !important;
+        }
+        
+        /* Ensure Streamlit doesn't cache container sizes */
+        .stApp {
+            contain: none !important;
         }
         
         /* BETTERSTACK-STYLE HEADER - RESTORED */
