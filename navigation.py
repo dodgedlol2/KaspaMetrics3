@@ -98,6 +98,35 @@ def sidebar_toggle_button():
                     });
                 });
                 
+                // === PLOTLY RESIZE FUNCTION ===
+                function resizePlotlyCharts() {
+                    console.log('Resizing Plotly charts...');
+                    // Find all Plotly charts
+                    const plotlyCharts = window.parent.document.querySelectorAll('.js-plotly-plot');
+                    console.log('Found', plotlyCharts.length, 'Plotly charts');
+                    
+                    plotlyCharts.forEach((chart, index) => {
+                        try {
+                            console.log('Resizing chart', index + 1);
+                            // Use Plotly.Plots.resize if available
+                            if (window.parent.Plotly && window.parent.Plotly.Plots) {
+                                window.parent.Plotly.Plots.resize(chart);
+                            }
+                            // Also try the relayout method
+                            else if (window.parent.Plotly && window.parent.Plotly.relayout) {
+                                window.parent.Plotly.relayout(chart, {});
+                            }
+                            // Fallback: trigger window resize event
+                            else {
+                                const resizeEvent = new Event('resize');
+                                window.parent.dispatchEvent(resizeEvent);
+                            }
+                        } catch (error) {
+                            console.log('Error resizing chart', index + 1, ':', error);
+                        }
+                    });
+                }
+                
                 // === SIDEBAR TOGGLE FUNCTIONALITY ===
                 toggleButton.addEventListener('click', function() {
                     console.log('Sidebar toggle clicked!');
@@ -109,11 +138,23 @@ def sidebar_toggle_button():
                     if (isCollapsed) {
                         this.innerHTML = '✕';
                         const expandBtn = parentDoc.querySelector('[data-testid="stExpandSidebarButton"]');
-                        if (expandBtn) expandBtn.click();
+                        if (expandBtn) {
+                            expandBtn.click();
+                            // Resize Plotly charts after sidebar opens
+                            setTimeout(() => {
+                                resizePlotlyCharts();
+                            }, 300); // Wait for sidebar animation to complete
+                        }
                     } else {
                         this.innerHTML = '☰';
                         const collapseBtn = parentDoc.querySelector('[data-testid="stSidebarCollapseButton"] button');
-                        if (collapseBtn) collapseBtn.click();
+                        if (collapseBtn) {
+                            collapseBtn.click();
+                            // Resize Plotly charts after sidebar closes
+                            setTimeout(() => {
+                                resizePlotlyCharts();
+                            }, 300); // Wait for sidebar animation to complete
+                        }
                     }
                 });
                 
@@ -193,7 +234,7 @@ def sidebar_toggle_button():
                     }
                 });
                 
-                // === MONITOR SIDEBAR CHANGES ===
+                // === MONITOR SIDEBAR CHANGES AND RESIZE CHARTS ===
                 const updateIcon = () => {
                     const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
                     const isCollapsed = sidebar && sidebar.getAttribute('aria-expanded') === 'false';
@@ -202,8 +243,37 @@ def sidebar_toggle_button():
                 
                 const sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
                 if (sidebar) {
-                    const observer = new MutationObserver(updateIcon);
+                    const observer = new MutationObserver((mutations) => {
+                        updateIcon();
+                        // Resize charts when sidebar state changes
+                        setTimeout(() => {
+                            resizePlotlyCharts();
+                        }, 350); // Slightly longer delay to ensure sidebar animation completes
+                    });
                     observer.observe(sidebar, { attributes: true, attributeFilter: ['aria-expanded'] });
+                }
+                
+                // === ALSO LISTEN FOR NATIVE STREAMLIT SIDEBAR BUTTONS ===
+                const parentDoc = window.parent.document;
+                
+                // Monitor native collapse button
+                const nativeCollapseBtn = parentDoc.querySelector('[data-testid="stSidebarCollapseButton"] button');
+                if (nativeCollapseBtn) {
+                    nativeCollapseBtn.addEventListener('click', () => {
+                        setTimeout(() => {
+                            resizePlotlyCharts();
+                        }, 300);
+                    });
+                }
+                
+                // Monitor native expand button
+                const nativeExpandBtn = parentDoc.querySelector('[data-testid="stExpandSidebarButton"]');
+                if (nativeExpandBtn) {
+                    nativeExpandBtn.addEventListener('click', () => {
+                        setTimeout(() => {
+                            resizePlotlyCharts();
+                        }, 300);
+                    });
                 }
                 
                 // === ADD BOTH BUTTONS TO PAGE ===
@@ -211,6 +281,11 @@ def sidebar_toggle_button():
                 window.parent.document.body.appendChild(homeButton);
                 console.log('Sidebar toggle and home buttons created successfully!');
                 updateIcon();
+                
+                // === INITIAL CHART RESIZE ON LOAD ===
+                setTimeout(() => {
+                    resizePlotlyCharts();
+                }, 1000); // Initial resize after page loads
             }
             
             // Create button with multiple attempts
@@ -233,7 +308,7 @@ def add_navigation():
     # This runs before Streamlit renders its default header
     st.markdown("""
     <style>
-        /* CACHE BUSTER - Change this comment to force CSS reload: v2.2 */
+        /* CACHE BUSTER - Change this comment to force CSS reload: v2.3 */
         /* Import Inter font like BetterStack */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -774,6 +849,11 @@ def add_navigation():
             margin-right: 8px;
         }
         
+        /* PLOTLY CHART AUTO-RESIZE FIX */
+        .js-plotly-plot {
+            transition: width 0.3s ease !important;
+        }
+        
         @media (max-width: 768px) {
             .kaspa-header {
                 padding: 0 1rem;
@@ -801,9 +881,9 @@ def add_navigation():
     </style>
     
     <script>
-        // Simplified JavaScript for logo functionality only
+        // Enhanced JavaScript for logo functionality and Plotly resize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Logo JavaScript loaded');
+            console.log('Logo and Plotly resize JavaScript loaded');
             
             function handleLogoClick(event) {
                 event.preventDefault();
@@ -821,6 +901,36 @@ def add_navigation():
                 return false;
             }
             
+            // Function to resize all Plotly charts
+            function resizeAllPlotlyCharts() {
+                const plotlyCharts = document.querySelectorAll('.js-plotly-plot');
+                plotlyCharts.forEach(chart => {
+                    try {
+                        if (window.Plotly && window.Plotly.Plots) {
+                            window.Plotly.Plots.resize(chart);
+                        } else if (window.Plotly && window.Plotly.relayout) {
+                            window.Plotly.relayout(chart, {});
+                        }
+                    } catch (error) {
+                        console.log('Error resizing Plotly chart:', error);
+                    }
+                });
+            }
+            
+            // Monitor for sidebar changes and resize charts
+            function monitorSidebarChanges() {
+                const sidebar = document.querySelector('[data-testid="stSidebar"]');
+                if (sidebar) {
+                    const observer = new MutationObserver(() => {
+                        setTimeout(resizeAllPlotlyCharts, 300);
+                    });
+                    observer.observe(sidebar, { 
+                        attributes: true, 
+                        attributeFilter: ['aria-expanded', 'style'] 
+                    });
+                }
+            }
+            
             // Try to add logo handler
             if (!addLogoClickHandler()) {
                 let attempts = 0;
@@ -831,6 +941,12 @@ def add_navigation():
                     }
                 }, 100);
             }
+            
+            // Initialize sidebar monitoring
+            monitorSidebarChanges();
+            
+            // Initial chart resize after page loads
+            setTimeout(resizeAllPlotlyCharts, 1000);
         });
     </script>
     
